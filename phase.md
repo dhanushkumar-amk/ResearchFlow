@@ -318,13 +318,13 @@ LangChain · LangGraph · RAG · Qdrant · Vector Embeddings · MCP (Model Conte
 
     **What you do:**
 
-    - [ ]  Design 4 tables on paper: sessions, reports, documents, agent_logs
-    - [ ]  Write schema.sql with CREATE TABLE + indexes for all 4 tables
-    - [ ]  Create src/db/migrate.ts that reads schema.sql and runs it
-    - [ ]  Add migrate npm script
-    - [ ]  Run migration: npm run migrate
-    - [ ]  Verify all 4 tables in TablePlus or pgAdmin (both free)
-    - [ ]  Create src/db/queries.ts: createSession, updateSession, saveReport, saveDocument, logAgentActivity
+    - [x]  Design 4 tables on paper: sessions, reports, documents, agent_logs
+    - [x]  Write schema.sql with CREATE TABLE + indexes for all 4 tables
+    - [x]  Create src/db/migrate.ts that reads schema.sql and runs it
+    - [x]  Add migrate npm script
+    - [x]  Run migration: npm run migrate
+    - [x]  Verify all 4 tables in TablePlus or pgAdmin (both free)
+    - [x]  Create src/db/queries.ts: createSession, updateSession, saveReport, saveDocument, logAgentActivity
 
     **What you learn:**
 
