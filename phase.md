@@ -335,13 +335,13 @@ LangChain · LangGraph · RAG · Qdrant · Vector Embeddings · MCP (Model Conte
 
     **What you do:**
 
-    - [ ]  Go to [upstash.com](http://upstash.com) → create free Redis DB → copy REST URL and token
-    - [ ]  Add UPSTASH_REDIS_URL and UPSTASH_REDIS_TOKEN to .env
-    - [ ]  Install @upstash/redis
-    - [ ]  Create src/db/redis.ts with configured Redis client
-    - [ ]  Write 4 helper functions: setMemory, getMemory, deleteMemory, setRateLimit
-    - [ ]  Test: setMemory with test value → getMemory to read back → confirm
-    - [ ]  Understand TTL: set key with 5s TTL → wait 6s → read → should return null
+    - [x]  Go to [upstash.com](http://upstash.com) → create free Redis DB → copy REST URL and token
+    - [x]  Add UPSTASH_REDIS_URL and UPSTASH_REDIS_TOKEN to .env
+    - [x]  Install @upstash/redis
+    - [x]  Create src/db/redis.ts with configured Redis client
+    - [x]  Write 4 helper functions: setMemory, getMemory, deleteMemory, setRateLimit
+    - [x]  Test: setMemory with test value → getMemory to read back → confirm
+    - [x]  Understand TTL: set key with 5s TTL → wait 6s → read → should return null
 
     **What you learn:**
 
