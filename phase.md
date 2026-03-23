@@ -64,7 +64,7 @@ This is the difference between a basic chatbot and a real AI product. Companies 
 | Web Search | Tavily API (free) | 1,000 req/month, purpose-built for AI agents |
 | Vector DB | Qdrant Cloud (free) | 1GB free forever, semantic search |
 | Memory | Upstash Redis (free) | 10,000 commands/day, already in your stack |
-| Database | PostgreSQL (Docker) | Sessions, reports, documents, agent logs |
+| Database | PostgreSQL (Neon) | Sessions, reports, documents, agent_logs |
 | Backend | Node.js + Express + TypeScript | Your existing resume stack |
 | Frontend | Next.js + TailwindCSS | Your existing resume stack |
 | MCP Server | @modelcontextprotocol/sdk | Custom tool server — biggest resume differentiator |
@@ -298,22 +298,22 @@ LangChain · LangGraph · RAG · Qdrant · Vector Embeddings · MCP (Model Conte
     - 12-factor app principle for configuration management
     - Why validate env variables at startup not runtime
     - How TypeScript typed config objects work
-- Phase 8 — PostgreSQL Database Setup
+- Phase 8 — PostgreSQL Database Setup (Neon)
 
     **What you do:**
 
-    - [ ]  Create docker-compose.yml with only PostgreSQL (postgres:15, port 5432)
-    - [ ]  Run docker-compose up -d
-    - [ ]  Install pg and @types/pg
-    - [ ]  Create src/db/postgres.ts with connection pool using DATABASE_URL
-    - [ ]  Write test query: create table, insert row, read it, delete table
-    - [ ]  Confirm connection works, remove test table
+    - [x]  Create a free project on [Neon.tech](https://neon.tech)
+    - [x]  Copy the Connection String (DATABASE_URL) to your `.env`
+    - [x]  Install pg and @types/pg
+    - [x]  Create src/db/postgres.ts with connection pool using DATABASE_URL
+    - [x]  Write test query: create table, insert row, read it, delete table
+    - [x]  Confirm connection works, remove test table
 
     **What you learn:**
 
-    - How Docker runs services without installing them
+    - Difference between local DB vs managed serverless Postgres
     - What a connection pool is and why it's better than single connections
-    - Basic PostgreSQL: CREATE TABLE, INSERT, SELECT, DROP TABLE
+    - Cloud database security (SSL/TLS connections)
 - Phase 9 — Database Schema Creation
 
     **What you do:**
