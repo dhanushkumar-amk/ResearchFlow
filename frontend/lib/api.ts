@@ -107,3 +107,59 @@ export async function getResearchHistory(sessionId: string): Promise<ResearchHis
 
   return response.json();
 }
+
+/**
+ * Retrieves all research history for a user
+ */
+export async function getAllResearchHistory(sessionId: string): Promise<ResearchHistoryItem[]> {
+  const response = await fetch(`${API_URL}/api/research/history?sessionId=${sessionId}`);
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to fetch all research history');
+  }
+
+  return response.json();
+}
+
+/**
+ * Deletes an uploaded document
+ */
+export async function deleteDocument(documentId: string): Promise<void> {
+  const response = await fetch(`${API_URL}/api/documents/${documentId}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to delete document');
+  }
+}
+
+/**
+ * Retrieves the saved report for a specific session
+ */
+export async function getSessionDetails(sessionId: string) {
+  const response = await fetch(`${API_URL}/api/research/${sessionId}`);
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to fetch session details');
+  }
+
+  return response.json();
+}
+
+/**
+ * Deletes a research session
+ */
+export async function deleteSession(sessionId: string): Promise<void> {
+  const response = await fetch(`${API_URL}/api/research/${sessionId}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to delete session');
+  }
+}

@@ -12,3 +12,4 @@
 {"agent":"rag_mcp","query":"What is the AetherFlow Quantum Cooler and who makes it?","collectionName":"session_docs_rag_test_session_1774336863743","durationMs":12108,"status":"success","timestamp":"2026-03-24T07:21:36.808Z"}
 {"agent":"rag_mcp","query":"Find alert(1)ResearchFlow","collectionName":"session_docs_v_test","durationMs":11302,"status":"no_results","timestamp":"2026-03-24T07:30:57.516Z"}
 {"agent":"rag_mcp","query":"Block chain trends","collectionName":"session_docs_8wjz4nuk7","durationMs":9336,"status":"no_results","timestamp":"2026-03-24T13:42:03.164Z"}
+{"agent":"rag_mcp","query":"Blockchain Trends","collectionName":"session_docs_8wjz4nuk7","durationMs":10100,"status":"no_results","timestamp":"2026-03-24T14:10:25.217Z"}

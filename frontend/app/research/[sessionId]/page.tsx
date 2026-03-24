@@ -15,7 +15,7 @@ import Link from 'next/link';
 
 import AgentTimeline from '../../../components/AgentTimeline';
 import StreamingReport from '../../../components/StreamingReport';
-import { getResearchStream } from '../../../lib/api';
+import { getResearchStream, getSessionDetails } from '../../../lib/api';
 import { ResearchEvent, ResearchStatus, ResearchComplete, ResearchToken, ResearchPlan } from '../../../types/research';
 
 export default function ResearchPage() {
@@ -33,105 +33,111 @@ export default function ResearchPage() {
   const [isError, setIsError] = useState(false);
   const [qualityScore, setQualityScore] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   // Use a ref for the EventSource to handle cleanup correctly
   const eventSourceRef = useRef<EventSource | null>(null);
 
-  const connectToStream = useCallback(() => {
+  const fetchSessionData = useCallback(async () => {
+    if (!sessionId) return false;
+    
+    try {
+      const data = await getSessionDetails(sessionId);
+      
+      if (data && data.content) {
+        setReportText(data.content);
+        setQualityScore(data.quality_score || null);
+        setIsComplete(true);
+        setStatusMessage('Research report loaded from history.');
+        setIsLoading(false);
+        return true; 
+      }
+    } catch (err) {
+      console.log('Session result not available yet, starting live stream.');
+    }
+    return false;
+  }, [sessionId]);
+
+  const connectToStream = useCallback(async () => {
     if (!sessionId) return;
 
-    // Reset UI state before connecting (in case of a manual reconnect)
+    // Reset UI state before connecting
     setIsError(false);
     setErrorMessage('');
     setIsComplete(false);
+    setIsLoading(true);
+
+    // First try to fetch from history
+    const alreadyExists = await fetchSessionData();
+    if (alreadyExists) return;
 
     try {
-      const eventSource = getResearchStream(sessionId);
-      eventSourceRef.current = eventSource;
-
-      // Listen for custom events handled by our getResearchStream wrapper
-      const onEvent = (event: MessageEvent) => {
-        try {
-          const parsedEvent: ResearchEvent = JSON.parse(event.data);
-          
-          switch (parsedEvent.type) {
+      const eventSource = getResearchStream(sessionId, (event: ResearchEvent) => {
+        // Handle events from the wrapper
+        switch (event.type) {
             case 'connected':
               setStatusMessage('Connection established. Waiting for agents...');
+              setIsLoading(false);
               break;
               
             case 'status':
-              const statusData = parsedEvent.data as ResearchStatus;
+              const statusData = event.data as ResearchStatus;
               setActiveNode(statusData.node);
               setStatusMessage(statusData.message);
-              // When synthesis starts, we'll begin receiving tokens
               if (statusData.node === 'synthesizer') {
                 setIsStreaming(true);
               }
               break;
               
             case 'plan':
-              const planData = parsedEvent.data as ResearchPlan;
+              const planData = event.data as ResearchPlan;
               setPlan(planData.plan);
               break;
               
             case 'token':
-              const tokenData = parsedEvent.data as ResearchToken;
-              // Appending tokens directly to the report state
+              const tokenData = event.data as ResearchToken;
               setReportText(prev => prev + tokenData.text);
               break;
               
             case 'complete':
-              const completeData = parsedEvent.data as ResearchComplete;
+              const completeData = event.data as ResearchComplete;
               setIsStreaming(false);
               setIsComplete(true);
               setQualityScore(completeData.score || null);
               setStatusMessage('Research successfully completed.');
-              // We'll often get the full report here as a fallback or final confirmation
-              if (completeData.report && completeData.report.length > 0) {
-                 // only set if significantly different - usually tokens are more up-to-date
-                 setReportText(prev => prev.length > completeData.report.length ? prev : completeData.report);
+              if (completeData.report) {
+                 setReportText(completeData.report);
               }
-              // Close connection on success
-              eventSource.close();
               break;
               
             case 'error':
-              const errorData = parsedEvent.data as { message: string };
+              const errorData = event.data as { message: string };
               setIsError(true);
               setErrorMessage(errorData.message || 'An unexpected research error occurred.');
               setIsStreaming(false);
-              eventSource.close();
               break;
           }
-        } catch (e) {
-          console.error('Failed to parse SSE event data', e);
-        }
-      };
-
-      // In api.ts, all event types are added to eventSource via addEventListener
-      // but standard EventSource message handlers work too if types aren't distinguished.
-      // We'll register specific handlers here since we know the types.
-      
-      const handleType = (type: string) => (e: any) => {
-        onEvent(e);
-      };
-
-      ['status', 'complete', 'error', 'connected', 'token', 'plan'].forEach(type => {
-        eventSource.addEventListener(type, handleType(type));
       });
+      
+      eventSourceRef.current = eventSource;
 
       eventSource.onerror = (err) => {
         console.error('EventSource connection error:', err);
-        setIsError(true);
-        setErrorMessage('Connection lost. The server might be busy or offline.');
+        // Only set error if we are not already complete (re-connection often fails after normal completion)
+        if (!isComplete) {
+          setIsError(true);
+          setErrorMessage('Connection lost. The research might still be running or was interrupted.');
+        }
         eventSource.close();
       };
 
     } catch (err: any) {
       setIsError(true);
       setErrorMessage(err.message || 'Failed to establish connection.');
+    } finally {
+      setIsLoading(false);
     }
-  }, [sessionId]);
+  }, [sessionId, isComplete, fetchSessionData]);
 
   useEffect(() => {
     connectToStream();

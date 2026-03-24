@@ -116,3 +116,45 @@ export async function getResearchHistory(userId: string) {
   return res.rows;
 }
 
+/**
+ * Deletes a research session and all linked reports/logs
+ */
+export async function deleteSession(sessionId: string) {
+  const text = `
+    DELETE FROM sessions
+    WHERE session_id = $1
+    RETURNING *
+  `;
+  const res = await query(text, [sessionId]);
+  return res.rows[0];
+}
+
+/**
+ * Retrieves the full report for a specific session
+ */
+export async function getSessionReport(sessionId: string) {
+  const text = `
+    SELECT s.query, r.content, r.quality_score, r.sources, s.created_at
+    FROM sessions s
+    JOIN reports r ON s.session_id = r.session_id
+    WHERE s.session_id = $1
+  `;
+  const res = await query(text, [sessionId]);
+  return res.rows[0];
+}
+
+/**
+ * Retrieves all research history for a user
+ */
+export async function getAllResearchHistory(userId: string) {
+  const text = `
+    SELECT s.session_id, s.query, s.status, s.created_at, r.quality_score
+    FROM sessions s
+    LEFT JOIN reports r ON s.session_id = r.session_id
+    WHERE s.user_id = $1
+    ORDER BY s.created_at DESC
+  `;
+  const res = await query(text, [userId]);
+  return res.rows;
+}
+

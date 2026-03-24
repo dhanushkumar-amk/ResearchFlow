@@ -1,3 +1,11 @@
 node_modules
 .env
+.env.local
 dist
+.env.production
+.next
+out
+build
+*.db
+*.sqlite
+.DS_Store

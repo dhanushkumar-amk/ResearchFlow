@@ -1,5 +1,13 @@
 import { Router, Request, Response } from 'express';
-import { createSession, updateSessionStatus, saveReport, getResearchHistory } from '../db/queries';
+import { 
+  createSession, 
+  updateSessionStatus, 
+  saveReport, 
+  getResearchHistory, 
+  getSessionReport, 
+  deleteSession,
+  getAllResearchHistory 
+} from '../db/queries';
 import { researchGraph } from '../graph/researchGraph';
 import { researchEmitter } from '../events/emitter';
 import { researchRateLimiter } from '../middleware/rateLimit';
@@ -141,17 +149,45 @@ router.get('/:sessionId/stream', (req: Request, res: Response) => {
 
 /**
  * GET /api/research/history
- * Returns the last 5 research sessions for a user.
+ * Returns the research history for a user.
  */
 router.get('/history', async (req: Request, res: Response) => {
-  const sessionId = req.query.sessionId as string;
-  if (!sessionId) {
-    return res.status(400).json({ error: 'sessionId is required' });
-  }
+  const userId = (req.query.sessionId as string) || 'research_session_id';
 
   try {
-    const history = await getResearchHistory(sessionId);
+    const history = await getAllResearchHistory(userId);
     res.json(history);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /api/research/:sessionId
+ * Retrieves the saved report for a specific session.
+ */
+router.get('/:sessionId', async (req: Request, res: Response) => {
+  const sessionId = req.params.sessionId as string;
+
+  try {
+    const report = await getSessionReport(sessionId);
+    if (!report) return res.status(404).json({ error: 'Report not found' });
+    res.json(report);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * DELETE /api/research/:sessionId
+ * Deletes a session and its associated data.
+ */
+router.delete('/:sessionId', async (req: Request, res: Response) => {
+  const sessionId = req.params.sessionId;
+
+  try {
+    await deleteSession(sessionId as string);
+    res.json({ message: 'Session deleted successfully' });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
