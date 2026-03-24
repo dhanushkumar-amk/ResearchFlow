@@ -1,0 +1,167 @@
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ÔÜÖ´©Å  load multiple .env files with { path: ['.env.local', '.env'] }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ­ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+­ƒÅù´©Å  LangGraph: Research Pipeline Constructed Successfully!
+
+­ƒîƒ [MILESTONE] Starting Full End-to-End Research Pipeline Test
+­ƒñû Session ID: edffd84c-0a88-4a07-9b12-1197e7febd67
+­ƒôØ Query: "What are the technical and developer experience benefits of TypeScript over JavaScript?"
+
+------------------------------------------------------------
+­ƒÜÇ Research MCP Server running on Stdio transport...
+­ƒºá [Planner] Saved planning memory for session: edffd84c-0a88-4a07-9b12-1197e7febd67
+(node:18416) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Successfully connected to the PostgreSQL database!
+ÔÜá´©Å Warning: Failed to log agent activity to DB: error: insert or update on table "agent_logs" violates foreign key constraint "agent_logs_session_id_fkey"
+    at C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\node_modules\pg-pool\index.js:45:11
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async logAgentActivity (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\src\db\queries.ts:73:15)
+    at async runPlannerAgent (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\src\agents\planner.ts:88:9)
+    at async RunnableCallable.plannerNode [as func] (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\src\graph\researchGraph.ts:16:19)
+    at async RunnableCallable.invoke (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\node_modules\@langchain\langgraph\src\utils.ts:85:21)
+    at async RunnableSequence.invoke (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\node_modules\@langchain\core\src\runnables\base.ts:1912:25)
+    at async Object._runWithRetry (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\node_modules\@langchain\langgraph\src\pregel\retry.ts:103:16)
+    at async PregelRunner._executeTasksWithRetry (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\node_modules\@langchain\langgraph\src\pregel\runner.ts:330:27)
+    at async PregelRunner.tick (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\node_modules\@langchain\langgraph\src\pregel\runner.ts:138:37) {
+  length: 309,
+  severity: 'ERROR',
+  code: '23503',
+  detail: 'Key (session_id)=(edffd84c-0a88-4a07-9b12-1197e7febd67) is not present in table "sessions".',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'agent_logs',
+  column: undefined,
+  dataType: undefined,
+  constraint: 'agent_logs_session_id_fkey',
+  file: 'ri_triggers.c',
+  line: '2599',
+  routine: 'ri_ReportViolation'
+}
+
+Ô£à NODE COMPLETED: [PLANNER]
+­ƒöÄ Plan Generated (780 chars)
+ÔÅ▒´©Å [RAG Start] 2026-03-24T06:29:20.929Z
+­ƒñû [RAG Agent] Starting retrieval via MCP Tool for: "What are the technical and developer experience benefits of TypeScript over JavaScript?" in collection: "edffd84c-0a88-4a07-9b12-1197e7febd67"
+ÔÅ▒´©Å [Researcher Start] 2026-03-24T06:29:20.948Z
+­ƒöÄ [Search Agent] Researching via MCP Tool: "What are the technical and developer experience benefits of TypeScript over JavaScript?"
+­ƒÜÇ Research MCP Server running on Stdio transport...
+­ƒÜÇ Research MCP Server running on Stdio transport...
+
+Ô£à NODE COMPLETED: [RAG]
+­ƒôä Document retrieval finished. Context length: 0
+
+Ô£à NODE COMPLETED: [RESEARCHER]
+­ƒîÉ Web search finished. Found 7 snippets.
+­ƒôØ [Synthesizer Agent] Generating final report via Groq streaming...
+­ƒÜÇ Research MCP Server running on Stdio transport...
+­ƒºá [Synthesizer] Verified planning memory for session: edffd84c-0a88-4a07-9b12-1197e7febd67
+
+Ô£à NODE COMPLETED: [SYNTHESIZER]
+Ô£ì´©Å  Draft Report Generated. Length: 4297 characters.
+­ƒºÉ [Critic Agent] Reviewing attempt #1 for query: "What are the technical and developer experience benefits of TypeScript over JavaScript?"
+­ƒôè [Critic Result] Score: 9/10 | Verdict: APPROVE
+
+Ô£à NODE COMPLETED: [CRITIC]
+ÔÜû´©Å  Review Outcome: [APPROVE] (Score: 9/10)
+­ƒÜÇ Research MCP Server running on Stdio transport...
+­ƒºá [Planner] Saved planning memory for session: edffd84c-0a88-4a07-9b12-1197e7febd67
+Successfully connected to the PostgreSQL database!
+ÔÜá´©Å Warning: Failed to log agent activity to DB: error: insert or update on table "agent_logs" violates foreign key constraint "agent_logs_session_id_fkey"
+    at C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\node_modules\pg-pool\index.js:45:11
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async logAgentActivity (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\src\db\queries.ts:73:15)
+    at async runPlannerAgent (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\src\agents\planner.ts:88:9)
+    at async RunnableCallable.plannerNode [as func] (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\src\graph\researchGraph.ts:16:19)
+    at async RunnableCallable.invoke (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\node_modules\@langchain\langgraph\src\utils.ts:85:21)
+    at async RunnableSequence.invoke (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\node_modules\@langchain\core\src\runnables\base.ts:1912:25)
+    at async Object._runWithRetry (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\node_modules\@langchain\langgraph\src\pregel\retry.ts:103:16)
+    at async PregelRunner._executeTasksWithRetry (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\node_modules\@langchain\langgraph\src\pregel\runner.ts:330:27)
+    at async PregelRunner.tick (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\node_modules\@langchain\langgraph\src\pregel\runner.ts:138:37) {
+  length: 309,
+  severity: 'ERROR',
+  code: '23503',
+  detail: 'Key (session_id)=(edffd84c-0a88-4a07-9b12-1197e7febd67) is not present in table "sessions".',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'agent_logs',
+  column: undefined,
+  dataType: undefined,
+  constraint: 'agent_logs_session_id_fkey',
+  file: 'ri_triggers.c',
+  line: '2599',
+  routine: 'ri_ReportViolation'
+}
+ÔÅ▒´©Å [RAG Start] 2026-03-24T06:29:50.148Z
+­ƒñû [RAG Agent] Starting retrieval via MCP Tool for: "What are the technical and developer experience benefits of TypeScript over JavaScript?" in collection: "edffd84c-0a88-4a07-9b12-1197e7febd67"
+ÔÅ▒´©Å [Researcher Start] 2026-03-24T06:29:50.169Z
+­ƒöÄ [Search Agent] Researching via MCP Tool: "What are the technical and developer experience benefits of TypeScript over JavaScript?"
+­ƒÜÇ Research MCP Server running on Stdio transport...
+­ƒÜÇ Research MCP Server running on Stdio transport...
+­ƒôØ [Synthesizer Agent] Generating final report via Groq streaming...
+­ƒÜÇ Research MCP Server running on Stdio transport...
+­ƒºá [Synthesizer] Verified planning memory for session: edffd84c-0a88-4a07-9b12-1197e7febd67
+­ƒºÉ [Critic Agent] Reviewing attempt #1 for query: "What are the technical and developer experience benefits of TypeScript over JavaScript?"
+­ƒôè [Critic Result] Score: 9/10 | Verdict: APPROVE
+
+------------------------------------------------------------
+­ƒÅå [SUCCESS] Pipeline Finished in 30.64s
+­ƒôè Final Grade: 9/10
+­ƒöä Total Refinement Rounds: 0
+------------------------------------------------------------
+
+­ƒôû FINAL RESEARCH REPORT:
+============================================================
+# Technical and Developer Experience Benefits of TypeScript over JavaScript
+## Introduction
+TypeScript is a superset of JavaScript that offers several technical and developer experience benefits. This report aims to synthesize the research findings on the advantages of TypeScript over JavaScript, including its technical benefits, developer experience advantages, and use cases where TypeScript is preferred.
+
+## Technical Benefits of TypeScript
+TypeScript provides several technical benefits over JavaScript, including:
+* **Static typing**: TypeScript introduces static typing, which allows developers to define variable types during development, reducing bugs and errors [1].
+* **Error detection**: TypeScript's static typing ensures that type mismatches are caught during the development phase, reducing bugs in production [3].
+* **Code organization**: TypeScript provides better code organization and maintainability due to its optional typing and interfaces [2].
+* **Tooling support**: TypeScript has better tooling support, including integrated development environments (IDEs) and editors that provide a built-in TypeScript compiler (TSC) [1].
+
+## Developer Experience Advantages of TypeScript
+TypeScript offers several developer experience advantages over JavaScript, including:
+* **Rapid feedback loop**: TypeScript provides a rapid feedback loop for correcting minor problems that occur during development or refactoring [1].
+* **Dependable and refactorable code**: TypeScript code is more dependable and refactorable due to its static typing and interfaces [1].
+* **Improved readability and maintainability**: TypeScript's optional typing and interfaces improve code readability and maintainability [3].
+
+## Comparison and Contrast of TypeScript and JavaScript
+TypeScript and JavaScript have several differences, including:
+* **Static typing**: TypeScript has static typing, while JavaScript has dynamic typing [3].
+* **Compilation**: TypeScript compiles to JavaScript, while JavaScript does not require compilation [1].
+* **Compatibility**: TypeScript is compatible with JavaScript libraries and frameworks, allowing for gradual adoption [3].
+
+## Use Cases where TypeScript is Preferred
+TypeScript is preferred over JavaScript in several use cases, including:
+* **Large-scale applications**: TypeScript is preferred for large-scale applications that require error-resistant code and high maintainability [4].
+* **Cross-platform environments**: TypeScript is used in cross-platform environments, such as React Native app development [4].
+* **High-scale applications**: TypeScript is preferred for high-scale applications that require scalability, error prevention, and long-term maintainability [4].
+
+## Conclusion
+In conclusion, TypeScript offers several technical and developer experience benefits over JavaScript, including static typing, error detection, code organization, and tooling support. TypeScript is preferred over JavaScript in use cases that require large-scale applications, cross-platform environments, and high-scale applications. Overall, TypeScript is a suitable choice for developers who want to build high-quality, maintainable, and scalable applications.
+
+## References
+[1] Aalpha. (2026). Advantages of TypeScript over JavaScript 2026. Retrieved from https://www.aalpha.net/articles/advantages-of-typescript-over-javascript/
+[2] Geeksforgeeks. (n.d.). Advantages and Disadvantages of TypeScript over JavaScript. Retrieved from https://www.geeksforgeeks.org/javascript/advantages-and-disadvantages-of-typescript-over-javascript/
+[3] Perficient Blogs. (2025). Why Choose TypeScript Over JavaScript? Retrieved from https://blogs.perficient.com/2025/01/20/why-choose-typescript-over-javascript/
+[4] Medium. (2025). TypeScript vs JavaScript with Use Cases (2025 Guide). Retrieved from https://medium.com/@may_sanders/typescript-vs-javascript-with-use-cases-2025-guide-3aa20fc25d6f
+============================================================
+

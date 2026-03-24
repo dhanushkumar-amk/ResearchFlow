@@ -3,6 +3,7 @@ import { PromptTemplate } from '@langchain/core/prompts';
 import { JsonOutputParser } from '@langchain/core/output_parsers';
 import { config } from '../config';
 import { logAgentActivity } from '../db/queries';
+import { callMcpTool } from '../mcp/toolClient';
 
 // Define the interface for the planner's output
 export interface PlannerOutput {
@@ -13,8 +14,9 @@ export interface PlannerOutput {
 }
 
 /**
- * Planner Agent (Agent 1)
- * Responsible for breaking down a complex query into actionable research tasks and search queries.
+ * Planner Agent (Agent 1) - Phase 30 Updated
+ * Responsible for breaking down a complex query into actionable research tasks.
+ * Uses MCP tool `save_memory` to store intermediate planning data.
  */
 export async function runPlannerAgent(query: string, sessionId?: string): Promise<PlannerOutput> {
   const startTime = Date.now();
@@ -64,6 +66,21 @@ export async function runPlannerAgent(query: string, sessionId?: string): Promis
     });
 
     const durationMs = Date.now() - startTime;
+
+    // ── STORE MEMORY (New: Phase 30 Memory Tools) ──────────────────────────
+    if (sessionId) {
+      try {
+        await callMcpTool('save_memory', {
+          session_id: sessionId,
+          key: 'planner_result',
+          value: JSON.stringify(result),
+          ttl_seconds: 3600 // store for initial phase
+        });
+        console.log(`🧠 [Planner] Saved planning memory for session: ${sessionId}`);
+      } catch (err: any) {
+        console.warn('⚠️ Warning: Failed to save planning result to MCP memory工具:', err.message);
+      }
+    }
 
     // Log the activity to the database if a sessionId is provided
     if (sessionId) {

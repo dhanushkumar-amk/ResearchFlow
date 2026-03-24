@@ -13,7 +13,7 @@ import { runCriticAgent } from '../agents/critic';
  * Generates the research plan based on the original query.
  */
 async function plannerNode(state: ResearchStateType) {
-  const planObj = await runPlannerAgent(state.query);
+  const planObj = await runPlannerAgent(state.query, state.sessionId);
   
   // Convert JSON to a readable text summary for the Synthesizer
   const formattedPlan = `
@@ -57,6 +57,7 @@ async function synthesizerNode(state: ResearchStateType) {
     researchPlan: state.researchPlan,
     webResults: state.searchResults,
     ragContext: state.ragResults,
+    sessionId: state.sessionId,
   });
 
   let fullContent = '';

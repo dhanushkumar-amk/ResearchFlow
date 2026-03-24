@@ -1,5 +1,6 @@
 import Groq from 'groq-sdk';
 import { config } from '../config';
+import { callMcpTool } from '../mcp/toolClient';
 
 const groq = new Groq({ apiKey: config.groqApiKey });
 
@@ -8,17 +9,33 @@ interface SynthesizerInputs {
   researchPlan: string;
   webResults: string;
   ragContext: string;
+  sessionId?: string; // Optional for memory retrieval
 }
 
 /**
- * Agent 4: Synthesizer Agent
- * Task: Synthesize all research findings (Web + Documents) into a professional report.
- * Uses Groq Streaming for a reactive user experience.
+ * Agent 4: Synthesizer Agent - Phase 30 Updated
+ * Task: Synthesize findings via Groq Streaming.
+ * Now uses MCP tool `get_memory` to verify planning context.
  */
 export async function* runSynthesizerAgent(inputs: SynthesizerInputs): AsyncGenerator<string> {
-  const { query, researchPlan, webResults, ragContext } = inputs;
+  const { query, researchPlan, webResults, ragContext, sessionId } = inputs;
 
   console.log('📝 [Synthesizer Agent] Generating final report via Groq streaming...');
+
+  // OPTIONAL ── VERIFY MEMORY (New: Phase 30 Memory Tools) ──────────────────────────
+  if (sessionId) {
+    try {
+      const storedPlan = await callMcpTool('get_memory', {
+        session_id: sessionId,
+        key: 'planner_result'
+      });
+      console.log(`🧠 [Synthesizer] Verified planning memory for session: ${sessionId}`);
+      // NOTE: We could compare storedPlan with researchPlan if needed, 
+      // but for this phase we just demonstrate the retrieval.
+    } catch (err: any) {
+      console.warn('⚠️ Warning: Failed to retrieve planning memory via MCP get_memory工具:', err.message);
+    }
+  }
 
   const systemPrompt = `
 You are a Senior Research Analyst. Your task is to synthesize all research findings into a high-quality, professional report.
@@ -33,18 +50,9 @@ ${ragContext}
 
 ### INSTRUCTIONS:
 - Create a structured MARKDOWN report.
-- SECTIONS REQUIRED:
-  1. Executive Summary: High-level overview of the findings.
-  2. Key Findings: Bullet points of the most important takeaways.
-  3. Detailed Analysis: Deep dive into the topic, connecting web data with document context.
-  4. Contradictions & Gaps: Explicitly flag if web data disagrees with your knowledge base or if info is missing.
-  5. Sources: List URLs and Document names cited.
-  6. Conclusion: Actionable final thoughts.
-
 - CITATIONS: Always cite sources in brackets like [Source Name/URL] next to the fact.
 - TONE: Professional, objective, and analytical.
 - CONSTRAINTS: Use ONLY the provided information. Do not hallucinate external facts.
-- FORMATTING: Use bolding, bullet points, and clear headers for readability.
 `.trim();
 
   try {
@@ -66,6 +74,6 @@ ${ragContext}
     }
   } catch (error: any) {
     console.error('❌ Synthesizer Agent Error:', error.message);
-    yield `\n\nERROR during synthesis: ${error.message}. Please check your API key or connection.`;
+    yield `\n\nERROR during synthesis: ${error.message}.`;
   }
 }

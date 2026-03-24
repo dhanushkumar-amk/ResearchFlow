@@ -1,53 +1,26 @@
-import { searchWeb, SearchResult } from '../tools/tavilySearch';
+import { callMcpTool } from '../mcp/toolClient';
 import fs from 'fs/promises';
 import path from 'path';
 
 /**
- * Agent 1: Search Agent (Researcher)
- * Task: Execute optimized search queries and format results.
+ * Agent 1: Search Agent (Researcher) - Phase 30 Updated
+ * Task: Execute optimized search queries via MCP Tool.
+ * Now routes through the MCP server's web_search tool for standardization.
  */
 export async function runSearchAgent(query: string) {
   const startTime = Date.now();
-  console.log(`🔎 [Search Agent] Researching: "${query}"`);
-
-  // We generate a list of queries (for now, just the main query + two variants)
-  // In a real flow, the Planner provides these. 
-  // To keep it robust, we'll search the main query + a focused query.
-  const queries = [
-    query,
-    `${query} detailed analysis 2024`,
-    `${query} scientific studies or news`
-  ];
+  console.log(`🔎 [Search Agent] Researching via MCP Tool: "${query}"`);
 
   try {
-    const batchResults = await searchWeb(queries);
-    
-    // Flatten and deduplicate by URL
-    const allResults: SearchResult[] = [];
-    const seenUrls = new Set<string>();
-
-    for (const batch of batchResults) {
-      for (const item of batch) {
-        if (!seenUrls.has(item.url)) {
-          seenUrls.add(item.url);
-          allResults.push(item);
-        }
-      }
-    }
-
-    // Format as a text block for the synthesizer
-    let formattedResults = '';
-    allResults.slice(0, 10).forEach((res, i) => {
-      formattedResults += `[${i + 1}] ${res.title}\nURL: ${res.url}\nSnippet: ${res.snippet}\n\n`;
-    });
+    // ── CALLING MCP TOOL (Standardized Interface) ──────────────────────────
+    const formattedResults = await callMcpTool('web_search', { query });
 
     const duration = Date.now() - startTime;
 
     // Log the activity
     const logEntry = {
-      agent: 'search',
+      agent: 'search_mcp',
       query,
-      resultsCount: allResults.length,
       durationMs: duration,
       timestamp: new Date().toISOString()
     };
@@ -59,9 +32,9 @@ export async function runSearchAgent(query: string) {
       JSON.stringify(logEntry) + '\n'
     );
 
-    return formattedResults || 'No web results found.';
+    return formattedResults;
   } catch (error: any) {
-    console.error(`❌ Search Agent failed:`, error.message);
+    console.error(`❌ Search Agent (MCP) failed:`, error.message);
     return 'Web search failed due to an error.';
   }
 }

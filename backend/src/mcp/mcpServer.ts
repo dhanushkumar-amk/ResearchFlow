@@ -6,13 +6,15 @@ import {
   ListToolsRequestSchema,
   McpError,
 } from '@modelcontextprotocol/sdk/types.js';
-import { runSearchAgent } from '../agents/search';
+
+import { searchWeb } from '../tools/tavilySearch';
 import { searchChunks, collectionExists } from '../rag/vectorStore';
 import { setMemory, getMemory } from '../db/redis';
 
 /**
- * Phase 26-29: Research Tools MCP Server
- * Exposes research tools (Web, Documents, Memory) to any MCP-compatible AI client.
+ * Phase 26-30: Research Tools MCP Server
+ * Refactored to call raw tools directly. 
+ * Formats results inside the tool handler for a standardized agent interface.
  */
 class ResearchMcpServer {
   private server: Server;
@@ -104,8 +106,16 @@ class ResearchMcpServer {
         if (!query) throw new McpError(ErrorCode.InvalidParams, 'Query is required.');
 
         try {
-          const results = await runSearchAgent(query);
-          return { content: [{ type: 'text', text: results }] };
+          // CALLING RAW TAVILY SEARCH (Unified logic)
+          const resultsArray = await searchWeb([query]);
+          const results = resultsArray[0] || [];
+
+          let formatted = `🔎 Web search results for: "${query}":\n\n`;
+          results.forEach((res, i) => {
+            formatted += `[${i + 1}] ${res.title}\nURL: ${res.url}\nSnippet: ${res.snippet}\n\n`;
+          });
+
+          return { content: [{ type: 'text', text: formatted || 'No results found.' }] };
         } catch (error: any) {
           return {
             content: [{ type: 'text', text: `❌ Web Search Error: ${error.message}` }],
@@ -146,8 +156,8 @@ class ResearchMcpServer {
           const formatted = chunks.map((chunk, i) => {
             const source = chunk.metadata?.source || 'Unknown document';
             const page = chunk.metadata?.page !== undefined ? ` (Page ${chunk.metadata.page})` : '';
-            return `[${i + 1}] Source: ${source}${page}\n${chunk.text}`;
-          }).join('\n\n---\n\n');
+            return `--- From ${source}${page} ---\n${chunk.text}`;
+          }).join('\n\n');
 
           return { content: [{ type: 'text', text: formatted }] };
         } catch (error: any) {
@@ -173,7 +183,7 @@ class ResearchMcpServer {
           return {
             content: [{
               type: 'text',
-              text: success ? `✅ Memory saved: ${key} (TTL: ${ttl}s)` : '❌ Failed to save memory.',
+              text: success ? `✅ Memory saved: ${key}` : '❌ Failed to save memory.',
             }],
           };
         } catch (error: any) {

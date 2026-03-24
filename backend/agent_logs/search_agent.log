@@ -3,3 +3,5 @@
 {"agent":"search","query":"What are the technical and developer experience benefits of TypeScript over JavaScript?","resultsCount":14,"durationMs":3014,"timestamp":"2026-03-24T05:14:18.316Z"}
 {"agent":"search","query":"What are the technical and developer experience benefits of TypeScript over JavaScript?","resultsCount":14,"durationMs":1505,"timestamp":"2026-03-24T05:14:24.822Z"}
 {"agent":"search","query":"What is the Model Context Protocol in AI?","resultsCount":11,"durationMs":4506,"timestamp":"2026-03-24T06:09:18.330Z"}
+{"agent":"search_mcp","query":"What are the technical and developer experience benefits of TypeScript over JavaScript?","durationMs":10544,"timestamp":"2026-03-24T06:29:31.492Z"}
+{"agent":"search_mcp","query":"What are the technical and developer experience benefits of TypeScript over JavaScript?","durationMs":9153,"timestamp":"2026-03-24T06:29:59.322Z"}
