@@ -1,8 +1,8 @@
-[dotenv@17.3.1] injecting env (9) from .env -- tip: ÔÜÖ´©Å  suppress all logs with { quiet: true }
-Using DATABASE_URL: postgresql:****@ep-blue-band-an68sbgm-pooler.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require
---- Database Connection Test ---
-Environment variable DATABASE_URL is: FOUND
-(node:10808) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ÔÜÖ´©Å  write to custom object with { processEnv: myObject }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ­ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+­ƒÜÇ Starting Planner Agent Test (Phase 15)...
+­ƒôª Creating a test research session...
+(node:3924) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
 In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
 
 To prepare for this change:
@@ -12,7 +12,12 @@ To prepare for this change:
 See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
 (Use `node --trace-warnings ...` to show where the warning was created)
 Successfully connected to the PostgreSQL database!
-Query SELECT 1 + 1 result: 2
-Connection successful!
-Read data: Test
-Cleanup successful!
+Ô£à Session Created: c7f0a89d-ae8c-4215-983d-78af791dd390
+
+--------------------------------------------------
+­ƒº¬ TEST #1: "What caused the fall of the Roman Empire?"
+ÔÅ▒´©Å Duration: 1993ms
+­ƒôè Question Type: ANALYTICAL
+ÔØî Planner test failed: TypeError: Cannot read properties of undefined (reading 'toUpperCase')
+    at testPlannerAgent (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\src\test\planner-test.ts:35:63)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
