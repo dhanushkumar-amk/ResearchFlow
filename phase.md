@@ -411,12 +411,12 @@ LangChain · LangGraph · RAG · Qdrant · Vector Embeddings · MCP (Model Conte
 
     **What you do:**
 
-    - [ ]  Create src/test/embeddings-test.ts
-    - [ ]  Use GoogleGenerativeAIEmbeddings with model text-embedding-004
-    - [ ]  Embed 3 sentences: "Machine learning is a type of AI", "Deep learning uses neural networks", "Pizza is a popular food"
-    - [ ]  Print first 5 numbers of each embedding vector
-    - [ ]  Compare ML and deep learning vectors — should be mathematically closer than ML and pizza
-    - [ ]  Calculate cosine similarity manually between two vectors
+    - [x]  Create src/test/embeddings-test.ts
+    - [x]  Use GoogleGenerativeAIEmbeddings with model gemini-embedding-001 (Note: text-embedding-004 is deprecated)
+    - [x]  Embed 3 sentences: "Machine learning is a type of AI", "Deep learning uses neural networks", "Pizza is a popular food"
+    - [x]  Print first 5 numbers of each embedding vector
+    - [x]  Compare ML and deep learning vectors — should be mathematically closer than ML and pizza
+    - [x]  Calculate cosine similarity manually between two vectors
 
     **What you learn:**
 
