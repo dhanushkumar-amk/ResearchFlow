@@ -7,6 +7,7 @@ import { runSearchAgent } from '../agents/search';
 import { runRagAgent } from '../agents/rag';
 import { runSynthesizerAgent } from '../agents/synthesizer';
 import { runCriticAgent } from '../agents/critic';
+import { emitResearchEvent } from '../events/emitter';
 
 /**
  * Node 1: Planner Node
@@ -61,16 +62,19 @@ async function synthesizerNode(state: ResearchStateType) {
   });
 
   let fullContent = '';
-  // Since this is a graph node (blocking), we collect the full stream
-  // (streaming to frontend happens at the controller level)
+  // Collect full stream for graph logic
   for await (const chunk of generator) {
     fullContent += chunk;
+    // Emit tokens for Phase 32 live streaming
+    if (state.sessionId) {
+      emitResearchEvent(state.sessionId, 'token', { text: chunk });
+    }
   }
 
   return { 
     report: fullContent, 
     status: 'synthesis_complete',
-    retryCount: 1 // Increment iteration count
+    retryCount: (state.retryCount || 0) + 1 // Increment iteration count
   };
 }
 

@@ -6,3 +6,6 @@
 {"agent":"rag","query":"What are the technical and developer experience benefits of TypeScript over JavaScript?","collectionName":"4f572b15-85a6-49f3-aaea-2e1d2365cd18","chunkCount":0,"durationMs":397,"status":"no_collection","timestamp":"2026-03-24T05:14:23.712Z"}
 {"agent":"rag_mcp","query":"What are the technical and developer experience benefits of TypeScript over JavaScript?","collectionName":"edffd84c-0a88-4a07-9b12-1197e7febd67","durationMs":8680,"status":"no_results","timestamp":"2026-03-24T06:29:29.611Z"}
 {"agent":"rag_mcp","query":"What are the technical and developer experience benefits of TypeScript over JavaScript?","collectionName":"edffd84c-0a88-4a07-9b12-1197e7febd67","durationMs":8691,"status":"no_results","timestamp":"2026-03-24T06:29:58.839Z"}
+{"agent":"rag_mcp","query":"What are the main advantages of TypeScript for enterprise apps?","collectionName":"live-test-1774334368422","durationMs":7472,"status":"no_results","timestamp":"2026-03-24T06:39:48.539Z"}
+{"agent":"rag_mcp","query":"hi","collectionName":"1","durationMs":8623,"status":"no_results","timestamp":"2026-03-24T06:47:32.541Z"}
+{"agent":"rag_mcp","query":"TypeScript performance benefits","collectionName":"f5a19236-7f94-4d27-8297-bc281091325c","durationMs":16520,"status":"no_results","timestamp":"2026-03-24T06:49:08.323Z"}
