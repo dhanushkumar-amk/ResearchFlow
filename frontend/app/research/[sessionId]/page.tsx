@@ -71,9 +71,11 @@ export default function ResearchPage() {
         case 'plan':
           setPlan((event.data as ResearchPlan).plan);
           break;
-        case 'token':
-          setReportText((prev) => prev + (event.data as ResearchToken).text);
+        case 'token': {
+          const text = typeof event.data === 'string' ? event.data : (event.data as ResearchToken).text;
+          setReportText((prev) => prev + text);
           break;
+        }
         case 'complete': {
           const d = event.data as ResearchComplete;
           setIsStreaming(false);
@@ -85,9 +87,9 @@ export default function ResearchPage() {
           break;
         }
         case 'error': {
-          const d = event.data as { message: string };
+          const message = typeof event.data === 'string' ? event.data : (event.data as any).message;
           setIsError(true);
-          setErrorMessage(d.message || 'An error occurred during research.');
+          setErrorMessage(message || 'An error occurred during research.');
           setIsStreaming(false);
           es.close();
           break;
