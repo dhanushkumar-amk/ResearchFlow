@@ -47,10 +47,18 @@ export function getResearchStream(sessionId: string, onEvent: (event: ResearchEv
     eventSource.addEventListener(type as string, (e: Event) => {
       const messageEvent = e as MessageEvent;
       try {
-        const data = JSON.parse(messageEvent.data);
-        onEvent({ type, data });
+        // Only try parsing JSON if it looks like dynamic data.
+        // Report and Token events are raw chunks.
+        if (type === 'report' || type === 'token') {
+          onEvent({ type, data: messageEvent.data });
+        } else {
+          const data = JSON.parse(messageEvent.data);
+          onEvent({ type, data });
+        }
       } catch (err) {
-        console.error(`Failed to parse ${type} event`, err);
+        // Fallback to raw data if parsing fails
+        onEvent({ type, data: messageEvent.data });
+        console.warn(`Failed to parse ${type} event as JSON, using raw data`, err);
       }
     });
   });
@@ -83,12 +91,13 @@ export async function uploadDocument(file: File, sessionId: string): Promise<Doc
 /**
  * Retrieves history of uploaded documents (or research sessions)
  */
-export async function getHistory(sessionId: string): Promise<Document[]> {
-  const response = await fetch(`${API_URL}/api/documents?sessionId=${sessionId}`);
+export async function getHistory(id: string): Promise<Document[]> {
+  if (!id) return [];
+  const response = await fetch(`${API_URL}/api/documents?sessionId=${id}&userId=${id}`);
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to fetch history');
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `Failed to fetch history (${response.status})`);
   }
 
   return response.json();

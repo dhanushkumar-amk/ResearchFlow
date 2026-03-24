@@ -93,7 +93,7 @@ export async function getDocumentsByUserId(userId: string) {
 export async function deleteDocumentById(documentId: string) {
   const text = `
     DELETE FROM documents
-    WHERE document_id = $1
+    WHERE id = $1
     RETURNING *
   `;
   const res = await query(text, [documentId]);
@@ -157,4 +157,3 @@ export async function getAllResearchHistory(userId: string) {
   const res = await query(text, [userId]);
   return res.rows;
 }
-
