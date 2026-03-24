@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { researchGraph } from '../graph/researchGraph';
 import { researchEmitter } from '../events/emitter';
+import { researchRateLimiter } from '../middleware/rateLimit';
+import { validateResearchQuery } from '../middleware/validation';
 
 const router = Router();
 
@@ -91,7 +93,7 @@ async function executeResearch(query: string, sessionId: string) {
  * POST /api/research/start
  * Initiates the research pipeline.
  */
-router.post('/start', (req: Request, res: Response) => {
+router.post('/start', researchRateLimiter, validateResearchQuery, (req: Request, res: Response) => {
   console.log('📦 [POST /start] Body:', req.body);
   const { query, sessionId } = req.body;
 

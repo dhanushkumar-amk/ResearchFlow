@@ -9,7 +9,16 @@ import documentsRouter from './routes/documents';
 const app = express();
 const port = config.port;
 
-app.use(cors());
+// Phase 36: Security - Restricted CORS
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+// Required for rate limiting (behind proxy check)
+app.set('trust proxy', 1);
+
 app.use(express.json());
 
 // API Routes

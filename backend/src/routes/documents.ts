@@ -5,6 +5,7 @@ import fs from 'fs';
 import { ingestDocument } from '../agents/ingest';
 import { saveDocument, getDocumentsByUserId, deleteDocumentById } from '../db/queries';
 import { qdrantClient } from '../db/qdrant';
+import { uploadRateLimiter } from '../middleware/rateLimit';
 
 const router = Router();
 
@@ -19,7 +20,7 @@ const upload = multer({
  * Accepts a PDF or TXT file, runs it through the RAG pipeline (chunking + embeddings),
  * saves metadata to Postgres, and stores search vectors in Qdrant.
  */
-router.post('/upload', (req: Request, res: Response) => {
+router.post('/upload', uploadRateLimiter, (req: Request, res: Response) => {
   upload(req, res, async (err) => {
     if (err) {
       console.error('❌ Multer error:', err.message);
@@ -48,7 +49,6 @@ router.post('/upload', (req: Request, res: Response) => {
       });
 
       // 2. Persist metadata in PostgreSQL
-      // We use sessionId as userId for now as per the simplified beginner flow
       const docRecord = await saveDocument(
         sessionId,
         originalname,
@@ -105,26 +105,17 @@ router.delete('/:id', async (req: Request, res: Response) => {
   const documentId = req.params.id;
 
   try {
-    // 1. Delete from PostgreSQL and retrieve metadata
     const doc = await deleteDocumentById(documentId as string);
     if (!doc) {
       return res.status(404).json({ error: 'Document record not found' });
     }
 
-    // 2. Delete vectors from Qdrant by filename filter
-    // Note: We use the source metadata tag added during ingestion
     console.log(`🗑️ [Deletion] Removing vectors for ${doc.filename} in collection ${doc.qdrant_collection_name}`);
     await qdrantClient.delete(doc.qdrant_collection_name, {
       filter: {
         must: [
-          {
-            key: 'source',
-            match: { value: doc.filename },
-          },
-          {
-            key: 'sessionId',
-            match: { value: doc.user_id },
-          },
+          { key: 'source', match: { value: doc.filename } },
+          { key: 'sessionId', match: { value: doc.user_id } },
         ],
       },
     });
