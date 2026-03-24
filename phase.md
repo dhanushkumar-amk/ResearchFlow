@@ -358,13 +358,13 @@ LangChain · LangGraph · RAG · Qdrant · Vector Embeddings · MCP (Model Conte
 
     **What you do:**
 
-    - [ ]  Go to [cloud.qdrant.io](http://cloud.qdrant.io) → create free cluster → copy URL and API key
-    - [ ]  Add QDRANT_URL and QDRANT_API_KEY to .env
-    - [ ]  Install @qdrant/js-client-rest
-    - [ ]  Create src/db/qdrant.ts with configured Qdrant client
-    - [ ]  Create test collection test_vectors with vector size 768
-    - [ ]  Insert 3 fake vectors, run search query, confirm results
-    - [ ]  Delete test collection
+    - [x]  Go to [cloud.qdrant.io](http://cloud.qdrant.io) → create free cluster → copy URL and API key
+    - [x]  Add QDRANT_URL and QDRANT_API_KEY to .env
+    - [x]  Install @qdrant/js-client-rest
+    - [x]  Create src/db/qdrant.ts with configured Qdrant client
+    - [x]  Create test collection test_vectors with vector size 768
+    - [x]  Insert 3 fake vectors, run search query, confirm results
+    - [x]  Delete test collection
 
     **What you learn:**
 
