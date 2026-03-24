@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import { createSession, updateSessionStatus, saveReport, getResearchHistory } from '../db/queries';
 import { researchGraph } from '../graph/researchGraph';
 import { researchEmitter } from '../events/emitter';
 import { researchRateLimiter } from '../middleware/rateLimit';
@@ -136,6 +137,24 @@ router.get('/:sessionId/stream', (req: Request, res: Response) => {
     clients.delete(sessionId);
     console.log(`🔌 [SSE] Client disconnected: ${sessionId}`);
   });
+});
+
+/**
+ * GET /api/research/history
+ * Returns the last 5 research sessions for a user.
+ */
+router.get('/history', async (req: Request, res: Response) => {
+  const sessionId = req.query.sessionId as string;
+  if (!sessionId) {
+    return res.status(400).json({ error: 'sessionId is required' });
+  }
+
+  try {
+    const history = await getResearchHistory(sessionId);
+    res.json(history);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 export default router;

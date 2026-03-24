@@ -100,3 +100,19 @@ export async function deleteDocumentById(documentId: string) {
   return res.rows[0];
 }
 
+/**
+ * Retrieves research history with scores for a user
+ */
+export async function getResearchHistory(userId: string) {
+  const text = `
+    SELECT s.session_id, s.query, s.created_at, r.quality_score
+    FROM sessions s
+    LEFT JOIN reports r ON s.session_id = r.session_id
+    WHERE s.user_id = $1
+    ORDER BY s.created_at DESC
+    LIMIT 5
+  `;
+  const res = await query(text, [userId]);
+  return res.rows;
+}
+
