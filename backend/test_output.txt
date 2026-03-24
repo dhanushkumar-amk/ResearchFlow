@@ -1,23 +1,53 @@
-[dotenv@17.3.1] injecting env (9) from .env -- tip: ÔÜÖ´©Å  write to custom object with { processEnv: myObject }
-[dotenv@17.3.1] injecting env (0) from .env -- tip: ­ƒöÉ encrypt with Dotenvx: https://dotenvx.com
-­ƒÜÇ Starting Planner Agent Test (Phase 15)...
-­ƒôª Creating a test research session...
-(node:3924) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
-In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ÔÜÖ´©Å  load multiple .env files with { path: ['.env.local', '.env'] }
+­ƒÜÇ Starting Tavily Search Tool Test (Phase 16)...
 
-To prepare for this change:
-- If you want the current behavior, explicitly use 'sslmode=verify-full'
-- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
-
-See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
-(Use `node --trace-warnings ...` to show where the warning was created)
-Successfully connected to the PostgreSQL database!
-Ô£à Session Created: c7f0a89d-ae8c-4215-983d-78af791dd390
+­ƒöÄ Running 3 search queries in parallel...
+ÔÅ▒´©Å All 3 queries completed in 4068ms (parallel)
 
 --------------------------------------------------
-­ƒº¬ TEST #1: "What caused the fall of the Roman Empire?"
-ÔÅ▒´©Å Duration: 1993ms
-­ƒôè Question Type: ANALYTICAL
-ÔØî Planner test failed: TypeError: Cannot read properties of undefined (reading 'toUpperCase')
-    at testPlannerAgent (C:\Users\Star\OneDrive\Documents\Important\Projects\ResearchFlow\backend\src\test\planner-test.ts:35:63)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+­ƒöÄ QUERY #1: "causes of the fall of the Roman Empire history"
+­ƒôª Results: 5 found
+
+  Ô£à Result 1:
+     Title: Fall of the Roman Empire | History & Causes - Lesson
+     URL:   https://study.com/academy/lesson/the-fall-of-rome.html
+     Snippet: Fall of the Roman Empire | History & Causes - Lesson | Study.com. Ancient History/Classical Antiquity/Ancient Rome/Roman...
+
+  Ô£à Result 2:
+     Title: 8 Reasons Why Rome Fell: The Fall of Rome Explained
+     URL:   https://www.history.com/articles/8-reasons-why-rome-fell
+     Snippet: Historians cite multiple overlapping factors for the fall of the Western Roman Empire, ranging from economic collapse to...
+--------------------------------------------------
+­ƒöÄ QUERY #2: "how do mRNA vaccines work mechanism explained"
+­ƒôª Results: 5 found
+
+  Ô£à Result 1:
+     Title: How do mRNA vaccines work? - IAVI
+     URL:   https://www.iavi.org/video/how-do-mrna-vaccines-work/
+     Snippet: Home / Videos / How do mRNA vaccines work? # How do mRNA vaccines work? When you get a messenger RNA (mRNA) vaccine, you...
+
+  Ô£à Result 2:
+     Title: What are mRNA vaccines and how do they work? - MedlinePlus
+     URL:   https://medlineplus.gov/genetics/understanding/therapy/mrnavaccines/
+     Snippet: What are mRNA vaccines and how do they work? # What are mRNA vaccines and how do they work? However, scientists have dev...
+--------------------------------------------------
+­ƒöÄ QUERY #3: "quantum computing impact on cryptography security"
+­ƒôª Results: 5 found
+
+  Ô£à Result 1:
+     Title: Quantum Computing's Impact on Cryptography ÔÇö The Future of ...
+     URL:   https://medium.com/@RocketMeUpCybersecurity/quantum-computings-impact-on-cryptography-the-future-of-encryption-1f8804205d86
+     Snippet: # Quantum ComputingÔÇÖs Impact on Cryptography ÔÇö The Future of Encryption. In this article, weÔÇÖll explore how quantum comp...
+
+  Ô£à Result 2:
+     Title: Quantum Computing impact on Cryptography - YouTube
+     URL:   https://www.youtube.com/watch?v=1cA1qOLaFGQ
+     Snippet: Quantum Computing impact on Cryptography
+IBM Technology
+1620000 subscribers
+344 likes
+20982 views
+10 Jun 2021
+Learn more...
+
+Ô£¿ Tavily Search Phase 16 test COMPLETE!

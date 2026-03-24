@@ -446,13 +446,13 @@ LangChain · LangGraph · RAG · Qdrant · Vector Embeddings · MCP (Model Conte
 
     **What you do:**
 
-    - [ ]  Install @langchain/community (includes TavilySearchResults)
-    - [ ]  Create src/tools/tavilySearch.ts
-    - [ ]  Configure: maxResults 5, includeAnswer true, includeRawContent false
-    - [ ]  Write searchWeb(queries: string[]) — runs all queries in parallel with Promise.all
-    - [ ]  Each result: title, url, snippet, published_date
-    - [ ]  Test with search_queries from Planner agent test
-    - [ ]  Handle rate limits: if 429 error, wait 1s and retry once
+    - [x]  Install @langchain/community (includes TavilySearchResults)
+    - [x]  Create src/tools/tavilySearch.ts
+    - [x]  Configure: maxResults 5, includeAnswer true, includeRawContent false
+    - [x]  Write searchWeb(queries: string[]) — runs all queries in parallel with Promise.all
+    - [x]  Each result: title, url, snippet, published_date
+    - [x]  Test with search_queries from Planner agent test
+    - [x]  Handle rate limits: if 429 error, wait 1s and retry once
 
     **What you learn:**
 
