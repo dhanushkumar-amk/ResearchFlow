@@ -1,15 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { 
-  ArrowLeft, 
-  RotateCcw, 
-  CheckCircle2, 
-  AlertCircle, 
-  FileText, 
-  Zap,
-  Info
+import { useParams } from 'next/navigation';
+import {
+  ArrowLeft, RotateCcw, CheckCircle2, AlertCircle, Zap, ChevronRight, Info
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -20,14 +14,11 @@ import { ResearchEvent, ResearchStatus, ResearchComplete, ResearchToken, Researc
 
 export default function ResearchPage() {
   const { sessionId } = useParams() as { sessionId: string };
-  const router = useRouter();
 
-  // State for live research progress
   const [activeNode, setActiveNode] = useState<string | null>(null);
   const [reportText, setReportText] = useState('');
   const [plan, setPlan] = useState<string | null>(null);
-  const [statusMessage, setStatusMessage] = useState('Initializing research connection...');
-  
+  const [statusMessage, setStatusMessage] = useState('Connecting to research agents...');
   const [isStreaming, setIsStreaming] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -35,233 +26,191 @@ export default function ResearchPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Use a ref for the EventSource to handle cleanup correctly
   const eventSourceRef = useRef<EventSource | null>(null);
 
-  const fetchSessionData = useCallback(async () => {
-    if (!sessionId) return false;
-    
+  const fetchSavedReport = useCallback(async () => {
     try {
       const data = await getSessionDetails(sessionId);
-      
-      if (data && data.content) {
+      if (data?.content) {
         setReportText(data.content);
-        setQualityScore(data.quality_score || null);
+        setQualityScore(data.quality_score ?? null);
         setIsComplete(true);
-        setStatusMessage('Research report loaded from history.');
+        setStatusMessage('Report loaded from history.');
         setIsLoading(false);
-        return true; 
+        return true;
       }
-    } catch (err) {
-      console.log('Session result not available yet, starting live stream.');
+    } catch {
+      // not in DB yet, will stream live
     }
     return false;
   }, [sessionId]);
 
   const connectToStream = useCallback(async () => {
     if (!sessionId) return;
-
-    // Reset UI state before connecting
     setIsError(false);
-    setErrorMessage('');
     setIsComplete(false);
     setIsLoading(true);
+    setReportText('');
 
-    // First try to fetch from history
-    const alreadyExists = await fetchSessionData();
-    if (alreadyExists) return;
+    const alreadyDone = await fetchSavedReport();
+    if (alreadyDone) return;
 
-    try {
-      const eventSource = getResearchStream(sessionId, (event: ResearchEvent) => {
-        // Handle events from the wrapper
-        switch (event.type) {
-            case 'connected':
-              setStatusMessage('Connection established. Waiting for agents...');
-              setIsLoading(false);
-              break;
-              
-            case 'status':
-              const statusData = event.data as ResearchStatus;
-              setActiveNode(statusData.node);
-              setStatusMessage(statusData.message);
-              if (statusData.node === 'synthesizer') {
-                setIsStreaming(true);
-              }
-              break;
-              
-            case 'plan':
-              const planData = event.data as ResearchPlan;
-              setPlan(planData.plan);
-              break;
-              
-            case 'token':
-              const tokenData = event.data as ResearchToken;
-              setReportText(prev => prev + tokenData.text);
-              break;
-              
-            case 'complete':
-              const completeData = event.data as ResearchComplete;
-              setIsStreaming(false);
-              setIsComplete(true);
-              setQualityScore(completeData.score || null);
-              setStatusMessage('Research successfully completed.');
-              if (completeData.report) {
-                 setReportText(completeData.report);
-              }
-              break;
-              
-            case 'error':
-              const errorData = event.data as { message: string };
-              setIsError(true);
-              setErrorMessage(errorData.message || 'An unexpected research error occurred.');
-              setIsStreaming(false);
-              break;
-          }
-      });
-      
-      eventSourceRef.current = eventSource;
-
-      eventSource.onerror = (err) => {
-        console.error('EventSource connection error:', err);
-        // Only set error if we are not already complete (re-connection often fails after normal completion)
-        if (!isComplete) {
-          setIsError(true);
-          setErrorMessage('Connection lost. The research might still be running or was interrupted.');
+    const es = getResearchStream(sessionId, (event: ResearchEvent) => {
+      switch (event.type) {
+        case 'connected':
+          setStatusMessage('Connected! Waiting for agents...');
+          setIsLoading(false);
+          break;
+        case 'status': {
+          const d = event.data as ResearchStatus;
+          setActiveNode(d.node);
+          setStatusMessage(d.message);
+          if (d.node === 'synthesizer') setIsStreaming(true);
+          break;
         }
-        eventSource.close();
-      };
+        case 'plan':
+          setPlan((event.data as ResearchPlan).plan);
+          break;
+        case 'token':
+          setReportText((prev) => prev + (event.data as ResearchToken).text);
+          break;
+        case 'complete': {
+          const d = event.data as ResearchComplete;
+          setIsStreaming(false);
+          setIsComplete(true);
+          setQualityScore(d.score ?? null);
+          setStatusMessage('Research complete!');
+          if (d.report) setReportText(d.report);
+          es.close();
+          break;
+        }
+        case 'error': {
+          const d = event.data as { message: string };
+          setIsError(true);
+          setErrorMessage(d.message || 'An error occurred during research.');
+          setIsStreaming(false);
+          es.close();
+          break;
+        }
+      }
+    });
 
-    } catch (err: any) {
-      setIsError(true);
-      setErrorMessage(err.message || 'Failed to establish connection.');
-    } finally {
+    es.onerror = () => {
+      if (!isComplete) {
+        setIsError(true);
+        setErrorMessage('Connection lost. Research may still be running in the background.');
+      }
+      es.close();
       setIsLoading(false);
-    }
-  }, [sessionId, isComplete, fetchSessionData]);
+    };
+
+    eventSourceRef.current = es;
+    setIsLoading(false);
+  }, [sessionId, fetchSavedReport, isComplete]);
 
   useEffect(() => {
     connectToStream();
-
-    // Cleanup: close the EventSource when the component unmounts
     return () => {
-      if (eventSourceRef.current) {
-        console.log('🔌 [SSE] Cleaning up connection for session:', sessionId);
-        eventSourceRef.current.close();
-      }
+      eventSourceRef.current?.close();
     };
-  }, [connectToStream, sessionId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId]);
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black p-4 md:p-8 pt-24 font-sans selection:bg-blue-100 dark:selection:bg-blue-900/40">
-      <div className="max-w-7xl mx-auto space-y-8">
-        
-        {/* Navigation & Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-zinc-200 dark:border-zinc-800">
-          <div className="flex items-center gap-4">
-            <Link 
-              href="/" 
-              className="p-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group"
-            >
-              <ArrowLeft className="w-5 h-5 text-zinc-500 group-hover:-translate-x-1 transition-transform" />
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                Live Research
-              </h1>
-              <div className="flex items-center gap-2 text-sm text-zinc-500 mt-1 font-mono">
-                <span className="opacity-70">Session ID:</span>
-                <span>{sessionId}</span>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-50 pt-16">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
 
-          <div className="flex items-center gap-4">
+        {/* Breadcrumb + Header */}
+        <div className="flex items-center gap-3">
+          <Link
+            href="/"
+            className="p-2 bg-white border border-zinc-200 rounded-xl hover:bg-zinc-50 transition-colors group"
+          >
+            <ArrowLeft className="w-4 h-4 text-zinc-500 group-hover:-translate-x-0.5 transition-transform" />
+          </Link>
+          <div className="text-sm text-zinc-400 flex items-center gap-1">
+            <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <span className="text-zinc-600 font-medium">Research</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <span className="text-blue-600 font-mono text-xs max-w-30 truncate">{sessionId}</span>
+          </div>
+        </div>
+
+        {/* Status Banner */}
+        <div className={`flex items-center gap-3 px-5 py-3 rounded-xl border text-sm font-medium transition-all ${
+          isError ? 'bg-red-50 border-red-200 text-red-700' :
+          isComplete ? 'bg-green-50 border-green-200 text-green-700' :
+          'bg-white border-zinc-200 text-zinc-700'
+        }`}>
+          {isLoading ? (
+            <svg className="w-4 h-4 animate-spin text-blue-500" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+          ) : isError ? (
+            <AlertCircle className="w-4 h-4 shrink-0" />
+          ) : isComplete ? (
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+          ) : (
+            <Zap className="w-4 h-4 text-blue-500 animate-pulse shrink-0" />
+          )}
+          <span>{isError ? errorMessage : statusMessage}</span>
+
+          <div className="ml-auto flex items-center gap-2">
             {isError && (
               <button
                 onClick={connectToStream}
-                className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/20 hover:scale-105 active:scale-95 transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors"
               >
-                <RotateCcw className="w-4 h-4" />
-                <span>Reconnect</span>
+                <RotateCcw className="w-3.5 h-3.5" /> Reconnect
               </button>
             )}
-            
             {isComplete && (
-              <div className="flex items-center gap-2 px-5 py-2.5 bg-green-500 text-white rounded-xl font-semibold shadow-lg shadow-green-500/20 animate-in zoom-in-95 duration-500">
-                <CheckCircle2 className="w-5 h-5" />
-                <span>Research Complete</span>
-              </div>
+              <span className="flex items-center gap-1.5 text-green-700 text-xs font-semibold">
+                <CheckCircle2 className="w-4 h-4" /> Complete
+              </span>
             )}
           </div>
         </div>
 
-        {/* Status Indicator */}
-        <div className={`p-4 rounded-2xl border transition-all duration-500 flex items-center gap-4 shadow-sm ${
-          isError ? 'bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900/30 text-red-700 dark:text-red-400' :
-          isComplete ? 'bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900/30 text-green-700 dark:text-green-400' :
-          'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
-        }`}>
-          {isError ? (
-            <AlertCircle className="w-6 h-6 shrink-0" />
-          ) : isComplete ? (
-            <CheckCircle2 className="w-6 h-6 shrink-0" />
-          ) : (
-            <Zap className="w-6 h-6 text-blue-600 animate-pulse shrink-0" />
-          )}
-          <span className="font-medium">{isError ? errorMessage : statusMessage}</span>
-        </div>
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-        {/* Main Interface Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* Left: Progress Tracking */}
-          <div className="lg:col-span-4 flex flex-col gap-8">
-            <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-xl overflow-hidden">
-               <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center gap-3">
-                 <div className="w-8 h-8 bg-zinc-900 dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black">
-                   <Zap className="w-4 h-4" />
-                 </div>
-                 <h2 className="font-bold text-zinc-900 dark:text-zinc-50">Agent Timeline</h2>
-               </div>
-               <div className="p-2">
-                 <AgentTimeline 
-                   activeNode={activeNode} 
-                   isComplete={isComplete} 
-                 />
-               </div>
+          {/* Left: Agent Timeline */}
+          <div className="lg:col-span-4 space-y-4">
+            <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
+              <div className="px-5 py-4 border-b border-zinc-100 flex items-center gap-2">
+                <Zap className="w-4 h-4 text-blue-500" />
+                <h2 className="font-semibold text-zinc-800 text-sm">Agent Pipeline</h2>
+              </div>
+              <div className="p-4">
+                <AgentTimeline activeNode={activeNode} isComplete={isComplete} />
+              </div>
             </div>
 
-            {/* Strategy Card - Shown when plan is available */}
             {plan && (
-              <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 shadow-md transition-all duration-700 animate-in slide-in-from-left-4 fade-in">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 rounded-lg">
-                    <Info className="w-4 h-4" />
-                  </div>
-                  <h3 className="font-bold text-zinc-900 dark:text-zinc-50">Current Strategy</h3>
+              <div className="bg-white border border-blue-200 rounded-2xl p-5 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <Info className="w-4 h-4 text-blue-500" />
+                  <h3 className="font-semibold text-zinc-800 text-sm">Research Strategy</h3>
                 </div>
-                <div className="text-sm text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-zinc-100 dark:border-zinc-800 font-mono whitespace-pre-wrap leading-relaxed">
+                <p className="text-sm text-zinc-600 leading-relaxed whitespace-pre-wrap font-mono bg-zinc-50 p-3 rounded-xl border border-zinc-100">
                   {plan}
-                </div>
+                </p>
               </div>
             )}
           </div>
 
-          {/* Right: Streaming Results */}
+          {/* Right: Report */}
           <div className="lg:col-span-8">
-            <StreamingReport 
-              content={reportText} 
+            <StreamingReport
+              content={reportText}
               isStreaming={isStreaming}
               qualityScore={qualityScore}
             />
           </div>
         </div>
-      </div>
-
-      {/* Background Decor */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute top-[20%] -right-[15%] w-[45%] h-[45%] bg-blue-500/10 blur-[150px] rounded-full" />
-        <div className="absolute bottom-[10%] -left-[10%] w-[40%] h-[40%] bg-indigo-500/10 blur-[150px] rounded-full" />
       </div>
     </div>
   );

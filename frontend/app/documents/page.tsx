@@ -11,14 +11,12 @@ import {
   Database,
   CheckCircle2,
   Loader2,
-  Info,
-  Zap
+  Info
 } from 'lucide-react';
 import Link from 'next/link';
 
 import { uploadDocument, getHistory, deleteDocument } from '../../lib/api';
 import { Document } from '../../types/research';
-import Badge from '../../components/Badge';
 
 export default function DocumentsPage() {
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -101,8 +99,8 @@ export default function DocumentsPage() {
         setSuccess(`'${file.name}' has been successfully analyzed and embedded.`);
       }, 500);
 
-    } catch (err: any) {
-      setError(err.message || 'Analysis failed. Please ensure the document is not password protected.');
+    } catch (err: unknown) {
+      setError((err as Error).message || 'Analysis failed. Please ensure the document is not password protected.');
       setIsUploading(false);
       setUploadProgress(0);
     }
@@ -140,8 +138,8 @@ export default function DocumentsPage() {
       await deleteDocument(docId);
       setSuccess(`Document deleted successfully.`);
       setTimeout(() => setSuccess(null), 3000);
-    } catch (err) {
-      // 2. Rollback if failed
+    } catch {
+      // Rollback if failed
       if (deletedDoc) setDocuments(prev => [...prev, deletedDoc]);
       setError('Deletion failed. The server might be unreachable.');
     }
@@ -156,7 +154,7 @@ export default function DocumentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black p-4 md:p-8 pt-24 font-sans selection:bg-blue-100 dark:selection:bg-blue-900/40 antialiased">
+    <div className="min-h-screen bg-white p-4 md:p-8 pt-20">
       <div className="max-w-5xl mx-auto space-y-12">
         
         {/* Navigation & Header */}
@@ -164,15 +162,15 @@ export default function DocumentsPage() {
           <div className="flex items-center gap-4">
             <Link 
               href="/" 
-              className="p-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group"
+              className="p-2.5 bg-white border border-zinc-200 rounded-xl hover:bg-zinc-50 transition-colors group"
             >
               <ArrowLeft className="w-5 h-5 text-zinc-500 group-hover:-translate-x-1 transition-transform" />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+              <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
                 Document Vault
               </h1>
-              <p className="text-zinc-400 dark:text-zinc-500 text-sm mt-1">
+              <p className="text-zinc-500 text-sm mt-1">
                 Upload PDFs or TXT files to ground your research in specific context.
               </p>
             </div>
@@ -181,7 +179,7 @@ export default function DocumentsPage() {
 
         {/* Messaging Area */}
         {error && (
-          <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 text-red-700 dark:text-red-400 p-4 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl flex items-center gap-3">
             <AlertCircle className="w-5 h-5 shrink-0" />
             <span className="text-sm font-medium">{error}</span>
             <button onClick={() => setError(null)} className="ml-auto text-red-400 hover:text-red-600">×</button>
@@ -189,7 +187,7 @@ export default function DocumentsPage() {
         )}
 
         {success && (
-          <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/40 text-green-700 dark:text-green-400 p-4 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+          <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 shrink-0" />
             <span className="text-sm font-medium">{success}</span>
             <button onClick={() => setSuccess(null)} className="ml-auto text-green-400 hover:text-green-600">×</button>
@@ -201,7 +199,7 @@ export default function DocumentsPage() {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`relative group bg-white dark:bg-zinc-900 border-2 border-dashed rounded-4xl transition-all duration-300 ${
+          className={`relative group bg-white border-2 border-dashed rounded-3xl transition-all duration-300 ${
             isDragging ? 'border-blue-500 bg-blue-50/10 scale-[1.01]' : 'border-zinc-200 dark:border-zinc-800'
           }`}
         >
@@ -279,7 +277,7 @@ export default function DocumentsPage() {
               documents.map((doc) => (
                 <div 
                   key={doc.id} 
-                  className="group relative bg-white dark:bg-zinc-900 p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 hover:border-blue-500/50 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                  className="group relative bg-white p-6 rounded-2xl border border-zinc-200 hover:border-blue-400 hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
                 >
                   <div className="space-y-4">
                     <div className="flex items-start justify-between">
@@ -310,12 +308,12 @@ export default function DocumentsPage() {
                         {doc.chunk_count}
                       </span>
                     </div>
-                    <Badge variant="blue">RAG Enabled</Badge>
+                    <span className="text-xs font-semibold px-2.5 py-1 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg">RAG Enabled</span>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="col-span-full py-20 flex flex-col items-center justify-center text-center space-y-4 bg-white dark:bg-zinc-900 rounded-4xl border border-zinc-200 dark:border-zinc-800">
+              <div className="col-span-full py-16 flex flex-col items-center justify-center text-center space-y-4 bg-zinc-50 rounded-2xl border border-dashed border-zinc-200">
                 <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center">
                   <Info className="w-8 h-8 text-zinc-300 dark:text-zinc-600" />
                 </div>
@@ -330,24 +328,6 @@ export default function DocumentsPage() {
           </div>
         </div>
 
-        {/* Tips / Info Section */}
-        <div className="bg-indigo-50 dark:bg-indigo-950/10 p-8 rounded-3xl border border-indigo-100 dark:border-indigo-900/20 flex flex-col md:flex-row items-center gap-8">
-            <div className="w-16 h-16 bg-indigo-600 rounded-2xl shrink-0 flex items-center justify-center text-white shadow-lg shadow-indigo-600/20">
-              <Zap className="w-8 h-8" />
-            </div>
-            <div className="space-y-1">
-              <h4 className="text-lg font-bold text-indigo-900 dark:text-indigo-400">Why upload documents?</h4>
-              <p className="text-sm text-indigo-700 dark:text-indigo-500 max-w-2xl leading-relaxed">
-                Our <strong>RAG Agent</strong> prioritizes your uploaded files during retrieval. This ensures the output is tailored to your internal data, policies, and specific research context, reducing AI hallucinations.
-              </p>
-            </div>
-        </div>
-      </div>
-
-      {/* Decorative Blur */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute top-[20%] -left-[10%] w-[40%] h-[40%] bg-blue-500/10 blur-[150px] rounded-full" />
-        <div className="absolute bottom-[20%] -right-[10%] w-[35%] h-[35%] bg-indigo-500/10 blur-[150px] rounded-full" />
       </div>
     </div>
   );

@@ -13,3 +13,5 @@
 {"agent":"rag_mcp","query":"Find alert(1)ResearchFlow","collectionName":"session_docs_v_test","durationMs":11302,"status":"no_results","timestamp":"2026-03-24T07:30:57.516Z"}
 {"agent":"rag_mcp","query":"Block chain trends","collectionName":"session_docs_8wjz4nuk7","durationMs":9336,"status":"no_results","timestamp":"2026-03-24T13:42:03.164Z"}
 {"agent":"rag_mcp","query":"Blockchain Trends","collectionName":"session_docs_8wjz4nuk7","durationMs":10100,"status":"no_results","timestamp":"2026-03-24T14:10:25.217Z"}
+{"agent":"rag_mcp","query":"Blockchain Trends","collectionName":"session_docs_8wjz4nuk7","durationMs":7018,"status":"no_results","timestamp":"2026-03-24T14:19:03.273Z"}
+{"agent":"rag_mcp","query":"Quantum Computing advances","collectionName":"session_docs_8wjz4nuk7","durationMs":10062,"status":"no_results","timestamp":"2026-03-24T14:23:27.041Z"}

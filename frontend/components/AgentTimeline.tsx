@@ -94,59 +94,55 @@ const AgentTimeline: React.FC<AgentTimelineProps> = ({ activeNode, isComplete })
   }, [activeNode, isComplete]);
 
   return (
-    <div className="w-full max-w-lg mx-auto py-8">
-      <div className="relative space-y-8">
-        <div className="absolute left-6.75 top-2 bottom-2 w-0.5 bg-zinc-200 dark:bg-zinc-800 -z-10" />
+    <div className="w-full max-w-lg mx-auto py-4">
+      <div className="relative space-y-6">
+        <div className="absolute left-5 top-2 bottom-2 w-0.5 bg-zinc-200 -z-10" />
 
         {AGENTS.map((agent) => {
           const status = agentStatuses[agent.id] || { state: 'waiting' };
           const Icon = agent.icon;
 
           return (
-            <div 
-              key={agent.id} 
-              className={`flex items-start gap-6 transition-all duration-300 ${status.state === 'waiting' ? 'opacity-40 grayscale' : 'opacity-100 grayscale-0'}`}
+            <div
+              key={agent.id}
+              className={`flex items-start gap-4 transition-all duration-300 ${status.state === 'waiting' ? 'opacity-40' : 'opacity-100'}`}
             >
-              <div className="relative shrink-0 mt-1">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-sm border-2 ${
-                  status.state === 'complete' ? 'bg-green-500 border-green-500 text-white' : 
-                  status.state === 'running' ? 'bg-blue-600 border-blue-600 text-white ring-4 ring-blue-500/20' : 
-                  'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400'
+              <div className="relative shrink-0">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 border-2 ${
+                  status.state === 'complete' ? 'bg-green-500 border-green-500 text-white' :
+                  status.state === 'running' ? 'bg-blue-600 border-blue-600 text-white ring-4 ring-blue-100' :
+                  'bg-white border-zinc-200 text-zinc-400'
                 }`}>
-                  <Icon className={`w-7 h-7 ${status.state === 'running' ? 'animate-pulse' : ''}`} />
-                  <div className="absolute -bottom-1 -right-1">
-                    {status.state === 'complete' && (
-                      <div className="bg-white dark:bg-green-500 rounded-full text-green-500 dark:text-white ring-2 ring-white">
-                        <CheckCircle2 className="w-5 h-5 fill-current" />
-                      </div>
-                    )}
-                    {status.state === 'running' && (
-                      <div className="bg-white dark:bg-blue-600 rounded-full text-blue-600 dark:text-white p-0.5 ring-2 ring-white">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      </div>
-                    )}
-                  </div>
+                  <Icon className={`w-5 h-5 ${status.state === 'running' ? 'animate-pulse' : ''}`} />
                 </div>
+                {status.state === 'complete' && (
+                  <div className="absolute -bottom-1 -right-1 bg-white rounded-full text-green-500 ring-1 ring-white">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                )}
+                {status.state === 'running' && (
+                  <div className="absolute -bottom-1 -right-1 bg-white rounded-full text-blue-500 ring-1 ring-white">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  </div>
+                )}
               </div>
 
-              <div className="flex-1 space-y-1">
+              <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <h3 className={`font-bold transition-colors ${
-                    status.state === 'complete' ? 'text-green-600 dark:text-green-400' : 
-                    status.state === 'running' ? 'text-blue-600 dark:text-blue-400' : 
-                    'text-zinc-500 dark:text-zinc-400'
+                  <h3 className={`text-sm font-semibold ${
+                    status.state === 'complete' ? 'text-green-600' :
+                    status.state === 'running' ? 'text-blue-600' :
+                    'text-zinc-500'
                   }`}>
                     {agent.name}
                   </h3>
                   {status.duration && (
-                    <span className="text-xs font-mono text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded">
+                    <span className="text-xs font-mono text-zinc-400 bg-zinc-100 px-2 py-0.5 rounded">
                       {status.duration}ms
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-zinc-400 dark:text-zinc-500">
-                  {agent.description}
-                </p>
+                <p className="text-xs text-zinc-400">{agent.description}</p>
               </div>
             </div>
           );
