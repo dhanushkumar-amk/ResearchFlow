@@ -6,9 +6,10 @@ import {
   ListToolsRequestSchema,
   McpError,
 } from '@modelcontextprotocol/sdk/types.js';
+import { runSearchAgent } from '../agents/search';
 
 /**
- * Phase 26: Research Tools MCP Server
+ * Phase 26-27: Research Tools MCP Server
  * Purpose: Expose our custom analysis tools to any MCP-compatible AI client.
  */
 class ResearchMcpServer {
@@ -30,7 +31,7 @@ class ResearchMcpServer {
     this.setupHandlers();
     
     // Error handling
-    this.server.onerror = (error) => console.error('[MCP Error]', error);
+    this.server.onerror = (error: unknown) => console.error('[MCP Error]', error);
     process.on('SIGINT', async () => {
       await this.server.close();
       process.exit(0);
@@ -40,19 +41,64 @@ class ResearchMcpServer {
   private setupHandlers() {
     /**
      * Handler for listing available tools.
-     * Starts empty for this phase.
      */
     this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
-      tools: [],
+      tools: [
+        {
+          name: 'web_search',
+          description: 'Search the live web for real-time information and research data.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              query: {
+                type: 'string',
+                description: 'The search query or research question.',
+              },
+            },
+            required: ['query'],
+          },
+        },
+      ],
     }));
 
     /**
      * Handler for calling specific tools.
      */
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    this.server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
+      const { name, arguments: args } = request.params;
+
+      if (name === 'web_search') {
+        const query = (args as any)?.query;
+        if (!query) {
+          throw new McpError(ErrorCode.InvalidParams, 'Query parameter is required.');
+        }
+
+        try {
+          const results = await runSearchAgent(query);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: results,
+              },
+            ],
+          };
+        } catch (error: any) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `❌ Web Search Tool Error: ${error.message}`,
+              },
+            ],
+            isError: true,
+          };
+        }
+      }
+
       throw new McpError(
         ErrorCode.MethodNotFound,
-        `Tool not found: ${request.params.name}`
+        `Tool not found: ${name}`
       );
     });
   }

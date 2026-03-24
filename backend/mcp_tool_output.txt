@@ -1,0 +1,11 @@
+­ƒôí Testing MCP Tool: web_search...
+
+­ƒôØ Server Log: ­ƒÜÇ Research MCP Server running on Stdio transport...
+Ô£à [SUCCESS] Received tool results!
+
+--- Tool Output ---
+[1] Model Context Protocol - Wikipedia
+URL: https://en.wikipedia.org/wiki/Model_Context_Protocol
+Snippet: The **Model Context Protocol** (**MCP**) is an open standard and open-source framework introduced by Anthropic in November 2024 to standardize the way artificial intelligence (AI) systems like large language models (LLMs) integrate and share data with external tools, systems, and data sources. MCP was announced by Anthropic in November 2024 as an open standard for connecting AI assistants to...
+-------------------
+
