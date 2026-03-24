@@ -41,7 +41,7 @@ export function getResearchStream(sessionId: string, onEvent: (event: ResearchEv
   // but the backend sends 'event: ...' lines.
   // Standard EventSource uses addEventListener for named events.
   
-  const eventTypes: ResearchEvent['type'][] = ['status', 'complete', 'error', 'connected'];
+  const eventTypes: ResearchEvent['type'][] = ['status', 'complete', 'error', 'connected', 'token', 'plan'];
   
   eventTypes.forEach(type => {
     eventSource.addEventListener(type as string, (e: Event) => {

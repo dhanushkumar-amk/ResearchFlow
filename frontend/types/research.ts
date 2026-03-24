@@ -12,9 +12,17 @@ export interface ResearchError {
   message: string;
 }
 
+export interface ResearchToken {
+  text: string;
+}
+
+export interface ResearchPlan {
+  plan: string;
+}
+
 export interface ResearchEvent {
-  type: 'status' | 'complete' | 'error' | 'connected';
-  data: ResearchStatus | ResearchComplete | ResearchError | { sessionId: string; timestamp: string };
+  type: 'status' | 'complete' | 'error' | 'connected' | 'token' | 'plan';
+  data: ResearchStatus | ResearchComplete | ResearchError | ResearchToken | ResearchPlan | { sessionId: string; timestamp: string };
 }
 
 export interface Document {

@@ -27,6 +27,11 @@ ${planObj.search_queries.join(', ')}
 Type: ${planObj.question_type} | Complexity: ${planObj.estimated_complexity}
   `.trim();
 
+  // Emit plan for the UI
+  if (state.sessionId) {
+    emitResearchEvent(state.sessionId, 'plan', { plan: formattedPlan });
+  }
+
   return { researchPlan: formattedPlan, status: 'planning_complete' };
 }
 
