@@ -1,0 +1,10 @@
+­ƒôÜ Testing MCP Tool: document_search (Both Edge Cases)
+
+  [Server] ­ƒÜÇ Research MCP Server running on Stdio transport...
+­ƒº¬ Test 1: Calling document_search with non-existent collection
+  Ô£à Response: ­ƒôé No documents uploaded yet. Please upload documents to the "phantom-collection" collection first.
+
+­ƒº¬ Test 2: Calling document_search with default collection (no collection_name)
+  Ô£à Response: ­ƒôé No documents uploaded yet. Please upload documents to the "default" collection first.
+
+Ô£à All document_search edge cases passed!

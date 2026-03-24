@@ -1,0 +1,16 @@
+­ƒºá Testing MCP Tool: save_memory / get_memory
+
+  [Server] ­ƒÜÇ Research MCP Server running on Stdio transport...
+­ƒº¬ Step 1: Saving "Hello World" to "greeting"
+­ƒº¬ Step 2: Retrieving "greeting" (Expect success)
+  Ô£à Result: Hello From Redis!
+
+­ƒº¬ Step 3: Saving "Quick Info" with 2s TTL
+­ƒº¬ Step 4: Retrieving "temp" (Immediate, expect success)
+  Ô£à Result: This will disappear
+
+­ƒº¬ Step 5: Waiting 4 seconds for "temp" to expire...
+­ƒº¬ Step 6: Retrieving "temp" (After wait, expect "not found")
+  Ô£à Result: ­ƒºá Memory not found for this key.
+
+Ô£à Memory lifecycle test complete!
