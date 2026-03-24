@@ -375,14 +375,14 @@ LangChain · LangGraph · RAG · Qdrant · Vector Embeddings · MCP (Model Conte
 
     **What you do:**
 
-    - [ ]  Install: @langchain/core, @langchain/groq, @langchain/google-genai
-    - [ ]  Create src/test/langchain-test.ts
-    - [ ]  Build first chain: PromptTemplate → Groq LLM → StringOutputParser
-    - [ ]  Prompt: "What is {topic}? Answer in one sentence."
-    - [ ]  Call with topic = "machine learning", print result
-    - [ ]  Run: ts-node src/test/langchain-test.ts
-    - [ ]  Confirm response from Groq's Llama 3.3 70B
-    - [ ]  Understand pipe operator: prompt.pipe(llm).pipe(outputParser) — this is LCEL
+    - [x]  Install: @langchain/core, @langchain/groq, @langchain/google-genai
+    - [x]  Create src/test/langchain-test.ts
+    - [x]  Build first chain: PromptTemplate → Groq LLM → StringOutputParser
+    - [x]  Prompt: "What is {topic}? Answer in one sentence."
+    - [x]  Call with topic = "machine learning", print result
+    - [x]  Run: ts-node src/test/langchain-test.ts
+    - [x]  Confirm response from Groq's Llama 3.3 70B
+    - [x]  Understand pipe operator: prompt.pipe(llm).pipe(outputParser) — this is LCEL
 
     **What you learn:**
 
