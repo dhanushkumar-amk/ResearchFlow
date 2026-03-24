@@ -78,6 +78,18 @@ export async function storeChunks(collectionName: string, chunks: Document[]): P
 }
 
 /**
+ * Checks if a collection exists in Qdrant.
+ */
+export async function collectionExists(collectionName: string): Promise<boolean> {
+  try {
+    const list = await client.getCollections();
+    return !!list.collections.find((c) => c.name === collectionName);
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Searches for top_k relevant chunks for a given query string.
  * This is the core RAG retrieval step.
  */
@@ -85,21 +97,30 @@ export async function searchChunks(
   collectionName: string,
   query: string,
   topK: number = 5
-): Promise<string[]> {
+): Promise<{ text: string; metadata: any }[]> {
   console.log(`🔍 Searching relevant context in "${collectionName}" for query: "${query}"...`);
 
-  // 1. Embed exactly the query string
-  const queryVector = await embedText(query);
+  try {
+    // 1. Embed exactly the query string
+    const queryVector = await embedText(query);
 
-  // 2. Perform vector search (similarity search)
-  const result = await client.search(collectionName, {
-    vector: queryVector,
-    limit: topK,
-    with_payload: true,
-  });
+    // 2. Perform vector search (similarity search)
+    const result = await client.search(collectionName, {
+      vector: queryVector,
+      limit: topK,
+      with_payload: true,
+    });
 
-  // 3. Extract and return original text from results
-  const snippets = result.map((hit: any) => hit.payload?.text as string);
-  console.log(`📦 Found ${snippets.length} relevant snippet(s).`);
-  return snippets;
+    // 3. Extract and return text and metadata
+    const snippets = result.map((hit: any) => ({
+      text: hit.payload?.text as string,
+      metadata: hit.payload?.metadata,
+    }));
+    
+    console.log(`📦 Found ${snippets.length} relevant snippet(s).`);
+    return snippets;
+  } catch (error: any) {
+    console.error(`❌ Qdrant search error:`, error.message);
+    throw error;
+  }
 }

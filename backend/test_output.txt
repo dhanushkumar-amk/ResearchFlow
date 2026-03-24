@@ -1,26 +1,25 @@
-[dotenv@17.3.1] injecting env (9) from .env -- tip: ÔÜí´©Å secrets for agents: https://dotenvx.com/as2
-­ƒÜÇ Phase 18: Testing FULL RAG END-TO-END Pipeline...
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ­ƒöÉ prevent building .env in docker: https://dotenvx.com/prebuild
+­ƒñû Test RAG Agent (Agent 3) ÔÇö End-to-End Retrieval
 
---- Step 1: Loading PDF ---
 
---- Step 2: Text Splitting ---
-Ô£é´©Å  Split into 94 chunks (size: 500, overlap: 50)
+--- Test 1: Querying a non-existent collection (graceful empty) ---
+­ƒñû [RAG Agent] Starting retrieval for: "Any query" in collection: "invalid_colle"
+ÔÜá´©Å Collection "invalid_colle" does not exist. No docs uploaded for this project yet.
+­ƒôí Result Status: no_collection
+­ƒôª Chunks retrieved: 0
+­ƒôØ Context String length: 0
 
---- Step 3: Embedding & Storing (Gemini + Qdrant) ---
-­ƒºè Creating new Qdrant collection: "research_test_transformer" (dim: 3072)...
-­ƒºá Embedding 94 chunks via Gemini (gemini-embedding-001)...
-­ƒôÅ Computed embedding dimension: 3072
-­ƒôí Uploading 94 vectors to Qdrant collection: "research_test_transformer"...
-Ô£à Success! Data is now vector-searchable.
+--- Test 2: Querying the research_test_transformer collection (relevant chunks) ---
+­ƒñû [RAG Agent] Starting retrieval for: "the number of attention heads in the transformer" in collection: "research_test_transformer"
+­ƒöì Searching relevant context in "research_test_transformer" for query: "the number of attention heads in the transformer"...
+­ƒôª Found 5 relevant snippet(s).
+­ƒôí Result Status: success
+­ƒôª Chunks retrieved: 5
+­ƒôØ Context Snippet: 
+Below is relevant context retrieved from the project knowledge base:
 
---- Step 4: Retrieval Search For: "how many attention heads are used in the Transformer model?" ---
-­ƒöì Searching relevant context in "research_test_transformer" for query: "how many attention heads are used in the Transformer model?"...
-­ƒôª Found 2 relevant snippet(s).
-
-=== RAG Context Retrieval Results ===
-
-Ô£à SNIPPET #1 (relevant text):
-   "Q
+--- From attention_paper.pdf ---
+Q
 i
 ÔêêR
 d
@@ -53,20 +52,8 @@ model
 .
 In  this  work  we  employh= 8parallel  attention  layers,  or  heads.   For  each  of  these  we  use
 d
-k
-=d
-v
-=d
-model
-/h= 64. Due to the reduced dimension of each head, the total computational cost
-is simi..."
+...
 
-Ô£à SNIPPET #2 (relevant text):
-   "output values.  These are concatenated and once again projected, resulting in the final values, as
-depicted in Figure 2.
-Multi-head attention allows the model to jointly attend to information from different representation
-subspaces at different positions. With a single attention head, averaging inhi..."
+ÔÜá´©Å  [WARN]: Context found but target content "h = 8" not visible in snippet.
 
-Ô£¿ [PASS]: Successfully retrieved context mentioning "heads" or "h=8"!
-
-­ƒÄë FULL PIPELINE TEST COMPLETE ÔÇö Phase 18 SUCCESS!
+­ƒÅü RAG Agent Phase 19 test COMPLETE!
