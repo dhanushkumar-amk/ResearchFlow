@@ -1,0 +1,32 @@
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ­ƒñû agentic secret storage: https://dotenvx.com/as2
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ÔÜÖ´©Å  load multiple .env files with { path: ['.env.local', '.env'] }
+­ƒÅù´©Å  LangGraph: Research Pipeline Constructed Successfully!
+­ƒÜÇ Starting Full Agent Orchestration for: "What are the key technical breakthroughs of the Attention Is All You Need paper?" (Session: eb0dc95c-32c1-4905-a860-4705ce22e73a)
+
+ÔÅ▒´©Å [RAG Start] 2026-03-24T05:09:35.294Z
+­ƒñû [RAG Agent] Starting retrieval for: "What are the key technical breakthroughs of the Attention Is All You Need paper?" in collection: "eb0dc95c-32c1-4905-a860-4705ce22e73a"
+ÔÅ▒´©Å [Researcher Start] 2026-03-24T05:09:35.297Z
+­ƒöÄ [Search Agent] Researching: "What are the key technical breakthroughs of the Attention Is All You Need paper?"
+­ƒöÄ Running 3 search queries in parallel...
+ÔÜá´©Å Collection "eb0dc95c-32c1-4905-a860-4705ce22e73a" does not exist. No docs uploaded for this project yet.
+­ƒôØ [Synthesizer Agent] Generating final report via Groq streaming...
+­ƒºÉ [Critic Agent] Reviewing attempt #1 for query: "What are the key technical breakthroughs of the Attention Is All You Need paper?"
+­ƒôè [Critic Result] Score: 9/10 | Verdict: APPROVE
+
+
+========================================
+­ƒÅü RESEARCH COMPLETE!
+­ƒôè Final Score: 9/10
+­ƒöä Total Iterations: 1
+========================================
+
+­ƒôØ FINAL REPORT PREVIEW:
+**Attention Is All You Need Paper: Technical Breakthroughs and Impact**
+===========================================================
+
+### Executive Summary
+The "Attention Is All You Need" paper, published in 2017, introduced the Transformer architecture, which revolutionized the field of natural language processing (NLP) [1]. The paper's key contribution is the replacement of traditional recurrent neural networks (RNNs) and convolutional neural networks (CNNs) with self-attention mechanisms, enabling parallelization and improving performance on sequence-to-sequence tasks [2]. This report provides an overview of the paper's technical breakthroughs, its impact on the field of NLP, and the subsequent developments that have built upon this foundation.
+
+### Key Findings
+* The Transformer architecture relies solely on self-attention mechanisms, eliminating the need for RNNs and CNNs [1].
+* The self-attention mechanism allows the model to weigh the significance of different parts of the input ...

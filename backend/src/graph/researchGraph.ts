@@ -31,21 +31,20 @@ Type: ${planObj.question_type} | Complexity: ${planObj.estimated_complexity}
 
 /**
  * Node 2: Researcher Node (Web Search)
- * Finds relevant web information based on the query.
  */
 async function researcherNode(state: ResearchStateType) {
+  console.log(`⏱️ [Researcher Start] ${new Date().toISOString()}`);
   const result = await runSearchAgent(state.query);
-  return { searchResults: result, status: 'web_search_complete' };
+  return { searchResults: result };
 }
 
 /**
  * Node 3: RAG Node (Document Search)
- * Fetches private document context if available.
  */
 async function ragNode(state: ResearchStateType) {
-  // collectionName should be based on sessionId or project title
+  console.log(`⏱️ [RAG Start] ${new Date().toISOString()}`);
   const result = await runRagAgent(state.query, state.sessionId);
-  return { ragResults: result.context, status: 'rag_retrieval_complete' };
+  return { ragResults: result.context };
 }
 
 /**
@@ -102,10 +101,15 @@ const workflow = new StateGraph(ResearchState)
 // Define the Entry Point
 workflow.setEntryPoint('planner');
 
-// Define Linear Progression
+// Define Parallel Forks
 workflow.addEdge('planner', 'researcher');
-workflow.addEdge('researcher', 'rag');
+workflow.addEdge('planner', 'rag');
+
+// Define the Join (LangGraph waits for both branches to complete before synthesizer)
+workflow.addEdge('researcher', 'synthesizer');
 workflow.addEdge('rag', 'synthesizer');
+
+// Define the Linear Progress from Synthesis to Review
 workflow.addEdge('synthesizer', 'critic');
 
 // Define Conditional Logic (The Re-write Loop)

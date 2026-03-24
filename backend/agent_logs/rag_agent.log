@@ -1,2 +1,4 @@
 {"agent":"rag","query":"Any query","collectionName":"invalid_colle","chunkCount":0,"durationMs":1803,"status":"no_collection","timestamp":"2026-03-24T04:46:40.800Z"}
 {"agent":"rag","query":"the number of attention heads in the transformer","collectionName":"research_test_transformer","chunkCount":5,"durationMs":1980,"status":"success","timestamp":"2026-03-24T04:46:42.783Z"}
+{"agent":"rag","query":"What are the key technical breakthroughs of the Attention Is All You Need paper?","collectionName":"7774cb70-fb08-4ba6-b670-ea945d67779c","chunkCount":0,"durationMs":298,"status":"no_collection","timestamp":"2026-03-24T05:08:54.598Z"}
+{"agent":"rag","query":"What are the key technical breakthroughs of the Attention Is All You Need paper?","collectionName":"eb0dc95c-32c1-4905-a860-4705ce22e73a","chunkCount":0,"durationMs":1002,"status":"no_collection","timestamp":"2026-03-24T05:09:36.297Z"}

@@ -1,0 +1,11 @@
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ÔÜÖ´©Å  enable debug logging with { debug: true }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ÔÜÖ´©Å  override existing env vars with { override: true }
+­ƒÅù´©Å  LangGraph: Research Pipeline Constructed Successfully!
+­ƒÅù´©Å  Testing LangGraph: Research Pipeline Construction
+
+Ô£à Graph compiled successfully.
+­ƒôª Parallel Check... 
+­ƒôí Branches from planner: 1
+­ƒôÑ Incoming to synthesizer: 1
+
+ÔÜá´©Å [FAIL]: Parallel structure seems linear.
