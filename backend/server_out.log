@@ -1,0 +1,6 @@
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ­ƒøí´©Å auth for agents: https://vestauth.com
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ÔÜÖ´©Å  write to custom object with { processEnv: myObject }
+­ƒÅù´©Å  LangGraph: Research Pipeline Constructed Successfully!
+Ô£à [Express] Server successfully bound to port 3001
+­ƒÜÇ ResearchFlow Backend is ready for requests.
+ÔØî Error: Port 3001 is already in use.

@@ -9,3 +9,4 @@
 {"agent":"rag_mcp","query":"What are the main advantages of TypeScript for enterprise apps?","collectionName":"live-test-1774334368422","durationMs":7472,"status":"no_results","timestamp":"2026-03-24T06:39:48.539Z"}
 {"agent":"rag_mcp","query":"hi","collectionName":"1","durationMs":8623,"status":"no_results","timestamp":"2026-03-24T06:47:32.541Z"}
 {"agent":"rag_mcp","query":"TypeScript performance benefits","collectionName":"f5a19236-7f94-4d27-8297-bc281091325c","durationMs":16520,"status":"no_results","timestamp":"2026-03-24T06:49:08.323Z"}
+{"agent":"rag_mcp","query":"What is the AetherFlow Quantum Cooler and who makes it?","collectionName":"session_docs_rag_test_session_1774336863743","durationMs":12108,"status":"success","timestamp":"2026-03-24T07:21:36.808Z"}

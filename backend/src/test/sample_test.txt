@@ -1,0 +1,10 @@
+Advanced Agentic ResearchFlow (v1.0)
+    This is a test document designed to verify the Phase 33 RAG ingestion pipeline.
+    It contains multiple lines to ensure the RecursiveCharacterTextSplitter 
+    can properly chunk the information into at least 2 or 3 segments.
+    
+    Technical Details:
+    - Backend: Express + TypeScript
+    - Vector Store: Qdrant Cloud
+    - Embeddings: Google Gemini (embedding-001)
+    - Metadata Store: PostgreSQL

@@ -15,7 +15,7 @@ import { emitResearchEvent } from '../events/emitter';
  */
 async function plannerNode(state: ResearchStateType) {
   const planObj = await runPlannerAgent(state.query, state.sessionId);
-  
+
   // Convert JSON to a readable text summary for the Synthesizer
   const formattedPlan = `
 Research Tasks:
@@ -44,7 +44,11 @@ async function researcherNode(state: ResearchStateType) {
  */
 async function ragNode(state: ResearchStateType) {
   console.log(`⏱️ [RAG Start] ${new Date().toISOString()}`);
-  const result = await runRagAgent(state.query, state.sessionId);
+  
+  // Important: Match the collection name logic from ingest.ts
+  const collectionName = `session_docs_${(state.sessionId || 'anonymous').replace(/[^a-zA-Z0-9]/g, '_')}`;
+  
+  const result = await runRagAgent(state.query, collectionName);
   return { ragResults: result.context };
 }
 
@@ -71,8 +75,8 @@ async function synthesizerNode(state: ResearchStateType) {
     }
   }
 
-  return { 
-    report: fullContent, 
+  return {
+    report: fullContent,
     status: 'synthesis_complete',
     retryCount: (state.retryCount || 0) + 1 // Increment iteration count
   };
@@ -121,7 +125,7 @@ workflow.addEdge('synthesizer', 'critic');
 workflow.addConditionalEdges(
   'critic',
   (state: ResearchStateType) => {
-    if (state.critique.verdict === 'approve') {
+    if (state.critique?.verdict === 'approve') {
       return 'end';
     } else {
       return 'synthesize';

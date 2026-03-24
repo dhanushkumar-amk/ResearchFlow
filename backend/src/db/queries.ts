@@ -73,3 +73,30 @@ export async function logAgentActivity(
   const res = await query(text, [sessionId, agentName, inputSummary, outputSummary, durationMs, tokenCount]);
   return res.rows[0];
 }
+
+/**
+ * Retrieves all document metadata for a user session
+ */
+export async function getDocumentsByUserId(userId: string) {
+  const text = `
+    SELECT * FROM documents
+    WHERE user_id = $1
+    ORDER BY uploaded_at DESC
+  `;
+  const res = await query(text, [userId]);
+  return res.rows;
+}
+
+/**
+ * Deletes document metadata and returns its qdrant info for cleanup
+ */
+export async function deleteDocumentById(documentId: string) {
+  const text = `
+    DELETE FROM documents
+    WHERE document_id = $1
+    RETURNING *
+  `;
+  const res = await query(text, [documentId]);
+  return res.rows[0];
+}
+
