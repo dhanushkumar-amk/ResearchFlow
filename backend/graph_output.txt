@@ -1,0 +1,27 @@
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ÔÜÖ´©Å  override existing env vars with { override: true }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ­ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+­ƒÅù´©Å  LangGraph: Research Pipeline Constructed Successfully!
+­ƒÅù´©Å  Testing LangGraph: Research Pipeline Construction
+
+Ô£à Graph compiled successfully.
+­ƒôª Available channels: [
+  'query',
+  'sessionId',
+  'researchPlan',
+  'searchResults',
+  'ragResults',
+  'report',
+  'critique',
+  'retryCount',
+  'status',
+  'error',
+  '__start__',
+  '__pregel_tasks',
+  'branch:to:planner',
+  'branch:to:researcher',
+  'branch:to:rag',
+  'branch:to:synthesizer',
+  'branch:to:critic'
+]
+
+Ô£¿ Graph structure looks solid. Ready for real execution!
