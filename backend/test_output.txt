@@ -1,53 +1,49 @@
-[dotenv@17.3.1] injecting env (9) from .env -- tip: ÔÜÖ´©Å  load multiple .env files with { path: ['.env.local', '.env'] }
-­ƒÜÇ Starting Tavily Search Tool Test (Phase 16)...
+­ƒÜÇ Starting RAG Pipeline Test ÔÇö Phase 17 (Load & Split)
 
-­ƒöÄ Running 3 search queries in parallel...
-ÔÅ▒´©Å All 3 queries completed in 4068ms (parallel)
+=== TEST 1: PDF Loading ===
+­ƒôÜ Total pages loaded: 15
 
---------------------------------------------------
-­ƒöÄ QUERY #1: "causes of the fall of the Roman Empire history"
-­ƒôª Results: 5 found
+=== TEST 2: Text Splitting ===
+Ô£é´©Å  Split into 94 chunks (size: 500, overlap: 50)
+­ƒôª Total chunks generated: 94
 
-  Ô£à Result 1:
-     Title: Fall of the Roman Empire | History & Causes - Lesson
-     URL:   https://study.com/academy/lesson/the-fall-of-rome.html
-     Snippet: Fall of the Roman Empire | History & Causes - Lesson | Study.com. Ancient History/Classical Antiquity/Ancient Rome/Roman...
+=== TEST 3: First 3 Chunks ===
 
-  Ô£à Result 2:
-     Title: 8 Reasons Why Rome Fell: The Fall of Rome Explained
-     URL:   https://www.history.com/articles/8-reasons-why-rome-fell
-     Snippet: Historians cite multiple overlapping factors for the fall of the Western Roman Empire, ranging from economic collapse to...
---------------------------------------------------
-­ƒöÄ QUERY #2: "how do mRNA vaccines work mechanism explained"
-­ƒôª Results: 5 found
+--- Chunk #1 ---
+­ƒôÅ Length: 498 chars
+­ƒôØ Content: "Provided proper attribution is provided, Google hereby grants permission to
+reproduce the tables and figures in this pap..."
 
-  Ô£à Result 1:
-     Title: How do mRNA vaccines work? - IAVI
-     URL:   https://www.iavi.org/video/how-do-mrna-vaccines-work/
-     Snippet: Home / Videos / How do mRNA vaccines work? # How do mRNA vaccines work? When you get a messenger RNA (mRNA) vaccine, you...
+--- Chunk #2 ---
+­ƒôÅ Length: 462 chars
+­ƒôØ Content: "Ôêù ÔÇá
+University of Toronto
+aidan@cs.toronto.edu
+┼üukasz Kaiser
+Ôêù
+Google Brain
+lukaszkaiser@google.com
+Illia Polosukhin
+Ôêù ÔÇí..."
 
-  Ô£à Result 2:
-     Title: What are mRNA vaccines and how do they work? - MedlinePlus
-     URL:   https://medlineplus.gov/genetics/understanding/therapy/mrnavaccines/
-     Snippet: What are mRNA vaccines and how do they work? # What are mRNA vaccines and how do they work? However, scientists have dev...
---------------------------------------------------
-­ƒöÄ QUERY #3: "quantum computing impact on cryptography security"
-­ƒôª Results: 5 found
+--- Chunk #3 ---
+­ƒôÅ Length: 475 chars
+­ƒôØ Content: "based solely on attention mechanisms, dispensing with recurrence and convolutions
+entirely.  Experiments on two machine ..."
 
-  Ô£à Result 1:
-     Title: Quantum Computing's Impact on Cryptography ÔÇö The Future of ...
-     URL:   https://medium.com/@RocketMeUpCybersecurity/quantum-computings-impact-on-cryptography-the-future-of-encryption-1f8804205d86
-     Snippet: # Quantum ComputingÔÇÖs Impact on Cryptography ÔÇö The Future of Encryption. In this article, weÔÇÖll explore how quantum comp...
+=== TEST 4: Overlap Verification ===
+­ƒöù End of Chunk 1 (last 50 chars): "mez
+Ôêù ÔÇá
+University of Toronto
+aidan@cs.toronto.edu"
+­ƒöù Start of Chunk 2 (first 50 chars): "Ôêù ÔÇá
+University of Toronto
+aidan@cs.toronto.edu
+┼üuk"
+ÔÜá´©Å  Overlap not detected in first boundary (may split at natural break ÔÇö this is normal).
 
-  Ô£à Result 2:
-     Title: Quantum Computing impact on Cryptography - YouTube
-     URL:   https://www.youtube.com/watch?v=1cA1qOLaFGQ
-     Snippet: Quantum Computing impact on Cryptography
-IBM Technology
-1620000 subscribers
-344 likes
-20982 views
-10 Jun 2021
-Learn more...
+=== TEST 5: TXT Sample Loading ===
+Ô£é´©Å  Split into 8 chunks (size: 500, overlap: 50)
+Ô£à TXT file: 1 doc(s) ÔåÆ 8 chunks
 
-Ô£¿ Tavily Search Phase 16 test COMPLETE!
+Ô£¿ Phase 17 RAG Load & Split test COMPLETE!

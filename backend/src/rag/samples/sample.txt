@@ -1,0 +1,17 @@
+Machine Learning: An Overview
+
+Machine learning (ML) is a branch of artificial intelligence that focuses on building systems that learn from data, identify patterns, and make decisions with minimal human intervention. The field was formally coined by Arthur Samuel in 1959. Over decades, it has grown into one of the most transformative technologies in computer science.
+
+There are three primary categories of machine learning. Supervised learning is the most common, where models are trained on labeled datasets — meaning each input has a corresponding correct output. Examples include image classification, spam detection, and house price prediction. The algorithm learns by minimizing the error between its predictions and the true labels.
+
+Unsupervised learning deals with unlabeled data. The algorithm must discover hidden patterns or structure on its own. Clustering algorithms such as K-Means group similar data points together. Dimensionality reduction methods like Principal Component Analysis (PCA) simplify high-dimensional data while preserving important variance.
+
+Reinforcement learning is a third paradigm inspired by behavioral psychology. An agent interacts with an environment, takes actions, and receives rewards or penalties. Over time, the agent learns a policy — a strategy for maximizing cumulative reward. This technique powers game-playing AIs like AlphaGo and modern robotics systems.
+
+Deep learning is a subfield of machine learning that uses multi-layered neural networks called deep neural networks (DNNs). These networks can learn hierarchical representations of data, making them extremely powerful for tasks like natural language processing, computer vision, and speech recognition.
+
+The Transformer architecture, introduced in the landmark 2017 paper "Attention is All You Need," revolutionized NLP. By relying entirely on self-attention mechanisms rather than recurrence, Transformers can process sequences in parallel and scale to billions of parameters. Models like GPT-4, Google Gemini, and Meta Llama are all built on this architecture.
+
+Common challenges in machine learning include overfitting, where a model performs well on training data but poorly on new data. Techniques like dropout, L2 regularization, and cross-validation help mitigate this. Data quality is equally important — garbage in, garbage out.
+
+The future of machine learning lies in multi-modal models, efficient inference, and explainability. As the technology matures, understanding why a model makes a specific decision becomes critical for safety, healthcare, and legal applications.
