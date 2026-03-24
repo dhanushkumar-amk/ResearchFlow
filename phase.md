@@ -394,12 +394,12 @@ LangChain · LangGraph · RAG · Qdrant · Vector Embeddings · MCP (Model Conte
 
     **What you do:**
 
-    - [ ]  Create src/test/structured-output-test.ts
-    - [ ]  Build chain returning structured JSON: { tasks: string[], search_queries: string[], question_type: "factual" | "analytical" | "opinion" }
-    - [ ]  Use JsonOutputParser from LangChain
-    - [ ]  Instruct LLM to return ONLY valid JSON — nothing else
-    - [ ]  Test with 3 different questions, print typed results
-    - [ ]  Handle invalid JSON case with try-catch
+    - [x]  Create src/test/structured-output-test.ts
+    - [x]  Build chain returning structured JSON: { tasks: string[], search_queries: string[], question_type: "factual" | "analytical" | "opinion" }
+    - [x]  Use JsonOutputParser from LangChain
+    - [x]  Instruct LLM to return ONLY valid JSON — nothing else
+    - [x]  Test with 3 different questions, print typed results
+    - [x]  Handle invalid JSON case with try-catch
 
     **What you learn:**
 
