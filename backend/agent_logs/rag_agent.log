@@ -1,0 +1,2 @@
+{"agent":"rag","query":"Any query","collectionName":"invalid_colle","chunkCount":0,"durationMs":1803,"status":"no_collection","timestamp":"2026-03-24T04:46:40.800Z"}
+{"agent":"rag","query":"the number of attention heads in the transformer","collectionName":"research_test_transformer","chunkCount":5,"durationMs":1980,"status":"success","timestamp":"2026-03-24T04:46:42.783Z"}

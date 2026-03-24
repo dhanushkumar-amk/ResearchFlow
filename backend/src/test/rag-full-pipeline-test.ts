@@ -29,13 +29,16 @@ async function testFullRagPipeline() {
 
     // 5. Verification
     console.log('\n=== RAG Context Retrieval Results ===');
-    relevantSnippets.forEach((text, i) => {
+    relevantSnippets.forEach((snippet, i) => {
       console.log(`\n✅ SNIPPET #${i + 1} (relevant text):`);
-      console.log(`   "${text.substring(0, 300)}..."`);
+      console.log(`   Source: ${snippet.metadata?.source || 'unknown'}`);
+      console.log(`   "${snippet.text.substring(0, 300)}..."`);
     });
 
     // Check if the content is correct (Transformer uses 8 heads)
-    const mentionsHeads = relevantSnippets.some((s) => s.toLowerCase().includes('heads') || s.toLowerCase().includes('h = 8'));
+    const mentionsHeads = relevantSnippets.some(
+      (s) => s.text.toLowerCase().includes('heads') || s.text.toLowerCase().includes('h = 8')
+    );
     if (mentionsHeads) {
       console.log('\n✨ [PASS]: Successfully retrieved context mentioning "heads" or "h=8"!');
     } else {
