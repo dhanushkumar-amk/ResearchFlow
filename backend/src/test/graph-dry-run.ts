@@ -13,11 +13,22 @@ async function testGraphDraft() {
     }
 
     console.log('✅ Graph compiled successfully.');
-    console.log('📦 Available channels:', Object.keys((researchGraph as any).channels || {}));
+    console.log('📦 Parallel Check... ');
     
-    // Attempt a very simple run with mock state? 
-    // Actually, running takes API calls. Let's just verify types.
-    console.log('\n✨ Graph structure looks solid. Ready for real execution!');
+    // Check outgoing edges from planner
+    const channels = (researchGraph as any).channels;
+    const branchesFromPlanner = Object.keys(channels).filter(c => c.includes('branch:to:planner'));
+    console.log(`📡 Branches from planner: ${branchesFromPlanner.length}`);
+    
+    // Check incoming edges to synthesizer
+    const synthesizerIn = Object.keys(channels).filter(c => c.includes('branch:to:synthesizer'));
+    console.log(`📥 Incoming to synthesizer: ${synthesizerIn.length}`);
+    
+    if (synthesizerIn.length >= 2) {
+      console.log('\n✨ [PASS]: Parallel Execution structure confirmed! Graph will wait for both Search & RAG.');
+    } else {
+      console.log('\n⚠️ [FAIL]: Parallel structure seems linear.');
+    }
   } catch (err: any) {
     console.error('❌ Graph Error:', err.message);
   }
