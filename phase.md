@@ -428,13 +428,13 @@ LangChain · LangGraph · RAG · Qdrant · Vector Embeddings · MCP (Model Conte
 
     **What you do:**
 
-    - [ ]  Create src/agents/planner.ts
-    - [ ]  Input: user's raw question (string)
-    - [ ]  Write system prompt: act as research planning expert
-    - [ ]  Output JSON: { tasks (3-5 sub-questions), search_queries (5-6 queries), question_type, estimated_complexity }
-    - [ ]  Export async function runPlannerAgent(query: string)
-    - [ ]  Test with 5 different questions across different domains
-    - [ ]  Log duration ([Date.now](http://Date.now)() before/after) → add to agent_logs table
+    - [x]  Create src/agents/planner.ts
+    - [x]  Input: user's raw question (string)
+    - [x]  Write system prompt: act as research planning expert
+    - [x]  Output JSON: { tasks (3-5 sub-questions), search_queries (5-6 queries), question_type, estimated_complexity }
+    - [x]  Export async function runPlannerAgent(query: string)
+    - [x]  Test with 5 different questions across different domains
+    - [x]  Log duration ([Date.now](http://Date.now)() before/after) → add to agent_logs table
 
     **What you learn:**
 
