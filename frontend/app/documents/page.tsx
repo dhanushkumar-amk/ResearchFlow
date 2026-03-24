@@ -46,13 +46,14 @@ export default function DocumentsPage() {
   }, []);
 
   useEffect(() => {
-    const storedId = localStorage.getItem('research_session_id');
-    if (storedId) {
-      setSessionId(storedId);
-      fetchDocuments(storedId);
-    } else {
-      setIsLoading(false);
+    // Phase 40: Unified Identity Migration
+    let id = localStorage.getItem('research_user_id') || localStorage.getItem('research_session_id');
+    if (!id || id.includes('user_')) {
+      id = crypto.randomUUID();
     }
+    localStorage.setItem('research_user_id', id);
+    setSessionId(id);
+    fetchDocuments(id);
   }, [fetchDocuments]);
 
   // Handle file validation and upload

@@ -9,6 +9,7 @@ export const ResearchState = Annotation.Root({
   // Main Input
   query: Annotation<string>(),
   sessionId: Annotation<string>(),
+  userId: Annotation<string>(),
 
   // Processed artifacts (Last-write-wins)
   researchPlan: Annotation<string>(),

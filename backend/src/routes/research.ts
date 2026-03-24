@@ -46,13 +46,14 @@ const NODE_USER_MESSAGES: Record<string, string> = {
 /**
  * Execute the research graph and pipe results to emitter.
  */
-async function executeResearch(query: string, sessionId: string) {
-  console.log(`🚀 [Graph] Starting execution for: ${sessionId}`);
+async function executeResearch(query: string, sessionId: string, userId?: string) {
+  console.log(`🚀 [Graph] Starting execution for: ${sessionId} (User: ${userId})`);
 
   try {
     const initialState = {
       query,
       sessionId,
+      userId: userId || 'anonymous',
       retryCount: 0,
       status: 'initialized',
     };
@@ -64,13 +65,15 @@ async function executeResearch(query: string, sessionId: string) {
     // MARK: DB Persistence - Start Session
     await updateSessionStatus(sessionId, 'planning');
 
-    let lastUpdate: any = {};
+    let fullState: any = { ...initialState };
 
     for await (const update of stream) {
-      lastUpdate = update;
       const nodeName = Object.keys(update)[0];
+      // Merge the node's output into our full state
+      const nodeData = (update as any)[nodeName];
+      fullState = { ...fullState, ...nodeData };
+      
       const message = NODE_USER_MESSAGES[nodeName] || `Working on ${nodeName}...`;
-
       console.log(`📡 [Graph Update] ${nodeName} -> ${message}`);
 
       // Emit status event
@@ -83,26 +86,22 @@ async function executeResearch(query: string, sessionId: string) {
       await updateSessionStatus(sessionId, nodeName);
     }
 
-    // Capture the final state from the last node update
-    const finalNodeName = Object.keys(lastUpdate)[0];
-    const finalData = lastUpdate[finalNodeName];
-
     researchEmitter.emit(`research:${sessionId}`, {
       type: 'complete',
       data: { 
-        report: finalData?.report || 'Report synthesis finished.', 
-        score: finalData?.critique?.score 
+        report: fullState.report || 'Report synthesis finished.', 
+        score: fullState.critique?.score 
       },
     });
 
     // MARK: DB Persistence - Save Report
-    if (finalData?.report) {
+    if (fullState.report) {
       await saveReport(
         sessionId, 
-        finalData.report, 
-        finalData.critique?.score || 0, 
+        fullState.report, 
+        fullState.critique?.score || 0, 
         0, 
-        finalData.sources || []
+        fullState.sources || []
       );
       await updateSessionStatus(sessionId, 'complete');
     }
@@ -130,11 +129,11 @@ router.post('/start', researchRateLimiter, validateResearchQuery, async (req: Re
 
   // MARK: DB Persistence - Initialize Session Record
   try {
-    const userId = (req.body.userId as string) || 'research_session_id';
+    const userId = (req.body.userId as string) || 'anonymous';
     await createSession(userId, query, sessionId);
     
     // Trigger asynchronously
-    executeResearch(query, sessionId);
+    executeResearch(query, sessionId, userId);
     res.json({ message: 'Research started', sessionId });
   } catch (err: any) {
     console.error('Failed to init session in DB:', err.message);

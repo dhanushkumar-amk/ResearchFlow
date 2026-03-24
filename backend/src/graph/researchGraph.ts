@@ -50,8 +50,8 @@ async function researcherNode(state: ResearchStateType) {
 async function ragNode(state: ResearchStateType) {
   console.log(`⏱️ [RAG Start] ${new Date().toISOString()}`);
   
-  // Important: Match the collection name logic from ingest.ts
-  const collectionName = `session_docs_${(state.sessionId || 'anonymous').replace(/[^a-zA-Z0-9]/g, '_')}`;
+  // Phase 40: Correctly match the collection linked to the USER
+  const collectionName = `session_docs_${(state.userId || state.sessionId || 'anonymous').replace(/[^a-zA-Z0-9]/g, '_')}`;
   
   const result = await runRagAgent(state.query, collectionName);
   return { ragResults: result.context };
@@ -74,9 +74,9 @@ async function synthesizerNode(state: ResearchStateType) {
   // Collect full stream for graph logic
   for await (const chunk of generator) {
     fullContent += chunk;
-    // Emit tokens for Phase 32 live streaming
+    // Emit chunks for Phase 32 live streaming
     if (state.sessionId) {
-      emitResearchEvent(state.sessionId, 'token', { text: chunk });
+      emitResearchEvent(state.sessionId, 'report', chunk);
     }
   }
 

@@ -84,9 +84,9 @@ router.post('/upload', uploadRateLimiter, (req: Request, res: Response) => {
  * Returns all documents associated with a session ID.
  */
 router.get('/', async (req: Request, res: Response) => {
-  const sessionId = req.query.sessionId as string;
+  const sessionId = (req.query.sessionId || req.query.userId) as string;
   if (!sessionId) {
-    return res.status(400).json({ error: 'sessionId is required' });
+    return res.status(400).json({ error: 'User/Session ID is required' });
   }
 
   try {

@@ -16,3 +16,5 @@
 {"agent":"rag_mcp","query":"Blockchain Trends","collectionName":"session_docs_8wjz4nuk7","durationMs":7018,"status":"no_results","timestamp":"2026-03-24T14:19:03.273Z"}
 {"agent":"rag_mcp","query":"Quantum Computing advances","collectionName":"session_docs_8wjz4nuk7","durationMs":10062,"status":"no_results","timestamp":"2026-03-24T14:23:27.041Z"}
 {"agent":"rag_mcp","query":"Impact of AI on software engineering","collectionName":"session_docs_user_d1abwn2","durationMs":23916,"status":"no_results","timestamp":"2026-03-24T14:38:42.847Z"}
+{"agent":"rag_mcp","query":"AI Agents in 2025","collectionName":"session_docs_9c1fa5db_c29e_4f52_b976_c5d4092d129f","durationMs":9105,"status":"no_results","timestamp":"2026-03-24T14:46:06.684Z"}
+{"agent":"rag_mcp","query":"Blockchain in healthcare","collectionName":"session_docs_e709aa30_a53d_41c6_967b_794c3c1701a7","durationMs":13073,"status":"no_results","timestamp":"2026-03-24T14:50:33.442Z"}

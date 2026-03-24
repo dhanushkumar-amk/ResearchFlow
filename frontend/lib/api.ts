@@ -5,13 +5,13 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 /**
  * Initiates a new research task
  */
-export async function startResearch(query: string, sessionId: string) {
+export async function startResearch(query: string, sessionId: string, userId?: string) {
   const response = await fetch(`${API_URL}/api/research/start`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ query, sessionId }),
+    body: JSON.stringify({ query, sessionId, userId }),
   });
 
   if (!response.ok) {

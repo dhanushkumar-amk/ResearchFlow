@@ -12,28 +12,35 @@ export default function Home() {
   const [query, setQuery] = useState('');
   const [history, setHistory] = useState<ResearchHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [sessionId, setSessionId] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string>('');
 
   useEffect(() => {
-    const storedId = localStorage.getItem('research_session_id') || ('user_' + Math.random().toString(36).substring(2, 9));
-    localStorage.setItem('research_session_id', storedId);
-    setSessionId(storedId);
-    getResearchHistory(storedId).then(setHistory).catch(() => {});
+    // Generate a persistent cross-session User ID for history
+    let storedUserId = localStorage.getItem('research_user_id');
+    if (!storedUserId || storedUserId.includes('user_')) {
+      storedUserId = crypto.randomUUID();
+      localStorage.setItem('research_user_id', storedUserId);
+    }
+    setUserId(storedUserId);
+    getResearchHistory(storedUserId).then(setHistory).catch(() => {});
   }, []);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const q = query.trim();
-    if (!q || isLoading || !sessionId) return;
+  const handleSearch = async (e?: React.FormEvent, overrideQuery?: string) => {
+    if (e) e.preventDefault();
+    const q = (overrideQuery || query).trim();
+    if (!q || isLoading || !userId) return;
 
     setIsLoading(true);
     setError(null);
 
     try {
-      const { sessionId: newSessionId } = await startResearch(q, sessionId);
+      // Create a UNIQUE session ID for THIS specific research task
+      const newSessionId = crypto.randomUUID();
+      
+      const { sessionId } = await startResearch(q, newSessionId, userId);
       // Navigate to live research page
-      router.push(`/research/${newSessionId}`);
+      router.push(`/research/${sessionId}`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to start research. Is the backend running?';
       setError(msg);

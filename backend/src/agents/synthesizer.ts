@@ -52,6 +52,7 @@ ${ragContext}
 - Create a structured MARKDOWN report.
 - CITATIONS: Always cite sources in brackets like [Source Name/URL] next to the fact.
 - TONE: Professional, objective, and analytical.
+- SOURCES: END THE REPORT with a "### Sources & Documents" section listing all websites and uploaded documents used.
 - CONSTRAINTS: Use ONLY the provided information. Do not hallucinate external facts.
 `.trim();
 
