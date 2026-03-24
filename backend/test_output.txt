@@ -1,49 +1,72 @@
-­ƒÜÇ Starting RAG Pipeline Test ÔÇö Phase 17 (Load & Split)
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ÔÜí´©Å secrets for agents: https://dotenvx.com/as2
+­ƒÜÇ Phase 18: Testing FULL RAG END-TO-END Pipeline...
 
-=== TEST 1: PDF Loading ===
-­ƒôÜ Total pages loaded: 15
+--- Step 1: Loading PDF ---
 
-=== TEST 2: Text Splitting ===
+--- Step 2: Text Splitting ---
 Ô£é´©Å  Split into 94 chunks (size: 500, overlap: 50)
-­ƒôª Total chunks generated: 94
 
-=== TEST 3: First 3 Chunks ===
+--- Step 3: Embedding & Storing (Gemini + Qdrant) ---
+­ƒºè Creating new Qdrant collection: "research_test_transformer" (dim: 3072)...
+­ƒºá Embedding 94 chunks via Gemini (gemini-embedding-001)...
+­ƒôÅ Computed embedding dimension: 3072
+­ƒôí Uploading 94 vectors to Qdrant collection: "research_test_transformer"...
+Ô£à Success! Data is now vector-searchable.
 
---- Chunk #1 ---
-­ƒôÅ Length: 498 chars
-­ƒôØ Content: "Provided proper attribution is provided, Google hereby grants permission to
-reproduce the tables and figures in this pap..."
+--- Step 4: Retrieval Search For: "how many attention heads are used in the Transformer model?" ---
+­ƒöì Searching relevant context in "research_test_transformer" for query: "how many attention heads are used in the Transformer model?"...
+­ƒôª Found 2 relevant snippet(s).
 
---- Chunk #2 ---
-­ƒôÅ Length: 462 chars
-­ƒôØ Content: "Ôêù ÔÇá
-University of Toronto
-aidan@cs.toronto.edu
-┼üukasz Kaiser
-Ôêù
-Google Brain
-lukaszkaiser@google.com
-Illia Polosukhin
-Ôêù ÔÇí..."
+=== RAG Context Retrieval Results ===
 
---- Chunk #3 ---
-­ƒôÅ Length: 475 chars
-­ƒôØ Content: "based solely on attention mechanisms, dispensing with recurrence and convolutions
-entirely.  Experiments on two machine ..."
+Ô£à SNIPPET #1 (relevant text):
+   "Q
+i
+ÔêêR
+d
+model
+├ùd
+k
+,W
+K
+i
+ÔêêR
+d
+model
+├ùd
+k
+,W
+V
+i
+ÔêêR
+d
+model
+├ùd
+v
+andW
+O
+ÔêêR
+hd
+v
+├ùd
+model
+.
+In  this  work  we  employh= 8parallel  attention  layers,  or  heads.   For  each  of  these  we  use
+d
+k
+=d
+v
+=d
+model
+/h= 64. Due to the reduced dimension of each head, the total computational cost
+is simi..."
 
-=== TEST 4: Overlap Verification ===
-­ƒöù End of Chunk 1 (last 50 chars): "mez
-Ôêù ÔÇá
-University of Toronto
-aidan@cs.toronto.edu"
-­ƒöù Start of Chunk 2 (first 50 chars): "Ôêù ÔÇá
-University of Toronto
-aidan@cs.toronto.edu
-┼üuk"
-ÔÜá´©Å  Overlap not detected in first boundary (may split at natural break ÔÇö this is normal).
+Ô£à SNIPPET #2 (relevant text):
+   "output values.  These are concatenated and once again projected, resulting in the final values, as
+depicted in Figure 2.
+Multi-head attention allows the model to jointly attend to information from different representation
+subspaces at different positions. With a single attention head, averaging inhi..."
 
-=== TEST 5: TXT Sample Loading ===
-Ô£é´©Å  Split into 8 chunks (size: 500, overlap: 50)
-Ô£à TXT file: 1 doc(s) ÔåÆ 8 chunks
+Ô£¿ [PASS]: Successfully retrieved context mentioning "heads" or "h=8"!
 
-Ô£¿ Phase 17 RAG Load & Split test COMPLETE!
+­ƒÄë FULL PIPELINE TEST COMPLETE ÔÇö Phase 18 SUCCESS!
