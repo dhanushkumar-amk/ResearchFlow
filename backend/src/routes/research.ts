@@ -61,6 +61,9 @@ async function executeResearch(query: string, sessionId: string) {
       streamMode: 'updates',
     });
 
+    // MARK: DB Persistence - Start Session
+    await updateSessionStatus(sessionId, 'planning');
+
     let lastUpdate: any = {};
 
     for await (const update of stream) {
@@ -75,6 +78,9 @@ async function executeResearch(query: string, sessionId: string) {
         type: 'status',
         data: { node: nodeName, message },
       });
+
+      // MARK: DB Persistence - Update Status
+      await updateSessionStatus(sessionId, nodeName);
     }
 
     // Capture the final state from the last node update
@@ -89,6 +95,18 @@ async function executeResearch(query: string, sessionId: string) {
       },
     });
 
+    // MARK: DB Persistence - Save Report
+    if (finalData?.report) {
+      await saveReport(
+        sessionId, 
+        finalData.report, 
+        finalData.critique?.score || 0, 
+        0, 
+        finalData.sources || []
+      );
+      await updateSessionStatus(sessionId, 'complete');
+    }
+
   } catch (error: any) {
     console.error(`❌ [Graph Error] ${sessionId}:`, error.message);
     researchEmitter.emit(`research:${sessionId}`, {
@@ -102,7 +120,7 @@ async function executeResearch(query: string, sessionId: string) {
  * POST /api/research/start
  * Initiates the research pipeline.
  */
-router.post('/start', researchRateLimiter, validateResearchQuery, (req: Request, res: Response) => {
+router.post('/start', researchRateLimiter, validateResearchQuery, async (req: Request, res: Response) => {
   console.log('📦 [POST /start] Body:', req.body);
   const { query, sessionId } = req.body;
 
@@ -110,10 +128,18 @@ router.post('/start', researchRateLimiter, validateResearchQuery, (req: Request,
     return res.status(400).json({ error: 'query and sessionId are required' });
   }
 
-  // Trigger asynchronously
-  executeResearch(query, sessionId);
-
-  res.json({ message: 'Research started', sessionId });
+  // MARK: DB Persistence - Initialize Session Record
+  try {
+    const userId = (req.body.userId as string) || 'research_session_id';
+    await createSession(userId, query, sessionId);
+    
+    // Trigger asynchronously
+    executeResearch(query, sessionId);
+    res.json({ message: 'Research started', sessionId });
+  } catch (err: any) {
+    console.error('Failed to init session in DB:', err.message);
+    res.status(500).json({ error: 'Database initialization failed' });
+  }
 });
 
 /**

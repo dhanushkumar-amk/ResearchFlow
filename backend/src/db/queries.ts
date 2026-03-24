@@ -1,15 +1,15 @@
 import { query } from './postgres';
 
 /**
- * Creates a new research session
+ * Creates a new research session with an optional manual sessionId
  */
-export async function createSession(userId: string | null, userQuery: string) {
-  const text = `
-    INSERT INTO sessions (user_id, query, status)
-    VALUES ($1, $2, 'pending')
-    RETURNING *
-  `;
-  const res = await query(text, [userId, userQuery]);
+export async function createSession(userId: string | null, userQuery: string, sessionId?: string) {
+  const queryText = sessionId 
+    ? `INSERT INTO sessions (session_id, user_id, query, status) VALUES ($1, $2, $3, 'pending') RETURNING *`
+    : `INSERT INTO sessions (user_id, query, status) VALUES ($1, $2, 'pending') RETURNING *`;
+    
+  const params = sessionId ? [sessionId, userId, userQuery] : [userId, userQuery];
+  const res = await query(queryText, params);
   return res.rows[0];
 }
 
