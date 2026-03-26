@@ -8,7 +8,8 @@ import {
   deleteSession,
   getAllResearchHistory,
   toggleSessionPublic,
-  getPublicSessionReport
+  getPublicSessionReport,
+  getCachedReport
 } from '../db/queries';
 import { researchGraph } from '../graph/researchGraph';
 import { researchEmitter } from '../events/emitter';
@@ -41,6 +42,21 @@ router.post('/', requireAuth, validateResearchQuery, researchRateLimiter, async 
   const userId = req.userId!;
 
   try {
+    // 1. PERFORMANCE: CHECK 24H CACHE FIRST
+    const cached = await getCachedReport(query);
+    if (cached) {
+      console.log(`⚡ [Cache Hit] Reusing intelligence for: "${query}"`);
+      const session = await createSession(userId, query, manualSessionId);
+      const sessionId = session.session_id as string;
+
+      // Populate new session from cache
+      await saveReport(sessionId, cached.content, cached.quality_score, 1, cached.sources, cached.web_context, cached.rag_context);
+      await updateSessionStatus(sessionId, 'complete');
+
+      return res.json({ sessionId, message: 'Research loaded from cache (⚡)', cached: true });
+    }
+
+    // 2. CACHE MISS: Start new graph
     const session = await createSession(userId, query, manualSessionId);
     const sessionId = session.session_id as string;
 

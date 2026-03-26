@@ -6,6 +6,7 @@ export interface ResearchStatus {
 export interface ResearchComplete {
   report: string;
   score?: number;
+  duration_seconds?: number;
 }
 
 export interface ResearchError {

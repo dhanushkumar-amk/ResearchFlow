@@ -49,13 +49,14 @@ export async function runPlannerAgent(query: string, sessionId?: string): Promis
   const chain = prompt.pipe(llm).pipe(parser);
 
   try {
-    const result = await chain.invoke({
-      question: query,
-    });
+    const formatted = await prompt.format({ question: query });
+    const response = await llm.invoke(formatted);
+    const result = await parser.parse(response.content as string);
+    const tokenCount = (response as any).usage_metadata?.total_tokens || 0;
 
     const durationMs = Date.now() - startTime;
 
-    // Direct Database logging only (Minimal overhead)
+    // Database logging with TOKEN COUNT (Performance Telemetry)
     if (sessionId) {
       logAgentActivity(
         sessionId,
@@ -63,7 +64,7 @@ export async function runPlannerAgent(query: string, sessionId?: string): Promis
         query.substring(0, 500),
         JSON.stringify(result).substring(0, 500),
         durationMs,
-        0
+        tokenCount
       ).catch(() => {});
     }
 

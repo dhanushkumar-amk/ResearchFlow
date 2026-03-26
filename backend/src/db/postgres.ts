@@ -6,6 +6,9 @@ dotenv.config();
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  max: 20, // Adjusted for high-speed multi-agent concurrency
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
 });
 
 // Check connectivity

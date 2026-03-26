@@ -12,13 +12,14 @@ interface StreamingReportProps {
   content: string;
   isStreaming: boolean;
   qualityScore?: number | null;
+  durationSeconds?: number | null;
   onCitationHover?: (id: string | null) => void;
   sessionId?: string;
   isPublic?: boolean;
   onTogglePublic?: (val: boolean) => void;
 }
 
-export default function StreamingReport({ content, isStreaming, qualityScore, onCitationHover, sessionId, isPublic, onTogglePublic }: StreamingReportProps) {
+export default function StreamingReport({ content, isStreaming, qualityScore, durationSeconds, onCitationHover, sessionId, isPublic, onTogglePublic }: StreamingReportProps) {
   const [copied, setCopied] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
 
@@ -134,6 +135,13 @@ export default function StreamingReport({ content, isStreaming, qualityScore, on
             <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-xs font-bold shadow-xs">
               <Award className="w-3.5 h-3.5" />
               Quality Index: {qualityScore}/10
+            </div>
+          )}
+
+          {!isStreaming && durationSeconds != null && (
+            <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold shadow-xs">
+              <Sparkles className="w-3.5 h-3.5" />
+              Enlightenment Time: {durationSeconds.toFixed(1)}s
             </div>
           )}
           

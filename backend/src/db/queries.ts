@@ -138,11 +138,14 @@ export async function deleteSession(sessionId: string, userId: string) {
 }
 
 /**
- * Retrieves the full report for a specific session
+ * Retrieves the full report for a specific session with performance metadata
  */
 export async function getSessionReport(sessionId: string, userId: string) {
   const text = `
-    SELECT s.query, r.content, r.quality_score, r.sources, r.web_context, r.rag_context, s.created_at, s.is_public
+    SELECT 
+      s.query, r.content, r.quality_score, r.sources, r.web_context, r.rag_context, 
+      s.created_at, s.completed_at, s.is_public,
+      EXTRACT(EPOCH FROM (s.completed_at - s.created_at)) as duration_seconds
     FROM sessions s
     JOIN reports r ON s.session_id = r.session_id
     WHERE s.session_id = $1 AND s.user_id = $2
@@ -192,4 +195,21 @@ export async function getAllResearchHistory(userId: string) {
   `;
   const res = await query(text, [userId]);
   return res.rows;
+}
+/**
+ * Retrieves a completed report for the same query within the last 24 hours. (Cache)
+ */
+export async function getCachedReport(userQuery: string) {
+  const text = `
+    SELECT s.session_id, s.query, r.content, r.quality_score, r.sources, r.web_context, r.rag_context
+    FROM sessions s
+    JOIN reports r ON s.session_id = r.session_id
+    WHERE s.query = $1 
+      AND s.status = 'complete' 
+      AND s.created_at >= NOW() - INTERVAL '24 hours'
+    ORDER BY s.created_at DESC
+    LIMIT 1
+  `;
+  const res = await query(text, [userQuery]);
+  return res.rows[0];
 }

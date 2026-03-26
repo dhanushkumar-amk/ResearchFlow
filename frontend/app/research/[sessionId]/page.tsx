@@ -28,6 +28,7 @@ export default function ResearchPage() {
   const [isComplete, setIsComplete] = useState(false);
   const [isError, setIsError] = useState(false);
   const [qualityScore, setQualityScore] = useState<number | null>(null);
+  const [durationSeconds, setDurationSeconds] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [highlightedSource, setHighlightedSource] = useState<string | null>(null);
@@ -43,6 +44,7 @@ export default function ResearchPage() {
       if (existingReport) {
         setReportText(existingReport);
         setQualityScore(data.quality_score ?? null);
+        setDurationSeconds(data.duration_seconds ?? null);
         setIsPublic(!!data.is_public);
         setIsComplete(true);
         setStatusMessage('Report loaded from history.');
@@ -116,6 +118,7 @@ export default function ResearchPage() {
           setIsStreaming(false);
           setIsComplete(true);
           setQualityScore(d.score ?? null);
+          setDurationSeconds(d.duration_seconds ?? null);
           setStatusMessage('Research complete!');
           if (d.report) setReportText(d.report);
           es.close();
@@ -267,6 +270,7 @@ export default function ResearchPage() {
               content={reportText}
               isStreaming={isStreaming}
               qualityScore={qualityScore}
+              durationSeconds={durationSeconds}
               onCitationHover={setHighlightedSource}
               sessionId={sessionId}
               isPublic={isPublic}
