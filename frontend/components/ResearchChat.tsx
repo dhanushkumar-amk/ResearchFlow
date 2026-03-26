@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, MessageSquare, User, Sparkles } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useAuth } from '../lib/AuthContext';
+import { API_URL } from '../lib/api';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -39,7 +40,7 @@ export default function ResearchChat({ sessionId }: ResearchChatProps) {
     setMessages((prev) => [...prev, assistantMsg]);
 
     try {
-      const response = await fetch(`http://localhost:3001/api/research/${sessionId}/chat`, {
+      const response = await fetch(`${API_URL}/api/research/${sessionId}/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

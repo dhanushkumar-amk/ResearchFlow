@@ -1,0 +1,23 @@
+
+> frontend@0.1.0 build
+> next build
+
+Ôû▓ Next.js 16.2.1 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+Ô£ô Compiled successfully in 40s
+  Running TypeScript ...
+Failed to type check.
+
+./app/documents/page.tsx:87:31
+Type error: Cannot find name 'user'.
+
+  85 |
+  86 |       // We use the authenticated User ID as the storage scope (Knowledge Base)
+> 87 |       const uploadSessionId = user!.id;
+     |                               ^
+  88 |       const newDoc = await uploadDocument(file, uploadSessionId, token);
+  89 |       
+  90 |       clearInterval(progInterval);
+Next.js build worker exited with code: 1 and signal: null

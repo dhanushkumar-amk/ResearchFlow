@@ -7,7 +7,6 @@ async function testRagAgent() {
   console.log('\n--- Test 1: Querying a non-existent collection (graceful empty) ---');
   const emptyRes = await runRagAgent('Any query', 'invalid_colle');
   console.log(`📡 Result Status: ${emptyRes.status}`);
-  console.log(`📦 Chunks retrieved: ${emptyRes.chunkCount}`);
   console.log(`📝 Context String length: ${emptyRes.context.length}`);
 
   // ---- TEST 2: Valid Collection (Transformer Paper) ----
@@ -17,7 +16,6 @@ async function testRagAgent() {
     'research_test_transformer'
   );
   console.log(`📡 Result Status: ${validRes.status}`);
-  console.log(`📦 Chunks retrieved: ${validRes.chunkCount}`);
   console.log(`📝 Context Snippet: \n${validRes.context.substring(0, 300)}...`);
 
   if (validRes.context.includes('h = 8') || validRes.context.includes('8 parallel')) {

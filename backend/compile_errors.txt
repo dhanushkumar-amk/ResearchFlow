@@ -1,0 +1,2 @@
+src/test/rag-agent-test.ts(10,48): error TS2339: Property 'chunkCount' does not exist on type '{ context: string; status: "success" | "failure"; }'.
+src/test/rag-agent-test.ts(20,48): error TS2339: Property 'chunkCount' does not exist on type '{ context: string; status: "success" | "failure"; }'.

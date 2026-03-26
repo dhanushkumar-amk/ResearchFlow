@@ -20,7 +20,7 @@ import { Document } from '../../types/research';
 import { useAuth } from '../../lib/AuthContext';
 
 export default function DocumentsPage() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   

@@ -29,7 +29,7 @@ export interface ResearchSources {
 
 export interface ResearchEvent {
   type: 'status' | 'complete' | 'error' | 'connected' | 'token' | 'report' | 'plan' | 'sources';
-  data: ResearchStatus | ResearchComplete | ResearchError | ResearchToken | ResearchPlan | ResearchSources | string | { sessionId: string; timestamp: string };
+  data: ResearchStatus | ResearchComplete | ResearchError | ResearchToken | ResearchPlan | ResearchSources | string | { sessionId: string; timestamp: string } | null;
 }
 
 export interface Document {

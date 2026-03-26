@@ -1,6 +1,6 @@
 import { ResearchEvent, Document, ResearchHistoryItem } from '../types/research';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 /**
  * Common headers with Auth support
