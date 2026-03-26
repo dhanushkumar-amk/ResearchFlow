@@ -39,7 +39,7 @@ async function researcherNode(state: ResearchStateType) {
   if (state.sessionId) {
     emitResearchEvent(state.sessionId, 'status', { node: 'researcher', message: 'Agent 2: Scouring Web...' });
   }
-  const result = await runSearchAgent(state.query);
+  const result = await runSearchAgent(state.query, state.sessionId);
   
   // WIRE NEURAL MAP: Count finding density
   const webCount = (result.match(/\[Web Source/g) || []).length || 5; 
@@ -58,7 +58,7 @@ async function ragNode(state: ResearchStateType) {
     emitResearchEvent(state.sessionId, 'status', { node: 'rag', message: 'Agent 3: Querying Library...' });
   }
   const collectionName = `session_docs_${(state.userId || state.sessionId || 'anonymous').replace(/[^a-zA-Z0-9]/g, '_')}`;
-  const result = await runRagAgent(state.query, collectionName);
+  const result = await runRagAgent(state.query, collectionName, state.sessionId);
   
   // WIRE NEURAL MAP: Update with private context findings
   const ragCount = (result.context.match(/\[Document Context/g) || []).length || 3;

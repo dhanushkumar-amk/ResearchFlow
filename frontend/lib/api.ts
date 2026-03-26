@@ -190,3 +190,34 @@ export async function deleteSession(sessionId: string, token: string): Promise<v
     throw new Error(error.error || 'Failed to delete session');
   }
 }
+
+/**
+ * Retrieves the last 100 agent activity logs (Admin Only)
+ */
+export async function getAdminLogs(token: string) {
+  const response = await fetch(`${API_URL}/api/admin/logs`, {
+    headers: getHeaders(token),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to fetch logs');
+  }
+
+  return response.json();
+}
+
+/**
+ * Retrieves the system health status
+ */
+export async function getHealth() {
+  const response = await fetch(`${API_URL}/api/health`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Health check failed (${response.status})`);
+  }
+
+  return response.json();
+}

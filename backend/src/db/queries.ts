@@ -1,4 +1,5 @@
 import { query } from './postgres';
+import logger from '../utils/logger';
 
 /**
  * Creates a new research session with an optional manual sessionId
@@ -71,14 +72,24 @@ export async function logAgentActivity(
   inputSummary: string, 
   outputSummary: string, 
   durationMs: number, 
-  tokenCount: number
+  tokenCount: number,
+  status: 'success' | 'failure' = 'success'
 ) {
   const text = `
-    INSERT INTO agent_logs (session_id, agent_name, input_summary, output_summary, duration_ms, token_count)
-    VALUES ($1, $2, $3, $4, $5, $6)
+    INSERT INTO agent_logs (session_id, agent_name, input_summary, output_summary, duration_ms, token_count, status)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING *
   `;
-  const res = await query(text, [sessionId, agentName, inputSummary, outputSummary, durationMs, tokenCount]);
+  const res = await query(text, [sessionId, agentName, inputSummary, outputSummary, durationMs, tokenCount, status]);
+  
+  // Also log to winston
+  const logMsg = `Agent: ${agentName} | Session: ${sessionId} | Duration: ${durationMs}ms | Tokens: ${tokenCount} | Status: ${status}`;
+  if (status === 'failure') {
+    logger.error(logMsg);
+  } else {
+    logger.info(logMsg);
+  }
+
   return res.rows[0];
 }
 

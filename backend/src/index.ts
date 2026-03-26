@@ -6,9 +6,14 @@ import { config } from './config';
 import researchRouter from './routes/research';
 import documentsRouter from './routes/documents';
 import authRouter from './routes/auth';
+import adminRouter from './routes/admin';
+import systemRouter from './routes/system';
 import { requireAuth } from './middleware/auth';
 
+import { requestLogger } from './middleware/requestLogger';
+
 const app = express();
+app.use(requestLogger);
 const port = config.port;
 
 // Phase 36: Security - Restricted CORS
@@ -33,6 +38,8 @@ app.use(express.json());
 app.use('/api/auth', authRouter);
 app.use('/api/research', researchRouter);
 app.use('/api/documents', requireAuth, documentsRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/health', systemRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Server running');
