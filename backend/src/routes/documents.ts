@@ -6,6 +6,7 @@ import { ingestDocument } from '../agents/ingest';
 import { saveDocument, getDocumentsByUserId, deleteDocumentById } from '../db/queries';
 import { qdrantClient } from '../db/qdrant';
 import { uploadRateLimiter } from '../middleware/rateLimit';
+import { AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
@@ -49,8 +50,9 @@ router.post('/upload', uploadRateLimiter, (req: Request, res: Response) => {
       });
 
       // 2. Persist metadata in PostgreSQL
+      const userId = (req as AuthRequest).userId!;
       const docRecord = await saveDocument(
-        sessionId,
+        userId,
         originalname,
         mimetype,
         chunkCount,
@@ -83,14 +85,11 @@ router.post('/upload', uploadRateLimiter, (req: Request, res: Response) => {
  * GET /api/documents
  * Returns all documents associated with a session ID.
  */
-router.get('/', async (req: Request, res: Response) => {
-  const sessionId = (req.query.sessionId || req.query.userId) as string;
-  if (!sessionId) {
-    return res.status(400).json({ error: 'User/Session ID is required' });
-  }
+router.get('/', async (req: AuthRequest, res: Response) => {
+  const userId = req.userId!;
 
   try {
-    const documents = await getDocumentsByUserId(sessionId as string);
+    const documents = await getDocumentsByUserId(userId);
     res.json(documents);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -101,11 +100,12 @@ router.get('/', async (req: Request, res: Response) => {
  * DELETE /api/documents/:id
  * Deletes document from PostgreSQL and clears corresponding vectors in Qdrant.
  */
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', async (req: AuthRequest, res: Response) => {
   const documentId = req.params.id;
+  const userId = req.userId!;
 
   try {
-    const doc = await deleteDocumentById(documentId as string);
+    const doc = await deleteDocumentById(documentId as string, userId);
     if (!doc) {
       return res.status(404).json({ error: 'Document record not found' });
     }
@@ -115,7 +115,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
       filter: {
         must: [
           { key: 'source', match: { value: doc.filename } },
-          { key: 'sessionId', match: { value: doc.user_id } },
+          { key: 'userId', match: { value: doc.user_id } },
         ],
       },
     });

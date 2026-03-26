@@ -90,13 +90,13 @@ export async function getDocumentsByUserId(userId: string) {
 /**
  * Deletes document metadata and returns its qdrant info for cleanup
  */
-export async function deleteDocumentById(documentId: string) {
+export async function deleteDocumentById(documentId: string, userId: string) {
   const text = `
     DELETE FROM documents
-    WHERE id = $1
+    WHERE document_id = $1 AND user_id = $2
     RETURNING *
   `;
-  const res = await query(text, [documentId]);
+  const res = await query(text, [documentId, userId]);
   return res.rows[0];
 }
 
@@ -119,27 +119,27 @@ export async function getResearchHistory(userId: string) {
 /**
  * Deletes a research session and all linked reports/logs
  */
-export async function deleteSession(sessionId: string) {
+export async function deleteSession(sessionId: string, userId: string) {
   const text = `
     DELETE FROM sessions
-    WHERE session_id = $1
+    WHERE session_id = $1 AND user_id = $2
     RETURNING *
   `;
-  const res = await query(text, [sessionId]);
+  const res = await query(text, [sessionId, userId]);
   return res.rows[0];
 }
 
 /**
  * Retrieves the full report for a specific session
  */
-export async function getSessionReport(sessionId: string) {
+export async function getSessionReport(sessionId: string, userId: string) {
   const text = `
     SELECT s.query, r.content, r.quality_score, r.sources, s.created_at
     FROM sessions s
     JOIN reports r ON s.session_id = r.session_id
-    WHERE s.session_id = $1
+    WHERE s.session_id = $1 AND s.user_id = $2
   `;
-  const res = await query(text, [sessionId]);
+  const res = await query(text, [sessionId, userId]);
   return res.rows[0];
 }
 

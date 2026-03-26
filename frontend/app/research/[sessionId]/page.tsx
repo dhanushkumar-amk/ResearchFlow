@@ -11,9 +11,11 @@ import AgentTimeline from '../../../components/AgentTimeline';
 import StreamingReport from '../../../components/StreamingReport';
 import { getResearchStream, getSessionDetails } from '../../../lib/api';
 import { ResearchEvent, ResearchStatus, ResearchComplete, ResearchToken, ResearchPlan } from '../../../types/research';
+import { useAuth } from '../../../lib/AuthContext';
 
 export default function ResearchPage() {
   const { sessionId } = useParams() as { sessionId: string };
+  const { token } = useAuth();
 
   const [activeNode, setActiveNode] = useState<string | null>(null);
   const [reportText, setReportText] = useState('');
@@ -28,9 +30,9 @@ export default function ResearchPage() {
 
   const eventSourceRef = useRef<EventSource | null>(null);
 
-  const fetchSavedReport = useCallback(async () => {
+  const fetchSavedReport = useCallback(async (authToken: string) => {
     try {
-      const data = await getSessionDetails(sessionId);
+      const data = await getSessionDetails(sessionId, authToken);
       if (data?.content) {
         setReportText(data.content);
         setQualityScore(data.quality_score ?? null);
@@ -46,16 +48,16 @@ export default function ResearchPage() {
   }, [sessionId]);
 
   const connectToStream = useCallback(async () => {
-    if (!sessionId) return;
+    if (!sessionId || !token) return;
     setIsError(false);
     setIsComplete(false);
     setIsLoading(true);
     setReportText('');
 
-    const alreadyDone = await fetchSavedReport();
+    const alreadyDone = await fetchSavedReport(token);
     if (alreadyDone) return;
 
-    const es = getResearchStream(sessionId, (event: ResearchEvent) => {
+    const es = getResearchStream(sessionId, token, (event: ResearchEvent) => {
       switch (event.type) {
         case 'connected':
           setStatusMessage('Connected! Waiting for agents...');
@@ -108,18 +110,19 @@ export default function ResearchPage() {
 
     eventSourceRef.current = es;
     setIsLoading(false);
-  }, [sessionId, fetchSavedReport, isComplete]);
+  }, [sessionId, token, fetchSavedReport, isComplete]);
 
   useEffect(() => {
-    connectToStream();
+    if (token) {
+      connectToStream();
+    }
     return () => {
       eventSourceRef.current?.close();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionId]);
+  }, [sessionId, token, connectToStream]);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-16">
+    <div className="min-h-screen bg-gray-50 pt-16 font-sans">
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
 
         {/* Breadcrumb + Header */}
@@ -133,7 +136,7 @@ export default function ResearchPage() {
           <div className="text-sm text-zinc-400 flex items-center gap-1">
             <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5" />
-            <span className="text-zinc-600 font-medium">Research</span>
+            <span className="text-zinc-600 font-medium font-sans">Research</span>
             <ChevronRight className="w-3.5 h-3.5" />
             <span className="text-blue-600 font-mono text-xs max-w-30 truncate">{sessionId}</span>
           </div>
@@ -170,7 +173,7 @@ export default function ResearchPage() {
             )}
             {isComplete && (
               <span className="flex items-center gap-1.5 text-green-700 text-xs font-semibold">
-                <CheckCircle2 className="w-4 h-4" /> Complete
+                <CheckCircle2 className="w-4 h-4" /> Final Report
               </span>
             )}
           </div>

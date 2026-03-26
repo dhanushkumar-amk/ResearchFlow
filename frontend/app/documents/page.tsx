@@ -17,9 +17,10 @@ import Link from 'next/link';
 
 import { uploadDocument, getHistory, deleteDocument } from '../../lib/api';
 import { Document } from '../../types/research';
+import { useAuth } from '../../lib/AuthContext';
 
 export default function DocumentsPage() {
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const { token } = useAuth();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -32,11 +33,11 @@ export default function DocumentsPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const fetchDocuments = useCallback(async (id: string) => {
+  const fetchDocuments = useCallback(async (authToken: string) => {
     try {
       setIsLoading(true);
-      const docs = await getHistory(id);
-      setDocuments(docs);
+      const docs = await getHistory(authToken);
+      setDocuments(docs || []);
     } catch (err) {
       console.error('Failed to load documents', err);
       setError('Could not retrieve your documents. Please try again.');
@@ -46,19 +47,14 @@ export default function DocumentsPage() {
   }, []);
 
   useEffect(() => {
-    // Phase 40: Unified Identity Migration
-    let id = localStorage.getItem('research_user_id') || localStorage.getItem('research_session_id');
-    if (!id || id.includes('user_')) {
-      id = crypto.randomUUID();
+    if (token) {
+      fetchDocuments(token);
     }
-    localStorage.setItem('research_user_id', id);
-    setSessionId(id);
-    fetchDocuments(id);
-  }, [fetchDocuments]);
+  }, [token, fetchDocuments]);
 
   // Handle file validation and upload
   const handleUpload = async (file: File) => {
-    if (!sessionId) return;
+    if (!token) return;
     
     // Reset feedback
     setError(null);
@@ -80,15 +76,16 @@ export default function DocumentsPage() {
 
     // 2. Start Upload
     setIsUploading(true);
-    setUploadProgress(10); // Start with some progress
+    setUploadProgress(10);
 
     try {
-      // Small simulated progress increments (actual fetch doesn't expose progress easily without XHR)
       const progInterval = setInterval(() => {
         setUploadProgress(prev => (prev < 90 ? prev + 10 : prev));
       }, 300);
 
-      const newDoc = await uploadDocument(file, sessionId);
+      // We use the authenticated User ID as the storage scope (Knowledge Base)
+      const uploadSessionId = user!.id;
+      const newDoc = await uploadDocument(file, uploadSessionId, token);
       
       clearInterval(progInterval);
       setUploadProgress(100);
@@ -131,16 +128,16 @@ export default function DocumentsPage() {
 
   // Optimistic Delete
   const handleDelete = async (docId: string) => {
-    const deletedDoc = documents.find(d => d.id === docId);
-    // 1. Optimistic Update
-    setDocuments(prev => prev.filter(d => d.id !== docId));
+    if (!token) return;
+    const deletedDoc = documents.find(d => d.document_id === docId);
+    
+    setDocuments(prev => prev.filter(d => d.document_id !== docId));
     
     try {
-      await deleteDocument(docId);
+      await deleteDocument(docId, token);
       setSuccess(`Document deleted successfully.`);
       setTimeout(() => setSuccess(null), 3000);
     } catch {
-      // Rollback if failed
       if (deletedDoc) setDocuments(prev => [...prev, deletedDoc]);
       setError('Deletion failed. The server might be unreachable.');
     }
@@ -159,7 +156,7 @@ export default function DocumentsPage() {
       <div className="max-w-5xl mx-auto space-y-12">
         
         {/* Navigation & Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-zinc-200 dark:border-zinc-800">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-zinc-200">
           <div className="flex items-center gap-4">
             <Link 
               href="/" 
@@ -201,12 +198,12 @@ export default function DocumentsPage() {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={`relative group bg-white border-2 border-dashed rounded-3xl transition-all duration-300 ${
-            isDragging ? 'border-blue-500 bg-blue-50/10 scale-[1.01]' : 'border-zinc-200 dark:border-zinc-800'
+            isDragging ? 'border-blue-500 bg-blue-50/10 scale-[1.01]' : 'border-zinc-200'
           }`}
         >
           <div className="p-12 md:p-20 flex flex-col items-center justify-center text-center space-y-6">
             <div className={`w-20 h-20 rounded-3xl flex items-center justify-center transition-all duration-500 ${
-              isDragging ? 'bg-blue-600 text-white rotate-12 scale-110 shadow-xl' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400'
+              isDragging ? 'bg-blue-600 text-white rotate-12 scale-110 shadow-xl' : 'bg-zinc-100 text-zinc-400'
             }`}>
               {isUploading ? (
                 <Loader2 className="w-10 h-10 animate-spin" />
@@ -216,10 +213,10 @@ export default function DocumentsPage() {
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-xl font-bold text-zinc-800 dark:text-zinc-100">
+              <h3 className="text-xl font-bold text-zinc-800">
                 {isDragging ? 'Drop it like it\'s hot' : 'Drag & Drop Research Material'}
               </h3>
-              <p className="text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto">
+              <p className="text-zinc-500 max-w-sm mx-auto">
                 PDF or TXT documents (Max 10MB). <br className="hidden md:block" />
                 These will be vectorized for the RAG agent.
               </p>
@@ -235,8 +232,8 @@ export default function DocumentsPage() {
               />
               <span className={`px-8 py-3 rounded-2xl font-semibold transition-all shadow-md block ${
                 isUploading 
-                ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400' 
-                : 'bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 hover:scale-105 active:scale-95'
+                ? 'bg-zinc-100 text-zinc-400' 
+                : 'bg-zinc-900 text-white hover:scale-105 active:scale-95'
               }`}>
                 {isUploading ? 'Analyzing...' : 'Browse Local Files'}
               </span>
@@ -245,7 +242,7 @@ export default function DocumentsPage() {
             {/* Progress Bar */}
             {isUploading && (
               <div className="w-full max-w-md space-y-2 pt-4">
-                <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                <div className="h-2 w-full bg-zinc-100 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-blue-600 transition-all duration-300" 
                     style={{ width: `${uploadProgress}%` }}
@@ -262,7 +259,7 @@ export default function DocumentsPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Database className="w-5 h-5 text-zinc-400" />
-              <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Knowledge Base</h2>
+              <h2 className="text-xl font-bold text-zinc-900">Knowledge Base</h2>
             </div>
             <div className="text-sm text-zinc-400 font-medium">
               {documents.length} {documents.length === 1 ? 'Document' : 'Documents'} Loaded
@@ -272,40 +269,40 @@ export default function DocumentsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {isLoading ? (
                Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="h-48 bg-zinc-100 dark:bg-zinc-900/50 rounded-3xl border border-zinc-200 dark:border-zinc-800 animate-pulse" />
+                <div key={i} className="h-48 bg-zinc-100 rounded-3xl border border-zinc-200 animate-pulse" />
               ))
             ) : documents.length > 0 ? (
               documents.map((doc) => (
                 <div 
-                  key={doc.id} 
+                  key={doc.document_id} 
                   className="group relative bg-white p-6 rounded-2xl border border-zinc-200 hover:border-blue-400 hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
                 >
                   <div className="space-y-4">
                     <div className="flex items-start justify-between">
-                      <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-500 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
+                      <div className="w-12 h-12 bg-zinc-100 rounded-2xl flex items-center justify-center text-zinc-500 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
                         <FileCheck className="w-6 h-6" />
                       </div>
                       <button 
-                        onClick={() => handleDelete(doc.id)}
-                        className="p-2 text-zinc-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-all"
+                        onClick={() => handleDelete(doc.document_id)}
+                        className="p-2 text-zinc-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
 
                     <div className="space-y-1">
-                      <h4 className="font-bold text-zinc-900 dark:text-zinc-50 line-clamp-1">{doc.filename}</h4>
+                      <h4 className="font-bold text-zinc-900 line-clamp-1">{doc.filename}</h4>
                       <div className="flex items-center gap-2 text-xs text-zinc-400">
                         <Clock className="w-3 h-3" />
-                        <span>{formatDate(doc.created_at)}</span>
+                        <span>{formatDate(doc.uploaded_at)}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-6 pt-4 border-t border-zinc-50 dark:border-zinc-800 flex items-center justify-between">
+                  <div className="mt-6 pt-4 border-t border-zinc-50 flex items-center justify-between">
                     <div className="flex flex-col">
                       <span className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">Vector Chunks</span>
-                      <span className="text-lg font-mono font-bold text-zinc-900 dark:text-zinc-50 leading-tight">
+                      <span className="text-lg font-mono font-bold text-zinc-900 leading-tight">
                         {doc.chunk_count}
                       </span>
                     </div>
@@ -315,12 +312,12 @@ export default function DocumentsPage() {
               ))
             ) : (
               <div className="col-span-full py-16 flex flex-col items-center justify-center text-center space-y-4 bg-zinc-50 rounded-2xl border border-dashed border-zinc-200">
-                <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center">
-                  <Info className="w-8 h-8 text-zinc-300 dark:text-zinc-600" />
+                <div className="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center">
+                  <Info className="w-8 h-8 text-zinc-300" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-zinc-800 dark:text-zinc-200">No documents found</h4>
-                  <p className="text-zinc-500 dark:text-zinc-400 text-sm max-w-xs mx-auto">
+                  <h4 className="font-bold text-zinc-800">No documents found</h4>
+                  <p className="text-zinc-500 text-sm max-w-xs mx-auto">
                     Start by uploading reference material to improve AI reasoning accuracy.
                   </p>
                 </div>

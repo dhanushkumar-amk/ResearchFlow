@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NextTopLoader from 'nextjs-toploader';
 import Navbar from "../components/Navbar";
+import { AuthProvider } from "../lib/AuthContext";
+import AuthGuard from "../components/AuthGuard";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,9 +29,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-white text-zinc-900 selection:bg-blue-100">
-        <NextTopLoader color="#2563eb" showSpinner={false} height={3} />
-        <Navbar />
-        {children}
+        <AuthProvider>
+          <AuthGuard>
+            <NextTopLoader color="#2563eb" showSpinner={false} height={3} />
+            <Navbar />
+            {children}
+          </AuthGuard>
+        </AuthProvider>
       </body>
     </html>
   );

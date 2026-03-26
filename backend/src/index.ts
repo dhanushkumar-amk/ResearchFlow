@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import { config } from './config';
 import researchRouter from './routes/research';
 import documentsRouter from './routes/documents';
+import authRouter from './routes/auth';
+import { requireAuth } from './middleware/auth';
 
 const app = express();
 const port = config.port;
@@ -28,8 +30,9 @@ app.set('trust proxy', 1);
 app.use(express.json());
 
 // API Routes
-app.use('/api/research', researchRouter);
-app.use('/api/documents', documentsRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/research', requireAuth, researchRouter);
+app.use('/api/documents', requireAuth, documentsRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Server running');
