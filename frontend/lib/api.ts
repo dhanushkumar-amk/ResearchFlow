@@ -57,6 +57,10 @@ export function getResearchStream(sessionId: string, token: string, onEvent: (ev
         if (type === 'report' || type === 'token') {
           onEvent({ type: (type as ResearchEvent['type']), data: messageEvent.data });
         } else {
+          if (!messageEvent.data || messageEvent.data === 'undefined') {
+             onEvent({ type: (type as ResearchEvent['type']), data: null });
+             return;
+          }
           const data = JSON.parse(messageEvent.data);
           onEvent({ type: (type as ResearchEvent['type']), data });
         }

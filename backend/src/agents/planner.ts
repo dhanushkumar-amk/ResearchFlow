@@ -21,28 +21,21 @@ export interface PlannerOutput {
 export async function runPlannerAgent(query: string, sessionId?: string): Promise<PlannerOutput> {
   const startTime = Date.now();
   
-  // Initialize the Groq LLM
+  // Initialize the Groq LLM - USES INSTANT MODEL for sub-second planning
   const llm = new ChatGroq({
     apiKey: config.groqApiKey,
-    model: 'llama-3.3-70b-versatile',
-    temperature: 0, // Deterministic for planning
+    model: 'llama-3.1-8b-instant',
+    temperature: 0,
   });
 
   // Initialize the JSON parser
   const parser = new JsonOutputParser<PlannerOutput>();
 
-  // Construct the system prompt
   const prompt = PromptTemplate.fromTemplate(
-    `You are a world-class research planning expert. 
-    Your goal is to take a research question and create a high-level execution plan.
+    `You are a research planning expert. 
+    Break this research question into 3-5 sub-tasks and 5 optimized search queries.
     
-    Instructions:
-    1. Break the question into 3-5 specific sub-tasks/questions.
-    2. Generate 5-6 optimized search queries for web search.
-    3. Determine the type of question: factual, analytical, or opinion.
-    4. Estimate the research complexity: easy, medium, or hard.
-    
-    Return ONLY a valid JSON object matching the following structure:
+    Return ONLY JSON:
     {{
       "tasks": ["task 1", "task 2"],
       "search_queries": ["query 1", "query 2"],
@@ -50,56 +43,31 @@ export async function runPlannerAgent(query: string, sessionId?: string): Promis
       "estimated_complexity": "easy | medium | hard"
     }}
 
-    {format_instructions}
-    
-    User Question: {question}`
+    Question: {question}`
   );
 
-  // Link the chain using LCEL
   const chain = prompt.pipe(llm).pipe(parser);
 
   try {
-    // Execute the planning chain
     const result = await chain.invoke({
       question: query,
-      format_instructions: parser.getFormatInstructions(),
     });
 
     const durationMs = Date.now() - startTime;
 
-    // ── STORE MEMORY (New: Phase 30 Memory Tools) ──────────────────────────
+    // Direct Database logging only (Minimal overhead)
     if (sessionId) {
-      try {
-        await callMcpTool('save_memory', {
-          session_id: sessionId,
-          key: 'planner_result',
-          value: JSON.stringify(result),
-          ttl_seconds: 3600 // store for initial phase
-        });
-        console.log(`🧠 [Planner] Saved planning memory for session: ${sessionId}`);
-      } catch (err: any) {
-        console.warn('⚠️ Warning: Failed to save planning result to MCP memory工具:', err.message);
-      }
-    }
-
-    // Log the activity to the database if a sessionId is provided
-    if (sessionId) {
-      try {
-        await logAgentActivity(
-          sessionId,
-          'planner',
-          query.substring(0, 500), // Input summary
-          JSON.stringify(result).substring(0, 500), // Output summary
-          durationMs,
-          0 // Token count placeholder for now
-        );
-      } catch (logError) {
-        console.warn('⚠️ Warning: Failed to log agent activity to DB:', logError);
-      }
+      logAgentActivity(
+        sessionId,
+        'planner',
+        query.substring(0, 500),
+        JSON.stringify(result).substring(0, 500),
+        durationMs,
+        0
+      ).catch(() => {});
     }
 
     return result;
-
   } catch (error) {
     console.error('❌ Planner Agent Error:', error);
     throw error;

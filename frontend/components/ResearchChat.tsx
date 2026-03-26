@@ -35,7 +35,7 @@ export default function ResearchChat({ sessionId }: ResearchChatProps) {
     setInput('');
     setIsTyping(true);
 
-    let assistantMsg: Message = { role: 'assistant', content: '' };
+    const assistantMsg: Message = { role: 'assistant', content: '' };
     setMessages((prev) => [...prev, assistantMsg]);
 
     try {
@@ -80,7 +80,7 @@ export default function ResearchChat({ sessionId }: ResearchChatProps) {
   };
 
   return (
-    <div className="bg-white border border-zinc-200 rounded-3xl shadow-sm flex flex-col h-[500px] overflow-hidden">
+    <div className="bg-white border border-zinc-200 rounded-3xl shadow-sm flex flex-col h-125 overflow-hidden">
       <div className="px-5 py-4 border-b border-zinc-100 flex items-center gap-2 bg-zinc-50/50">
         <MessageSquare className="w-4 h-4 text-blue-500" />
         <h2 className="font-bold text-zinc-800 text-xs uppercase tracking-widest">Interactive Intelligence Chat</h2>
@@ -90,7 +90,7 @@ export default function ResearchChat({ sessionId }: ResearchChatProps) {
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center text-center space-y-3 opacity-40">
             <Sparkles className="w-8 h-8 text-zinc-300" />
-            <p className="text-xs font-medium text-zinc-500 max-w-[180px]">Ask follow-up questions about the data in this report.</p>
+            <p className="text-xs font-medium text-zinc-500 max-w-45">Ask follow-up questions about the data in this report.</p>
           </div>
         )}
         
@@ -101,9 +101,11 @@ export default function ResearchChat({ sessionId }: ResearchChatProps) {
                 {m.role === 'user' ? <User className="w-4 h-4 text-zinc-500" /> : <Sparkles className="w-4 h-4 text-white" />}
               </div>
               <div className={`p-3 rounded-2xl text-sm ${m.role === 'user' ? 'bg-zinc-100 text-zinc-800 rounded-tr-none' : 'bg-white border border-zinc-100 shadow-xs text-zinc-700 rounded-tl-none'}`}>
-                <ReactMarkdown className="prose prose-sm prose-zinc max-w-none prose-p:leading-relaxed">
-                  {m.content}
-                </ReactMarkdown>
+                <div className="prose prose-sm prose-zinc max-w-none prose-p:leading-relaxed">
+                  <ReactMarkdown>
+                    {m.content}
+                  </ReactMarkdown>
+                </div>
               </div>
             </div>
           </div>

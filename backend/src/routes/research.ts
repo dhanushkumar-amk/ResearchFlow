@@ -29,7 +29,7 @@ const clients = new Map<string, Response>();
  */
 function sendSSE(res: Response, event: string, data: any) {
   res.write(`event: ${event}\n`);
-  res.write(`data: ${JSON.stringify(data)}\n\n`);
+  res.write(`data: ${JSON.stringify(data ?? null)}\n\n`);
 }
 
 /**
@@ -42,7 +42,7 @@ router.post('/', requireAuth, validateResearchQuery, researchRateLimiter, async 
 
   try {
     const session = await createSession(userId, query, manualSessionId);
-    const sessionId = session.session_id;
+    const sessionId = session.session_id as string;
 
     res.json({ sessionId, message: 'Research started' });
 
@@ -50,6 +50,7 @@ router.post('/', requireAuth, validateResearchQuery, researchRateLimiter, async 
     researchGraph.invoke({ sessionId, query, userId }).catch((err: any) => {
       console.error(`❌ [Research Error] ${sessionId}:`, err);
       updateSessionStatus(sessionId, 'failed').catch(() => {});
+      researchEmitter.emit('error', { sessionId, type: 'error', data: err.message });
     });
 
   } catch (error: any) {
@@ -62,7 +63,7 @@ router.post('/', requireAuth, validateResearchQuery, researchRateLimiter, async 
  * SSE endpoint for real-time updates.
  */
 router.get('/:sessionId/stream', requireAuth, async (req: AuthRequest, res: Response) => {
-  const sessionId = req.params.sessionId as string;
+  const { sessionId } = req.params;
   const userId = req.userId!;
 
   res.writeHead(200, {
@@ -71,35 +72,38 @@ router.get('/:sessionId/stream', requireAuth, async (req: AuthRequest, res: Resp
     'Connection': 'keep-alive',
   });
 
-  clients.set(sessionId, res);
+  // Track client for cleanup
+  clients.set(sessionId as string, res);
 
-  // IMMEDIATELY send connection heartbeat and current state for zero-lag feeling
+  // IMMEDIATELY send connection heartbeat for zero-lag feeling
   sendSSE(res, 'connected', { sessionId, status: 'establishing_sync' });
 
-  // Optimistic State Sync: If the report exists, send it immediately to avoid empty UI
-  getSessionReport(sessionId, userId).then(session => {
+  // Optimistic State Sync: If the report exists, send it immediately
+  getSessionReport(sessionId as string, userId).then(session => {
     if (session) {
       if (session.query) sendSSE(res, 'plan', { plan: session.query });
       if (session.content) sendSSE(res, 'report', session.content);
     }
   }).catch(() => {});
 
-  const onUpdate = (data: any) => {
-    if (data.sessionId === sessionId) {
-      sendSSE(res, 'update', data);
+  // MAIN LISTENER: Maps incoming internal events to the SSE channel
+  const onUpdate = (payload: any) => {
+    if (payload.sessionId === sessionId) {
+      // payload.type is 'status', 'plan', 'sources', 'report' etc.
+      sendSSE(res, payload.type, payload.data);
     }
   };
 
-  const onComplete = (data: any) => {
-    if (data.sessionId === sessionId) {
-      sendSSE(res, 'complete', data);
+  const onComplete = (payload: any) => {
+    if (payload.sessionId === sessionId) {
+      sendSSE(res, 'complete', payload.data);
       res.end();
     }
   };
 
-  const onError = (data: any) => {
-    if (data.sessionId === sessionId) {
-      sendSSE(res, 'error', data);
+  const onError = (payload: any) => {
+    if (payload.sessionId === sessionId) {
+      sendSSE(res, 'error', payload.data);
       res.end();
     }
   };
@@ -109,7 +113,7 @@ router.get('/:sessionId/stream', requireAuth, async (req: AuthRequest, res: Resp
   researchEmitter.on('error', onError);
 
   req.on('close', () => {
-    clients.delete(sessionId);
+    clients.delete(sessionId as string);
     researchEmitter.off('update', onUpdate);
     researchEmitter.off('complete', onComplete);
     researchEmitter.off('error', onError);
@@ -133,11 +137,11 @@ router.get('/history', requireAuth, async (req: AuthRequest, res: Response) => {
  * DELETE /api/research/:sessionId
  */
 router.delete('/:sessionId', requireAuth, async (req: AuthRequest, res: Response) => {
-  const sessionId = req.params.sessionId as string;
+  const { sessionId } = req.params;
   const userId = req.userId!;
 
   try {
-    await deleteSession(sessionId, userId);
+    await deleteSession(sessionId as string, userId);
     res.json({ success: true });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -146,14 +150,13 @@ router.delete('/:sessionId', requireAuth, async (req: AuthRequest, res: Response
 
 /**
  * GET /api/research/:sessionId
- * Retrieves the final result of a research session.
  */
 router.get('/:sessionId', requireAuth, async (req: AuthRequest, res: Response) => {
-  const sessionId = req.params.sessionId as string;
+  const { sessionId } = req.params;
   const userId = req.userId!;
 
   try {
-    const report = await getSessionReport(sessionId, userId);
+    const report = await getSessionReport(sessionId as string, userId);
     if (!report) return res.status(404).json({ error: 'Report not found' });
     res.json(report);
   } catch (error: any) {
@@ -163,15 +166,14 @@ router.get('/:sessionId', requireAuth, async (req: AuthRequest, res: Response) =
 
 /**
  * PUT /api/research/:sessionId/public
- * Toggles public visibility for a session.
  */
 router.put('/:sessionId/public', requireAuth, async (req: AuthRequest, res: Response) => {
-  const sessionId = req.params.sessionId as string;
+  const { sessionId } = req.params;
   const { isPublic } = req.body;
   const userId = req.userId!;
 
   try {
-    const updated = await toggleSessionPublic(sessionId, userId, !!isPublic);
+    const updated = await toggleSessionPublic(sessionId as string, userId, !!isPublic);
     res.json(updated);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -180,14 +182,13 @@ router.put('/:sessionId/public', requireAuth, async (req: AuthRequest, res: Resp
 
 /**
  * GET /api/research/:sessionId/public
- * PUBLIC ROUTE: Retrieves a report for a shared session.
  */
 router.get('/:sessionId/public', async (req: Request, res: Response) => {
-  const sessionId = req.params.sessionId as string;
+  const { sessionId } = req.params;
 
   try {
-    const report = await getPublicSessionReport(sessionId);
-    if (!report) return res.status(404).json({ error: 'Public research not found or sharing is disabled' });
+    const report = await getPublicSessionReport(sessionId as string);
+    if (!report) return res.status(404).json({ error: 'Public research not found' });
     res.json(report);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -196,17 +197,16 @@ router.get('/:sessionId/public', async (req: Request, res: Response) => {
 
 /**
  * POST /api/research/:sessionId/chat
- * Streams follow-up chat responses based on the session report and context.
  */
 router.post('/:sessionId/chat', requireAuth, async (req: AuthRequest, res: Response) => {
-  const sessionId = req.params.sessionId as string;
+  const { sessionId } = req.params;
   const { query: chatQuery } = req.body;
   const userId = req.userId!;
 
   if (!chatQuery) return res.status(400).json({ error: 'Query is required' });
 
   try {
-    const session = await getSessionReport(sessionId, userId);
+    const session = await getSessionReport(sessionId as string, userId);
     if (!session) return res.status(404).json({ error: 'Session not found' });
 
     res.writeHead(200, {

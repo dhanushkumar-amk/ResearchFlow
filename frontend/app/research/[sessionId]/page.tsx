@@ -122,9 +122,17 @@ export default function ResearchPage() {
           break;
         }
         case 'error': {
-          const message = typeof event.data === 'string' ? event.data : (event.data as any).message;
+          const rawData = event.data;
+          let message = 'An error occurred during research.';
+          
+          if (typeof rawData === 'string') {
+            message = rawData;
+          } else if (rawData && typeof rawData === 'object') {
+            message = (rawData as any).message || (rawData as any).error || message;
+          }
+          
           setIsError(true);
-          setErrorMessage(message || 'An error occurred during research.');
+          setErrorMessage(message);
           setIsStreaming(false);
           es.close();
           break;

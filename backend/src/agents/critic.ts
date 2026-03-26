@@ -69,12 +69,12 @@ ${synthesizedReport}
 
   try {
     const response = await groq.chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
+      model: 'llama-3.1-8b-instant',
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: 'Give your critique in JSON format.' },
+        { role: 'user', content: 'Evaluation report in JSON format.' },
       ],
-      temperature: 0.1, // High precision
+      temperature: 0.1,
       response_format: { type: 'json_object' },
     });
 
@@ -83,7 +83,6 @@ ${synthesizedReport}
     return json;
   } catch (error: any) {
     console.error('❌ Critic Agent Failed:', error.message);
-    // Safe fallback: auto-approve on AI failure locally
     return {
       score: 7,
       issues: ['Critic agent connection error.'],

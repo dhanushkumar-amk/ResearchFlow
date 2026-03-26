@@ -7,34 +7,38 @@ import path from 'path';
  * Task: Execute optimized search queries via MCP Tool.
  * Now routes through the MCP server's web_search tool for standardization.
  */
+import { config } from '../config';
+
+/**
+ * Agent 2: Search Agent (Researcher) - HIGH SPEED EDITION
+ * Task: Execute optimized search queries directly via Tavily API.
+ */
 export async function runSearchAgent(query: string) {
   const startTime = Date.now();
-  console.log(`🔎 [Search Agent] Researching via MCP Tool: "${query}"`);
+  console.log(`🔎 [Search Agent] Direct Researching: "${query}"`);
 
   try {
-    // ── CALLING MCP TOOL (Standardized Interface) ──────────────────────────
-    const formattedResults = await callMcpTool('web_search', { query });
+    const response = await fetch('https://api.tavily.com/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_key: config.tavilyApiKey,
+        query: query,
+        search_depth: 'basic',
+        include_images: false,
+        max_results: 5
+      })
+    });
 
-    const duration = Date.now() - startTime;
+    if (!response.ok) throw new Error(`Tavily error: ${response.statusText}`);
+    
+    const data = await response.json();
+    const formattedResults = data.results.map((r: any) => `Source: ${r.url}\nTitle: ${r.title}\nContent: ${r.content}\n`).join('\n---\n');
 
-    // Log the activity
-    const logEntry = {
-      agent: 'search_mcp',
-      query,
-      durationMs: duration,
-      timestamp: new Date().toISOString()
-    };
-
-    const logsDir = path.join(process.cwd(), 'agent_logs');
-    await fs.mkdir(logsDir, { recursive: true });
-    await fs.appendFile(
-      path.join(logsDir, 'search_agent.log'),
-      JSON.stringify(logEntry) + '\n'
-    );
-
+    console.log(`✅ [Search Agent] Finished in ${Date.now() - startTime}ms`);
     return formattedResults;
   } catch (error: any) {
-    console.error(`❌ Search Agent (MCP) failed:`, error.message);
-    return 'Web search failed due to an error.';
+    console.error(`❌ Search Agent failed:`, error.message);
+    return 'Web search failed. Proceeding with internal knowledge only.';
   }
 }
