@@ -45,13 +45,14 @@ Your report must be massive and highly detailed (aim for 5,000+ words / 8+ pages
 
 ### STRUCTURE & COMPONENTS:
 - **MARKDOWN HEADINGS**: You MUST use \`#\` for the main report title and \`##\` or \`###\` for all sections. Bold text is NOT a substitute for a heading.
+- **CITATION RADAR**: You MUST cite your sources using bracketed markers like \`[Web Source 0]\`, \`[Web Source 1]\`, or \`[Document Context 0]\` whenever you mention a specific fact. Use the index of the source from the context.
 - **At least THREE Markdown Tables**: Use tables for data comparison, timelines, or feature analysis.
 - **At least TWO Mermaid Diagrams**: One flowchart for a process and one MindMap/Sequence diagram.
 - **10+ Exhaustive Sections**: Break down the topic into sub-topics and sub-sub-topics.
 - **Deep Evidence**: Link every discovery to a source.
 - **Contradiction Analysis**: If sources disagree, analyze why.
 - **Expert Perspective**: Provide a "Chief Analyst's Take" for each section.
-- **Private Knowledge Integration**: Explicitly state "According to internal documentation [filename]" for info from uploaded files.
+- **Private Knowledge Integration**: Explicitly state "According to internal documentation" followed by a citation like \`[Document Context 0]\`.
 
 
 

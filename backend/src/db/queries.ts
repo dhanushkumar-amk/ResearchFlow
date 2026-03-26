@@ -31,13 +31,21 @@ export async function updateSessionStatus(sessionId: string, status: string) {
 /**
  * Saves the final research report
  */
-export async function saveReport(sessionId: string, content: string, qualityScore: number, retryCount: number, sources: any[]) {
+export async function saveReport(
+  sessionId: string, 
+  content: string, 
+  qualityScore: number, 
+  retryCount: number, 
+  sources: any[],
+  webContext?: string,
+  ragContext?: string
+) {
   const text = `
-    INSERT INTO reports (session_id, content, quality_score, retry_count, sources)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO reports (session_id, content, quality_score, retry_count, sources, web_context, rag_context)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING *
   `;
-  const res = await query(text, [sessionId, content, qualityScore, retryCount, JSON.stringify(sources)]);
+  const res = await query(text, [sessionId, content, qualityScore, retryCount, JSON.stringify(sources), webContext, ragContext]);
   return res.rows[0];
 }
 
@@ -134,12 +142,40 @@ export async function deleteSession(sessionId: string, userId: string) {
  */
 export async function getSessionReport(sessionId: string, userId: string) {
   const text = `
-    SELECT s.query, r.content, r.quality_score, r.sources, s.created_at
+    SELECT s.query, r.content, r.quality_score, r.sources, r.web_context, r.rag_context, s.created_at, s.is_public
     FROM sessions s
     JOIN reports r ON s.session_id = r.session_id
     WHERE s.session_id = $1 AND s.user_id = $2
   `;
   const res = await query(text, [sessionId, userId]);
+  return res.rows[0];
+}
+
+/**
+ * Toggles the public visibility of a session
+ */
+export async function toggleSessionPublic(sessionId: string, userId: string, isPublic: boolean) {
+  const text = `
+    UPDATE sessions
+    SET is_public = $3
+    WHERE session_id = $1 AND user_id = $2
+    RETURNING *
+  `;
+  const res = await query(text, [sessionId, userId, isPublic]);
+  return res.rows[0];
+}
+
+/**
+ * Retrieves a report for a public session (no auth context required internally)
+ */
+export async function getPublicSessionReport(sessionId: string) {
+  const text = `
+    SELECT s.query, r.content, r.quality_score, r.sources, s.created_at
+    FROM sessions s
+    JOIN reports r ON s.session_id = r.session_id
+    WHERE s.session_id = $1 AND s.is_public = true
+  `;
+  const res = await query(text, [sessionId]);
   return res.rows[0];
 }
 

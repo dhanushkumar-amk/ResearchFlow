@@ -19,15 +19,22 @@ function getHeaders(token?: string) {
  * Initiates a new research task
  */
 export async function startResearch(query: string, sessionId: string, token: string) {
-  const response = await fetch(`${API_URL}/api/research/start`, {
+  const response = await fetch(`${API_URL}/api/research`, {
     method: 'POST',
     headers: getHeaders(token),
     body: JSON.stringify({ query, sessionId }),
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to start research');
+    const text = await response.text();
+    let errorMessage = 'Failed to start research';
+    try {
+      const error = JSON.parse(text);
+      errorMessage = error.error || errorMessage;
+    } catch {
+      errorMessage = `Server Error (${response.status}): ${text.substring(0, 100)}`;
+    }
+    throw new Error(errorMessage);
   }
 
   return response.json();

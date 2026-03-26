@@ -1,27 +1,17 @@
-import fs from 'fs';
-import path from 'path';
 import { query } from './postgres';
-import dotenv from 'dotenv';
-
-// Ensuring envs are loaded
-dotenv.config();
 
 async function migrate() {
   try {
-    console.log('--- Starting Database Migration ---');
-    const sqlPath = path.join(__dirname, 'schema.sql');
-    const schemaSql = fs.readFileSync(sqlPath, 'utf8');
-
-    // Split SQL by semicolons to execute statements individually if needed, 
-    // but pg.query can execute multiple statements separated by semicolons in one go.
-    await query(schemaSql);
-    
-    console.log('Migration successful: All 4 tables and indexes created/verified.');
-  } catch (error) {
-    console.error('Migration failed:', error);
-    process.exit(1);
-  } finally {
+    console.log('Running migration...');
+    await query('ALTER TABLE reports ADD COLUMN IF NOT EXISTS web_context TEXT;', []);
+    await query('ALTER TABLE reports ADD COLUMN IF NOT EXISTS rag_context TEXT;', []);
+    await query('ALTER TABLE sessions ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT false;', []);
+    await query('ALTER TABLE sessions ADD COLUMN IF NOT EXISTS search_meta JSONB DEFAULT \'{}\';', []);
+    console.log('Migration completed successfully!');
     process.exit(0);
+  } catch (err) {
+    console.error('Migration failed:', err);
+    process.exit(1);
   }
 }
 

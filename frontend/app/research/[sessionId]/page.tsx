@@ -10,6 +10,7 @@ import Link from 'next/link';
 import AgentTimeline from '../../../components/AgentTimeline';
 import StreamingReport from '../../../components/StreamingReport';
 import NeuralMap from '../../../components/NeuralMap';
+import ResearchChat from '../../../components/ResearchChat';
 import { getResearchStream, getSessionDetails } from '../../../lib/api';
 import { ResearchEvent, ResearchStatus, ResearchComplete, ResearchToken, ResearchPlan, ResearchSources } from '../../../types/research';
 import { useAuth } from '../../../lib/AuthContext';
@@ -29,6 +30,8 @@ export default function ResearchPage() {
   const [qualityScore, setQualityScore] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [highlightedSource, setHighlightedSource] = useState<string | null>(null);
+  const [isPublic, setIsPublic] = useState(false);
 
   const eventSourceRef = useRef<EventSource | null>(null);
 
@@ -40,6 +43,7 @@ export default function ResearchPage() {
       if (existingReport) {
         setReportText(existingReport);
         setQualityScore(data.quality_score ?? null);
+        setIsPublic(!!data.is_public);
         setIsComplete(true);
         setStatusMessage('Report loaded from history.');
         setIsLoading(false);
@@ -51,6 +55,25 @@ export default function ResearchPage() {
     return false;
   }, [sessionId]);
 
+  const handleTogglePublic = async (val: boolean) => {
+    if (!token) return;
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/research/${sessionId}/public`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ isPublic: val })
+      });
+      if (response.ok) {
+        setIsPublic(val);
+      }
+    } catch (err) {
+      console.error('Failed to toggle public status:', err);
+    }
+  };
+
   const connectToStream = useCallback(async () => {
     if (!sessionId || !token) return;
     setIsError(false);
@@ -58,8 +81,9 @@ export default function ResearchPage() {
     setIsLoading(true);
     setReportText('');
 
-    const alreadyDone = await fetchSavedReport(token);
-    if (alreadyDone) return;
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+    }
 
     const es = getResearchStream(sessionId, token, (event: ResearchEvent) => {
       switch (event.type) {
@@ -109,26 +133,27 @@ export default function ResearchPage() {
     });
 
     es.onerror = () => {
-      if (!isComplete) {
-        setIsError(true);
-        setErrorMessage('Connection lost. Research may still be running in the background.');
-      }
+      // Don't show error if we finished 
+      setIsError((prevError) => {
+        // We use a functional update to avoid stale closure or dependency on isComplete
+        return !es.readyState ? prevError : true; 
+      });
       es.close();
       setIsLoading(false);
     };
 
     eventSourceRef.current = es;
     setIsLoading(false);
-  }, [sessionId, token, fetchSavedReport, isComplete]);
+  }, [sessionId, token, fetchSavedReport]); // Removed isComplete
 
   useEffect(() => {
-    if (token) {
+    if (token && sessionId) {
       connectToStream();
     }
     return () => {
       eventSourceRef.current?.close();
     };
-  }, [sessionId, token, connectToStream]);
+  }, [sessionId, token]); // Removed connectToStream to prevent looping on state changes inside it
 
   return (
     <div className="min-h-screen bg-gray-50 pt-16 font-sans">
@@ -203,7 +228,17 @@ export default function ResearchPage() {
               </div>
             </div>
 
-            <NeuralMap sources={sources} query={plan || 'Analysing Query...'} />
+            <NeuralMap 
+              sources={sources} 
+              query={plan || 'Analysing Query...'} 
+              highlightedId={highlightedSource}
+            />
+
+            {isComplete && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                <ResearchChat sessionId={sessionId} />
+              </div>
+            )}
 
             {plan && (
               <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
@@ -211,7 +246,7 @@ export default function ResearchPage() {
                   <Info className="w-4 h-4 text-blue-500" />
                   <h3 className="font-semibold text-zinc-800 text-sm italic uppercase tracking-wider">Research Context</h3>
                 </div>
-                <div className="text-[11px] text-zinc-500 leading-relaxed font-mono bg-zinc-50/30 p-5 rounded-xl border border-zinc-100 max-h-60 overflow-y-auto whitespace-pre-wrap">
+                <div className="text-[11px] text-zinc-500 leading-relaxed font-mono bg-zinc-50/30 p-5 rounded-xl border border-zinc-100 max-h-60 overflow-y-auto whitespace-pre-wrap no-scrollbar">
                   {plan}
                 </div>
               </div>
@@ -224,6 +259,10 @@ export default function ResearchPage() {
               content={reportText}
               isStreaming={isStreaming}
               qualityScore={qualityScore}
+              onCitationHover={setHighlightedSource}
+              sessionId={sessionId}
+              isPublic={isPublic}
+              onTogglePublic={handleTogglePublic}
             />
           </div>
         </div>

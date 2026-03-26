@@ -1,18 +1,21 @@
 import { Router, Request, Response } from 'express';
-import { 
-  createSession, 
-  updateSessionStatus, 
-  saveReport, 
-  getResearchHistory, 
-  getSessionReport, 
+import {
+  createSession,
+  updateSessionStatus,
+  saveReport,
+  getResearchHistory,
+  getSessionReport,
   deleteSession,
-  getAllResearchHistory 
+  getAllResearchHistory,
+  toggleSessionPublic,
+  getPublicSessionReport
 } from '../db/queries';
 import { researchGraph } from '../graph/researchGraph';
 import { researchEmitter } from '../events/emitter';
 import { researchRateLimiter } from '../middleware/rateLimit';
 import { validateResearchQuery } from '../middleware/validation';
-import { AuthRequest } from '../middleware/auth';
+import { AuthRequest, requireAuth } from '../middleware/auth';
+import { runChatAgent } from '../agents/chat';
 
 const router = Router();
 
@@ -27,159 +30,97 @@ const clients = new Map<string, Response>();
 function sendSSE(res: Response, event: string, data: any) {
   res.write(`event: ${event}\n`);
   res.write(`data: ${JSON.stringify(data)}\n\n`);
-  // If compression is used, we need to flush
-  if ((res as any).flush) {
-    (res as any).flush();
-  }
 }
 
 /**
- * Mapping LangGraph nodes to user-friendly messages for Phase 32.
+ * POST /api/research
+ * Starts a new research process.
  */
-const NODE_USER_MESSAGES: Record<string, string> = {
-  planner: '🧠 Planning your research...',
-  researcher: '🔍 Searching the web...',
-  rag: '📄 Searching documents...',
-  synthesizer: '✍️ Writing report...',
-  critic: '⭐ Reviewing quality...',
-};
-
-/**
- * Execute the research graph and pipe results to emitter.
- */
-async function executeResearch(query: string, sessionId: string, userId?: string) {
-  console.log(`🚀 [Graph] Starting execution for: ${sessionId} (User: ${userId})`);
+router.post('/', requireAuth, validateResearchQuery, researchRateLimiter, async (req: AuthRequest, res: Response) => {
+  const { query, sessionId: manualSessionId } = req.body;
+  const userId = req.userId!;
 
   try {
-    const initialState = {
-      query,
-      sessionId,
-      userId: userId || 'anonymous',
-      retryCount: 0,
-      status: 'initialized',
-    };
+    const session = await createSession(userId, query, manualSessionId);
+    const sessionId = session.session_id;
 
-    const stream = await researchGraph.stream(initialState, {
-      streamMode: 'updates',
+    res.json({ sessionId, message: 'Research started' });
+
+    // Trigger background process - USING .invoke() for LangGraph
+    researchGraph.invoke({ sessionId, query, userId }).catch((err: any) => {
+      console.error(`❌ [Research Error] ${sessionId}:`, err);
+      updateSessionStatus(sessionId, 'failed').catch(() => {});
     });
-
-    // MARK: DB Persistence - Start Session
-    await updateSessionStatus(sessionId, 'planning');
-
-    let fullState: any = { ...initialState };
-
-    for await (const update of stream) {
-      const nodeName = Object.keys(update)[0];
-      // Merge the node's output into our full state
-      const nodeData = (update as any)[nodeName];
-      fullState = { ...fullState, ...nodeData };
-      
-      const message = NODE_USER_MESSAGES[nodeName] || `Working on ${nodeName}...`;
-      console.log(`📡 [Graph Update] ${nodeName} -> ${message}`);
-
-      // Emit status event
-      researchEmitter.emit(`research:${sessionId}`, {
-        type: 'status',
-        data: { node: nodeName, message },
-      });
-
-      // MARK: DB Persistence - Update Status
-      await updateSessionStatus(sessionId, nodeName);
-    }
-
-    researchEmitter.emit(`research:${sessionId}`, {
-      type: 'complete',
-      data: { 
-        report: fullState.report || 'Report synthesis finished.', 
-        score: fullState.critique?.score 
-      },
-    });
-
-    // MARK: DB Persistence - Save Report
-    if (fullState.report) {
-      await saveReport(
-        sessionId, 
-        fullState.report, 
-        fullState.critique?.score || 0, 
-        0, 
-        fullState.sources || []
-      );
-      await updateSessionStatus(sessionId, 'complete');
-    }
 
   } catch (error: any) {
-    console.error(`❌ [Graph Error] ${sessionId}:`, error.message);
-    researchEmitter.emit(`research:${sessionId}`, {
-      type: 'error',
-      data: { message: error.message },
-    });
-  }
-}
-
-/**
- * POST /api/research/start
- * Initiates the research pipeline.
- */
-router.post('/start', researchRateLimiter, validateResearchQuery, async (req: AuthRequest, res: Response) => {
-  console.log('📦 [POST /start] Body:', req.body);
-  const { query, sessionId } = req.body;
-
-  if (!query || !sessionId) {
-    return res.status(400).json({ error: 'query and sessionId are required' });
-  }
-
-  // MARK: DB Persistence - Initialize Session Record
-  try {
-    const userId = req.userId!;
-    await createSession(userId, query, sessionId);
-    
-    // Trigger asynchronously
-    executeResearch(query, sessionId, userId);
-    res.json({ message: 'Research started', sessionId });
-  } catch (err: any) {
-    console.error('Failed to init session in DB:', err.message);
-    res.status(500).json({ error: 'Database initialization failed' });
+    res.status(500).json({ error: error.message });
   }
 });
 
 /**
  * GET /api/research/:sessionId/stream
- * Connects the client to the live event bus.
+ * SSE endpoint for real-time updates.
  */
-router.get('/:sessionId/stream', (req: Request, res: Response) => {
+router.get('/:sessionId/stream', requireAuth, async (req: AuthRequest, res: Response) => {
   const sessionId = req.params.sessionId as string;
+  const userId = req.userId!;
 
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
     'Connection': 'keep-alive',
-    'Access-Control-Allow-Origin': '*',
   });
 
-  const eventHandler = (event: { type: string; data: any }) => {
-    sendSSE(res, event.type, event.data);
+  clients.set(sessionId, res);
+
+  // IMMEDIATELY send connection heartbeat and current state for zero-lag feeling
+  sendSSE(res, 'connected', { sessionId, status: 'establishing_sync' });
+
+  // Optimistic State Sync: If the report exists, send it immediately to avoid empty UI
+  getSessionReport(sessionId, userId).then(session => {
+    if (session) {
+      if (session.query) sendSSE(res, 'plan', { plan: session.query });
+      if (session.content) sendSSE(res, 'report', session.content);
+    }
+  }).catch(() => {});
+
+  const onUpdate = (data: any) => {
+    if (data.sessionId === sessionId) {
+      sendSSE(res, 'update', data);
+    }
   };
 
-  const eventName = `research:${sessionId}`;
-  researchEmitter.on(eventName, eventHandler);
+  const onComplete = (data: any) => {
+    if (data.sessionId === sessionId) {
+      sendSSE(res, 'complete', data);
+      res.end();
+    }
+  };
 
-  clients.set(sessionId, res);
-  sendSSE(res, 'connected', { sessionId, timestamp: new Date() });
+  const onError = (data: any) => {
+    if (data.sessionId === sessionId) {
+      sendSSE(res, 'error', data);
+      res.end();
+    }
+  };
+
+  researchEmitter.on('update', onUpdate);
+  researchEmitter.on('complete', onComplete);
+  researchEmitter.on('error', onError);
 
   req.on('close', () => {
-    researchEmitter.off(eventName, eventHandler);
     clients.delete(sessionId);
-    console.log(`🔌 [SSE] Client disconnected: ${sessionId}`);
+    researchEmitter.off('update', onUpdate);
+    researchEmitter.off('complete', onComplete);
+    researchEmitter.off('error', onError);
   });
 });
 
 /**
  * GET /api/research/history
- * Returns the research history for a user.
  */
-router.get('/history', async (req: AuthRequest, res: Response) => {
+router.get('/history', requireAuth, async (req: AuthRequest, res: Response) => {
   const userId = req.userId!;
-
   try {
     const history = await getAllResearchHistory(userId);
     res.json(history);
@@ -189,10 +130,25 @@ router.get('/history', async (req: AuthRequest, res: Response) => {
 });
 
 /**
- * GET /api/research/:sessionId
- * Retrieves the saved report for a specific session.
+ * DELETE /api/research/:sessionId
  */
-router.get('/:sessionId', async (req: AuthRequest, res: Response) => {
+router.delete('/:sessionId', requireAuth, async (req: AuthRequest, res: Response) => {
+  const sessionId = req.params.sessionId as string;
+  const userId = req.userId!;
+
+  try {
+    await deleteSession(sessionId, userId);
+    res.json({ success: true });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /api/research/:sessionId
+ * Retrieves the final result of a research session.
+ */
+router.get('/:sessionId', requireAuth, async (req: AuthRequest, res: Response) => {
   const sessionId = req.params.sessionId as string;
   const userId = req.userId!;
 
@@ -201,23 +157,86 @@ router.get('/:sessionId', async (req: AuthRequest, res: Response) => {
     if (!report) return res.status(404).json({ error: 'Report not found' });
     res.json(report);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message }); 
   }
 });
 
 /**
- * DELETE /api/research/:sessionId
- * Deletes a session and its associated data.
+ * PUT /api/research/:sessionId/public
+ * Toggles public visibility for a session.
  */
-router.delete('/:sessionId', async (req: AuthRequest, res: Response) => {
-  const sessionId = req.params.sessionId;
+router.put('/:sessionId/public', requireAuth, async (req: AuthRequest, res: Response) => {
+  const sessionId = req.params.sessionId as string;
+  const { isPublic } = req.body;
   const userId = req.userId!;
 
   try {
-    await deleteSession(sessionId as string, userId);
-    res.json({ message: 'Session deleted successfully' });
+    const updated = await toggleSessionPublic(sessionId, userId, !!isPublic);
+    res.json(updated);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/research/:sessionId/public
+ * PUBLIC ROUTE: Retrieves a report for a shared session.
+ */
+router.get('/:sessionId/public', async (req: Request, res: Response) => {
+  const sessionId = req.params.sessionId as string;
+
+  try {
+    const report = await getPublicSessionReport(sessionId);
+    if (!report) return res.status(404).json({ error: 'Public research not found or sharing is disabled' });
+    res.json(report);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/research/:sessionId/chat
+ * Streams follow-up chat responses based on the session report and context.
+ */
+router.post('/:sessionId/chat', requireAuth, async (req: AuthRequest, res: Response) => {
+  const sessionId = req.params.sessionId as string;
+  const { query: chatQuery } = req.body;
+  const userId = req.userId!;
+
+  if (!chatQuery) return res.status(400).json({ error: 'Query is required' });
+
+  try {
+    const session = await getSessionReport(sessionId, userId);
+    if (!session) return res.status(404).json({ error: 'Session not found' });
+
+    res.writeHead(200, {
+      'Content-Type': 'text/plain',
+      'Transfer-Encoding': 'chunked',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive'
+    });
+
+    const chatStream = runChatAgent({
+      query: chatQuery,
+      report: session.content,
+      context: {
+        webResults: session.web_context || '',
+        ragResults: session.rag_context || '',
+      }
+    });
+
+    for await (const chunk of chatStream) {
+      res.write(chunk);
+    }
+
+    res.end();
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error(`❌ [Chat Error] ${sessionId}:`, error.message);
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Chat failed' });
+    } else {
+      res.end();
+    }
   }
 });
 

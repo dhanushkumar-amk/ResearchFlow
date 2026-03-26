@@ -8,6 +8,7 @@ import { Share2 } from 'lucide-react';
 interface NeuralMapProps {
   sources: ResearchSources | null;
   query: string;
+  highlightedId?: string | null;
 }
 
 interface Node {
@@ -23,7 +24,7 @@ interface Link {
   target: string;
 }
 
-export default function NeuralMap({ sources, query }: NeuralMapProps) {
+export default function NeuralMap({ sources, query, highlightedId }: NeuralMapProps) {
   // Use fixed size for better performance and consistency
   const width = 400;
   const height = 400;
@@ -58,7 +59,7 @@ export default function NeuralMap({ sources, query }: NeuralMapProps) {
         links.push({ source: 'query', target: 'rag_hub' });
         
         for (let i = 0; i < 5; i++) { // Generate meaningful small nodes for context
-          const id = `chunk_${i}`;
+          const id = `rag_${i}`;
           nodes.push({ id, name: `Context Piece ${i+1}`, val: 3, type: 'rag', color: '#6ee7b7' });
           links.push({ source: 'rag_hub', target: id });
         }
@@ -103,28 +104,40 @@ export default function NeuralMap({ sources, query }: NeuralMapProps) {
           linkDirectionalParticles={1}
           linkDirectionalParticleSpeed={0.005}
           nodeCanvasObject={(node: any, ctx, globalScale) => {
+            const isHighlighted = highlightedId && node.id.includes(highlightedId.toLowerCase());
             const label = node.name;
             const fontSize = node.type === 'query' ? 14 / globalScale : 11 / globalScale;
-            ctx.font = `${fontSize}px Inter, sans-serif`;
+            ctx.font = `${isHighlighted ? 'bold ' : ''}${fontSize}px Inter, sans-serif`;
             
-            // Draw circle
-            ctx.fillStyle = node.color;
-            ctx.shadowBlur = 10 / globalScale;
-            ctx.shadowColor = node.color;
-            ctx.beginPath();
-            ctx.arc(node.x, node.y, node.val, 0, 2 * Math.PI, false);
-            ctx.fill();
-            ctx.shadowBlur = 0;
+            const nodeRadius = isHighlighted ? node.val * 1.5 : node.val;
+            
+            // Draw highlight ring
+            if (isHighlighted) {
+              ctx.beginPath();
+              ctx.arc(node.x, node.y, nodeRadius + 3 / globalScale, 0, 2 * Math.PI, false);
+              ctx.fillStyle = '#fef08a'; // Light yellow glow
+              ctx.fill();
+              
+              ctx.strokeStyle = '#eab308'; // Amber border
+              ctx.lineWidth = 2 / globalScale;
+              ctx.stroke();
+            }
 
-            // Optional: Draw text labels for important nodes
-            if (globalScale > 2 || node.type === 'query' || node.val > 8) {
+            // Draw principal circle
+            ctx.fillStyle = node.color;
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, nodeRadius, 0, 2 * Math.PI, false);
+            ctx.fill();
+
+            // Label
+            if (globalScale > 2 || node.type === 'query' || node.val > 8 || isHighlighted) {
               const textWidth = ctx.measureText(label).width;
-              ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-              ctx.fillRect(node.x - textWidth / 2 - 2, node.y - 12 - fontSize, textWidth + 4, fontSize + 4);
+              ctx.fillStyle = isHighlighted ? 'rgba(254, 240, 138, 0.95)' : 'rgba(255, 255, 255, 0.9)';
+              ctx.fillRect(node.x - textWidth / 2 - 2, node.y - nodeRadius - 8 - fontSize, textWidth + 4, fontSize + 4);
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
               ctx.fillStyle = '#0f172a';
-              ctx.fillText(label, node.x, node.y - 15);
+              ctx.fillText(label, node.x, node.y - nodeRadius - 10);
             }
           }}
         />

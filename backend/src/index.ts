@@ -31,7 +31,7 @@ app.use(express.json());
 
 // API Routes
 app.use('/api/auth', authRouter);
-app.use('/api/research', requireAuth, researchRouter);
+app.use('/api/research', researchRouter);
 app.use('/api/documents', requireAuth, documentsRouter);
 
 app.get('/', (req: Request, res: Response) => {
