@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies including devDependencies for tsc
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copy source code and config
 COPY . .
@@ -28,7 +28,7 @@ ENV PORT=3001
 COPY package*.json ./
 
 # Install only production dependencies to keep the image slim
-RUN npm install --omit=dev
+RUN npm install --omit=dev --legacy-peer-deps
 
 # Copy the compiled output from the builder stage
 COPY --from=builder /app/dist ./dist
