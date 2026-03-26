@@ -9,8 +9,9 @@ import Link from 'next/link';
 
 import AgentTimeline from '../../../components/AgentTimeline';
 import StreamingReport from '../../../components/StreamingReport';
+import NeuralMap from '../../../components/NeuralMap';
 import { getResearchStream, getSessionDetails } from '../../../lib/api';
-import { ResearchEvent, ResearchStatus, ResearchComplete, ResearchToken, ResearchPlan } from '../../../types/research';
+import { ResearchEvent, ResearchStatus, ResearchComplete, ResearchToken, ResearchPlan, ResearchSources } from '../../../types/research';
 import { useAuth } from '../../../lib/AuthContext';
 
 export default function ResearchPage() {
@@ -20,6 +21,7 @@ export default function ResearchPage() {
   const [activeNode, setActiveNode] = useState<string | null>(null);
   const [reportText, setReportText] = useState('');
   const [plan, setPlan] = useState<string | null>(null);
+  const [sources, setSources] = useState<ResearchSources | null>(null);
   const [statusMessage, setStatusMessage] = useState('Connecting to research agents...');
   const [isStreaming, setIsStreaming] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
@@ -33,8 +35,10 @@ export default function ResearchPage() {
   const fetchSavedReport = useCallback(async (authToken: string) => {
     try {
       const data = await getSessionDetails(sessionId, authToken);
-      if (data?.content) {
-        setReportText(data.content);
+      // Map 'report' from database to 'reportText' state
+      const existingReport = data.report || data.content;
+      if (existingReport) {
+        setReportText(existingReport);
         setQualityScore(data.quality_score ?? null);
         setIsComplete(true);
         setStatusMessage('Report loaded from history.');
@@ -73,9 +77,14 @@ export default function ResearchPage() {
         case 'plan':
           setPlan((event.data as ResearchPlan).plan);
           break;
+        case 'sources':
+          setSources(event.data as ResearchSources);
+          break;
+        case 'report':
         case 'token': {
           const text = typeof event.data === 'string' ? event.data : (event.data as ResearchToken).text;
           setReportText((prev) => prev + text);
+          if (!isStreaming) setIsStreaming(true);
           break;
         }
         case 'complete': {
@@ -182,27 +191,29 @@ export default function ResearchPage() {
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-          {/* Left: Agent Timeline */}
-          <div className="lg:col-span-4 space-y-4">
+          {/* Left: Agent Pipeline & Neural Map */}
+          <div className="lg:col-span-4 space-y-8">
             <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
-              <div className="px-5 py-4 border-b border-zinc-100 flex items-center gap-2">
+              <div className="px-5 py-4 border-b border-zinc-100 flex items-center gap-2 bg-zinc-50/50">
                 <Zap className="w-4 h-4 text-blue-500" />
-                <h2 className="font-semibold text-zinc-800 text-sm">Agent Pipeline</h2>
+                <h2 className="font-semibold text-zinc-800 text-sm italic">Agent Intelligence Pipeline</h2>
               </div>
-              <div className="p-4">
+              <div className="p-6">
                 <AgentTimeline activeNode={activeNode} isComplete={isComplete} />
               </div>
             </div>
 
+            <NeuralMap sources={sources} query={plan || 'Analysing Query...'} />
+
             {plan && (
-              <div className="bg-white border border-blue-200 rounded-2xl p-5 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
+              <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
+                <div className="flex items-center gap-2 mb-4">
                   <Info className="w-4 h-4 text-blue-500" />
-                  <h3 className="font-semibold text-zinc-800 text-sm">Research Strategy</h3>
+                  <h3 className="font-semibold text-zinc-800 text-sm italic uppercase tracking-wider">Research Context</h3>
                 </div>
-                <p className="text-sm text-zinc-600 leading-relaxed whitespace-pre-wrap font-mono bg-zinc-50 p-3 rounded-xl border border-zinc-100">
+                <div className="text-[11px] text-zinc-500 leading-relaxed font-mono bg-zinc-50/30 p-5 rounded-xl border border-zinc-100 max-h-60 overflow-y-auto whitespace-pre-wrap">
                   {plan}
-                </p>
+                </div>
               </div>
             )}
           </div>
