@@ -3,11 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, Calendar, Trash2, Eye, ChevronRight, ArrowLeft } from 'lucide-react';
+import { Search, Calendar, Trash2, Eye, ChevronRight, ArrowLeft, Loader2 } from 'lucide-react';
 import { getAllResearchHistory, deleteSession } from '../../lib/api';
 import { ResearchHistoryItem } from '../../types/research';
+import { useAuth } from '../../lib/AuthContext';
 
 export default function HistoryPage() {
+  const { token } = useAuth();
   const [history, setHistory] = useState<ResearchHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -15,19 +17,21 @@ export default function HistoryPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const sessionId = localStorage.getItem('research_session_id') || '';
-    getAllResearchHistory(sessionId)
+    if (!token) return;
+    getAllResearchHistory(token)
       .then((data) => { setHistory(data); setLoading(false); })
       .catch((err) => { console.error('Failed to fetch history:', err); setLoading(false); });
-  }, []);
+  }, [token]);
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!token) return;
+
     const original = [...history];
     setHistory((h) => h.filter((item) => item.session_id !== id));
     try {
-      await deleteSession(id);
+      await deleteSession(id, token);
     } catch {
       setHistory(original);
     }
@@ -90,7 +94,9 @@ export default function HistoryPage() {
         {loading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-44 bg-zinc-100 rounded-2xl animate-pulse" />
+              <div key={i} className="h-44 bg-zinc-100 rounded-2xl animate-pulse flex items-center justify-center">
+                 <Loader2 className="w-6 h-6 animate-spin text-zinc-300" />
+              </div>
             ))}
           </div>
         )}
@@ -139,17 +145,13 @@ export default function HistoryPage() {
         )}
 
         {/* Empty */}
-        {!loading && filtered.length === 0 && (
+        {!loading && history.length === 0 && (
           <div className="text-center py-24 bg-zinc-50 rounded-2xl border border-dashed border-zinc-200">
             <div className="w-14 h-14 bg-zinc-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Eye className="w-7 h-7 text-zinc-400" />
+              <Search className="w-7 h-7 text-zinc-400" />
             </div>
-            <h3 className="text-lg font-semibold text-zinc-700 mb-2">
-              {searchTerm ? 'No matching results' : 'No research yet'}
-            </h3>
-            <p className="text-sm text-zinc-400 mb-6">
-              {searchTerm ? 'Try a different search term.' : 'Start researching from the home page.'}
-            </p>
+            <h3 className="text-lg font-semibold text-zinc-700 mb-2">No research yet</h3>
+            <p className="text-sm text-zinc-400 mb-6">Start researching from the home page.</p>
             <Link
               href="/"
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors"

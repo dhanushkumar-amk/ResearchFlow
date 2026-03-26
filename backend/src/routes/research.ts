@@ -12,6 +12,7 @@ import { researchGraph } from '../graph/researchGraph';
 import { researchEmitter } from '../events/emitter';
 import { researchRateLimiter } from '../middleware/rateLimit';
 import { validateResearchQuery } from '../middleware/validation';
+import { AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
@@ -119,7 +120,7 @@ async function executeResearch(query: string, sessionId: string, userId?: string
  * POST /api/research/start
  * Initiates the research pipeline.
  */
-router.post('/start', researchRateLimiter, validateResearchQuery, async (req: Request, res: Response) => {
+router.post('/start', researchRateLimiter, validateResearchQuery, async (req: AuthRequest, res: Response) => {
   console.log('📦 [POST /start] Body:', req.body);
   const { query, sessionId } = req.body;
 
@@ -129,7 +130,7 @@ router.post('/start', researchRateLimiter, validateResearchQuery, async (req: Re
 
   // MARK: DB Persistence - Initialize Session Record
   try {
-    const userId = (req.body.userId as string) || 'anonymous';
+    const userId = req.userId!;
     await createSession(userId, query, sessionId);
     
     // Trigger asynchronously
@@ -176,8 +177,8 @@ router.get('/:sessionId/stream', (req: Request, res: Response) => {
  * GET /api/research/history
  * Returns the research history for a user.
  */
-router.get('/history', async (req: Request, res: Response) => {
-  const userId = (req.query.sessionId as string) || 'research_session_id';
+router.get('/history', async (req: AuthRequest, res: Response) => {
+  const userId = req.userId!;
 
   try {
     const history = await getAllResearchHistory(userId);
@@ -191,11 +192,12 @@ router.get('/history', async (req: Request, res: Response) => {
  * GET /api/research/:sessionId
  * Retrieves the saved report for a specific session.
  */
-router.get('/:sessionId', async (req: Request, res: Response) => {
+router.get('/:sessionId', async (req: AuthRequest, res: Response) => {
   const sessionId = req.params.sessionId as string;
+  const userId = req.userId!;
 
   try {
-    const report = await getSessionReport(sessionId);
+    const report = await getSessionReport(sessionId, userId);
     if (!report) return res.status(404).json({ error: 'Report not found' });
     res.json(report);
   } catch (error: any) {
@@ -207,11 +209,12 @@ router.get('/:sessionId', async (req: Request, res: Response) => {
  * DELETE /api/research/:sessionId
  * Deletes a session and its associated data.
  */
-router.delete('/:sessionId', async (req: Request, res: Response) => {
+router.delete('/:sessionId', async (req: AuthRequest, res: Response) => {
   const sessionId = req.params.sessionId;
+  const userId = req.userId!;
 
   try {
-    await deleteSession(sessionId as string);
+    await deleteSession(sessionId as string, userId);
     res.json({ message: 'Session deleted successfully' });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

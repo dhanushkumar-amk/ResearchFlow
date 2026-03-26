@@ -3,15 +3,26 @@ import { ResearchEvent, Document, ResearchHistoryItem } from '../types/research'
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 /**
+ * Common headers with Auth support
+ */
+function getHeaders(token?: string) {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
+
+/**
  * Initiates a new research task
  */
-export async function startResearch(query: string, sessionId: string, userId?: string) {
+export async function startResearch(query: string, sessionId: string, token: string) {
   const response = await fetch(`${API_URL}/api/research/start`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ query, sessionId, userId }),
+    headers: getHeaders(token),
+    body: JSON.stringify({ query, sessionId }),
   });
 
   if (!response.ok) {
@@ -24,43 +35,38 @@ export async function startResearch(query: string, sessionId: string, userId?: s
 
 /**
  * Establishes an SSE connection to stream research updates
+ * NOTE: EventSource doesn't support custom headers natively in the browser.
+ * We pass the token as a query parameter.
  */
-export function getResearchStream(sessionId: string, onEvent: (event: ResearchEvent) => void) {
-  const eventSource = new EventSource(`${API_URL}/api/research/${sessionId}/stream`);
+export function getResearchStream(sessionId: string, token: string, onEvent: (event: ResearchEvent) => void) {
+  const eventSource = new EventSource(`${API_URL}/api/research/${sessionId}/stream?token=${token}`);
 
-  eventSource.onmessage = (event: MessageEvent) => {
-    try {
-      const data = JSON.parse(event.data);
-      onEvent({ type: (event.type as ResearchEvent['type']) || 'message', data });
-    } catch (err) {
-      console.error('Failed to parse SSE message', err);
-    }
-  };
-
-  // EventSource doesn't support custom event names natively in onmessage, 
-  // but the backend sends 'event: ...' lines.
-  // Standard EventSource uses addEventListener for named events.
-  
-  const eventTypes: ResearchEvent['type'][] = ['status', 'complete', 'error', 'connected', 'token', 'plan'];
+  const eventTypes: (ResearchEvent['type'] | 'connected')[] = ['status', 'complete', 'error', 'connected', 'token', 'plan'];
   
   eventTypes.forEach(type => {
     eventSource.addEventListener(type as string, (e: Event) => {
       const messageEvent = e as MessageEvent;
       try {
-        // Only try parsing JSON if it looks like dynamic data.
-        // Report and Token events are raw chunks.
         if (type === 'report' || type === 'token') {
-          onEvent({ type, data: messageEvent.data });
+          onEvent({ type: (type as ResearchEvent['type']), data: messageEvent.data });
         } else {
           const data = JSON.parse(messageEvent.data);
-          onEvent({ type, data });
+          onEvent({ type: (type as ResearchEvent['type']), data });
         }
       } catch (err) {
-        // Fallback to raw data if parsing fails
-        onEvent({ type, data: messageEvent.data });
+        onEvent({ type: (type as ResearchEvent['type']), data: messageEvent.data });
         console.warn(`Failed to parse ${type} event as JSON, using raw data`, err);
       }
     });
+
+    eventSource.onmessage = (event: MessageEvent) => {
+      try {
+        const data = JSON.parse(event.data);
+        onEvent({ type: (event.type as ResearchEvent['type']) || 'message', data });
+      } catch (err) {
+        console.error('Failed to parse SSE message', err);
+      }
+    };
   });
 
   return eventSource;
@@ -69,13 +75,16 @@ export function getResearchStream(sessionId: string, onEvent: (event: ResearchEv
 /**
  * Uploads a document for RAG ingestion
  */
-export async function uploadDocument(file: File, sessionId: string): Promise<Document> {
+export async function uploadDocument(file: File, sessionId: string, token: string): Promise<Document> {
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('sessionId', sessionId);
+  formData.append('sessionId', sessionId); // used for collection prefix
 
   const response = await fetch(`${API_URL}/api/documents/upload`, {
     method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
     body: formData,
   });
 
@@ -89,11 +98,12 @@ export async function uploadDocument(file: File, sessionId: string): Promise<Doc
 }
 
 /**
- * Retrieves history of uploaded documents (or research sessions)
+ * Retrieves history of uploaded documents
  */
-export async function getHistory(id: string): Promise<Document[]> {
-  if (!id) return [];
-  const response = await fetch(`${API_URL}/api/documents?sessionId=${id}&userId=${id}`);
+export async function getHistory(token: string): Promise<Document[]> {
+  const response = await fetch(`${API_URL}/api/documents`, {
+    headers: getHeaders(token),
+  });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -104,10 +114,12 @@ export async function getHistory(id: string): Promise<Document[]> {
 }
 
 /**
- * Retrieves history of research sessions
+ * Retrieves all research history for a user
  */
-export async function getResearchHistory(sessionId: string): Promise<ResearchHistoryItem[]> {
-  const response = await fetch(`${API_URL}/api/research/history?sessionId=${sessionId}`);
+export async function getAllResearchHistory(token: string): Promise<ResearchHistoryItem[]> {
+  const response = await fetch(`${API_URL}/api/research/history`, {
+    headers: getHeaders(token),
+  });
 
   if (!response.ok) {
     const error = await response.json();
@@ -118,25 +130,12 @@ export async function getResearchHistory(sessionId: string): Promise<ResearchHis
 }
 
 /**
- * Retrieves all research history for a user
- */
-export async function getAllResearchHistory(sessionId: string): Promise<ResearchHistoryItem[]> {
-  const response = await fetch(`${API_URL}/api/research/history?sessionId=${sessionId}`);
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to fetch all research history');
-  }
-
-  return response.json();
-}
-
-/**
  * Deletes an uploaded document
  */
-export async function deleteDocument(documentId: string): Promise<void> {
+export async function deleteDocument(documentId: string, token: string): Promise<void> {
   const response = await fetch(`${API_URL}/api/documents/${documentId}`, {
     method: 'DELETE',
+    headers: getHeaders(token),
   });
 
   if (!response.ok) {
@@ -148,8 +147,10 @@ export async function deleteDocument(documentId: string): Promise<void> {
 /**
  * Retrieves the saved report for a specific session
  */
-export async function getSessionDetails(sessionId: string) {
-  const response = await fetch(`${API_URL}/api/research/${sessionId}`);
+export async function getSessionDetails(sessionId: string, token: string) {
+  const response = await fetch(`${API_URL}/api/research/${sessionId}`, {
+    headers: getHeaders(token),
+  });
 
   if (!response.ok) {
     const error = await response.json();
@@ -162,9 +163,10 @@ export async function getSessionDetails(sessionId: string) {
 /**
  * Deletes a research session
  */
-export async function deleteSession(sessionId: string): Promise<void> {
+export async function deleteSession(sessionId: string, token: string): Promise<void> {
   const response = await fetch(`${API_URL}/api/research/${sessionId}`, {
     method: 'DELETE',
+    headers: getHeaders(token),
   });
 
   if (!response.ok) {

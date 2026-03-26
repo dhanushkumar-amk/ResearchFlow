@@ -4,32 +4,29 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sparkles, ArrowRight, Clock, FileText, Upload } from 'lucide-react';
 import Link from 'next/link';
-import { getResearchHistory, startResearch } from '../lib/api';
+import { getAllResearchHistory, startResearch } from '../lib/api';
 import { ResearchHistoryItem } from '../types/research';
+import { useAuth } from '../lib/AuthContext';
 
 export default function Home() {
   const router = useRouter();
+  const { user, token } = useAuth();
   const [query, setQuery] = useState('');
   const [history, setHistory] = useState<ResearchHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string>('');
 
   useEffect(() => {
-    // Generate a persistent cross-session User ID for history
-    let storedUserId = localStorage.getItem('research_user_id');
-    if (!storedUserId || storedUserId.includes('user_')) {
-      storedUserId = crypto.randomUUID();
-      localStorage.setItem('research_user_id', storedUserId);
-    }
-    setUserId(storedUserId);
-    getResearchHistory(storedUserId).then(setHistory).catch(() => {});
-  }, []);
+    if (!token) return;
+    getAllResearchHistory(token)
+      .then(setHistory)
+      .catch((err) => console.error('Failed to fetch history', err));
+  }, [token]);
 
   const handleSearch = async (e?: React.FormEvent, overrideQuery?: string) => {
     if (e) e.preventDefault();
     const q = (overrideQuery || query).trim();
-    if (!q || isLoading || !userId) return;
+    if (!q || isLoading || !token) return;
 
     setIsLoading(true);
     setError(null);
@@ -38,9 +35,9 @@ export default function Home() {
       // Create a UNIQUE session ID for THIS specific research task
       const newSessionId = crypto.randomUUID();
       
-      const { sessionId } = await startResearch(q, newSessionId, userId);
+      await startResearch(q, newSessionId, token);
       // Navigate to live research page
-      router.push(`/research/${sessionId}`);
+      router.push(`/research/${newSessionId}`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to start research. Is the backend running?';
       setError(msg);
@@ -58,7 +55,7 @@ export default function Home() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-sm font-medium border border-blue-100">
             <Sparkles className="w-3.5 h-3.5" />
-            Multi-Agent AI Research Engine
+            Welcome back, {user?.name.split(' ')[0]}
           </div>
 
           {/* Headline */}
