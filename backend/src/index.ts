@@ -17,12 +17,24 @@ app.use(requestLogger);
 const port = config.port;
 
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL || 'http://localhost:3000',
-    'http://127.0.0.1:3000',
-  ].filter(Boolean),
+  origin: (origin, callback) => {
+    const allowed = [
+      process.env.FRONTEND_URL,
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      'https://research-flow-flame.vercel.app'
+    ];
+    
+    // Allow any Vercel preview URL or the specific production URL
+    if (!origin || allowed.includes(origin) || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 
 // Required for rate limiting (behind proxy check)
