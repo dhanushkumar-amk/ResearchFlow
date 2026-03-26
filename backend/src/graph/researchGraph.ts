@@ -70,6 +70,15 @@ async function synthesizerNode(state: ResearchStateType) {
     sessionId: state.sessionId,
   });
 
+  // Emit sources for the Neural Map (Phase 42)
+  if (state.sessionId) {
+    emitResearchEvent(state.sessionId, 'sources', {
+      webCount: (state.searchResults?.match(/https?:\/\//g) || []).length,
+      ragCount: state.ragResults ? 1 : 0, // Simplified for now
+      plan: state.researchPlan
+    });
+  }
+
   let fullContent = '';
   // Collect full stream for graph logic
   for await (const chunk of generator) {

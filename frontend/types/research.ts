@@ -20,19 +20,25 @@ export interface ResearchPlan {
   plan: string;
 }
 
+export interface ResearchSources {
+  webCount: number;
+  ragCount: number;
+  plan: string;
+}
+
 export interface ResearchEvent {
-  type: 'status' | 'complete' | 'error' | 'connected' | 'token' | 'plan';
-  data: ResearchStatus | ResearchComplete | ResearchError | ResearchToken | ResearchPlan | { sessionId: string; timestamp: string };
+  type: 'status' | 'complete' | 'error' | 'connected' | 'token' | 'report' | 'plan' | 'sources';
+  data: ResearchStatus | ResearchComplete | ResearchError | ResearchToken | ResearchPlan | ResearchSources | string | { sessionId: string; timestamp: string };
 }
 
 export interface Document {
-  id: string;
+  document_id: string; // Corrected field name
   user_id: string;
   filename: string;
   mimetype: string;
   chunk_count: number;
   qdrant_collection_name: string;
-  created_at: string;
+  uploaded_at: string; // Corrected field name
 }
 
 export interface ResearchHistoryItem {

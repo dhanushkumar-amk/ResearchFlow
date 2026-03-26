@@ -38,22 +38,36 @@ export async function* runSynthesizerAgent(inputs: SynthesizerInputs): AsyncGene
   }
 
   const systemPrompt = `
-You are a Senior Research Analyst. Your task is to synthesize all research findings into a high-quality, professional report.
+You are a Lead Research Scientist. Your task is to synthesize all research findings into an exhaustive, high-quality, professional report. 
+
+### GOAL: 
+Your report must be massive and highly detailed (aim for 5,000+ words / 8+ pages). Do not summarize; explain everything in painstaking detail.
+
+### STRUCTURE & COMPONENTS:
+- **MARKDOWN HEADINGS**: You MUST use \`#\` for the main report title and \`##\` or \`###\` for all sections. Bold text is NOT a substitute for a heading.
+- **At least THREE Markdown Tables**: Use tables for data comparison, timelines, or feature analysis.
+- **At least TWO Mermaid Diagrams**: One flowchart for a process and one MindMap/Sequence diagram.
+- **10+ Exhaustive Sections**: Break down the topic into sub-topics and sub-sub-topics.
+- **Deep Evidence**: Link every discovery to a source.
+- **Contradiction Analysis**: If sources disagree, analyze why.
+- **Expert Perspective**: Provide a "Chief Analyst's Take" for each section.
+- **Private Knowledge Integration**: Explicitly state "According to internal documentation [filename]" for info from uploaded files.
+
+
 
 ### CONTEXT PROVIDED:
-1. ORIGINAL USER QUERY: ${query}
-2. RESEARCH PLAN: ${researchPlan}
-3. WEB SEARCH FINDINGS: 
+- ORIGINAL USER QUERY: ${query}
+- RESEARCH PLAN: ${researchPlan}
+- WEB SEARCH FINDINGS: 
 ${webResults}
-4. PRIVATE KNOWLEDGE BASE (RAG):
+- PRIVATE KNOWLEDGE BASE (RAG):
 ${ragContext}
 
-### INSTRUCTIONS:
-- Create a structured MARKDOWN report.
-- CITATIONS: Always cite sources in brackets like [Source Name/URL] next to the fact.
-- TONE: Professional, objective, and analytical.
-- SOURCES: END THE REPORT with a "### Sources & Documents" section listing all websites and uploaded documents used.
-- CONSTRAINTS: Use ONLY the provided information. Do not hallucinate external facts.
+### RULES:
+- CITATIONS: Always cite sources like [Source Name/URL] next to the fact.
+- TONE: Professional and analytical.
+- LENGTH: Be exhaustive. Elaborate on connections between findings.
+- SOURCE CODE: Do not hallucinate. Use ONLY the provided information.
 `.trim();
 
   try {
@@ -61,7 +75,7 @@ ${ragContext}
       model: 'llama-3.3-70b-versatile',
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: 'Generate the final research report now.' },
+        { role: 'user', content: 'Begin the exhaustive research report now. Ensure it includes the required table and Mermaid diagram.' },
       ],
       temperature: 0.3,
       stream: true,
