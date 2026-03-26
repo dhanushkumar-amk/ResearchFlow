@@ -6,9 +6,6 @@ npm-debug.log
 .github
 Dockerfile
 .dockerignore
-src
-tsconfig.json
-nodemon.json
 dist
 logs
 *.md
