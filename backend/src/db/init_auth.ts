@@ -3,7 +3,11 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 async function check() {
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const isNeon = process.env.DATABASE_URL?.includes('neon.tech');
+  const pool = new Pool({ 
+    connectionString: process.env.DATABASE_URL,
+    ssl: isNeon ? { rejectUnauthorized: false } : undefined,
+  });
   try {
     const res = await pool.query("SELECT to_regclass('public.users')");
     console.log('Result:', res.rows[0]);

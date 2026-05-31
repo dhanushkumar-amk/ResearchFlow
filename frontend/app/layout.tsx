@@ -5,6 +5,7 @@ import NextTopLoader from 'nextjs-toploader';
 import Navbar from "../components/Navbar";
 import { AuthProvider } from "../lib/AuthContext";
 import AuthGuard from "../components/AuthGuard";
+import ErrorSuppressor from "../components/ErrorSuppressor";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,6 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-white text-zinc-900 selection:bg-blue-100">
+        <ErrorSuppressor />
         <AuthProvider>
           <AuthGuard>
             <NextTopLoader color="#2563eb" showSpinner={false} height={3} />
@@ -40,3 +42,4 @@ export default function RootLayout({
     </html>
   );
 }
+

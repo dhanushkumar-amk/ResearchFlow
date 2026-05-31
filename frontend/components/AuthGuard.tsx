@@ -15,11 +15,11 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (loading) return;
-    const isPublic = PUBLIC_PATHS.includes(pathname);
+    const isPublic = pathname === '/' || pathname.startsWith('/share/') || PUBLIC_PATHS.includes(pathname);
     if (!user && !isPublic) {
       router.push('/login');
     }
-    if (user && isPublic) {
+    if (user && PUBLIC_PATHS.includes(pathname)) {
       router.push('/');
     }
   }, [user, loading, pathname, router]);
@@ -33,10 +33,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const isPublic = PUBLIC_PATHS.includes(pathname);
+  const isPublic = pathname === '/' || pathname.startsWith('/share/') || PUBLIC_PATHS.includes(pathname);
 
-  // If logged in and on a public page — show nothing (will redirect)
-  if (user && isPublic) return null;
+  // If logged in and on a public-only auth page (like login/register) — show nothing (will redirect)
+  if (user && PUBLIC_PATHS.includes(pathname)) return null;
   // If not logged in and on a protected page — show nothing (will redirect)
   if (!user && !isPublic) return null;
 

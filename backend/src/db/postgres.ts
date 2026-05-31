@@ -4,11 +4,14 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
+const isNeon = process.env.DATABASE_URL?.includes('neon.tech');
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   max: 20, // Adjusted for high-speed multi-agent concurrency
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: 15000, // 15 seconds to allow serverless cold starts
+  ssl: isNeon ? { rejectUnauthorized: false } : undefined,
 });
 
 // Check connectivity

@@ -13,7 +13,7 @@ import { setMemory, getMemory } from '../db/redis';
 
 /**
  * Phase 26-30: Research Tools MCP Server
- * Refactored to call raw tools directly. 
+ * Refactored to call raw tools directly.
  * Formats results inside the tool handler for a standardized agent interface.
  */
 class ResearchMcpServer {
@@ -120,12 +120,12 @@ class ResearchMcpServer {
           return {
             content: [{ type: 'text', text: `❌ Web Search Error: ${error.message}` }],
             isError: true,
-          };
+        };
         }
-      }
+    }
 
       // ── document_search ───────────────────────────────────────────────────
-      if (name === 'document_search') {
+    if (name === 'document_search') {
         const query = (args as any)?.query as string;
         const collectionName = ((args as any)?.collection_name as string) || 'default';
 
