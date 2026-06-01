@@ -47,4 +47,5 @@ export interface ResearchHistoryItem {
   query: string;
   created_at: string;
   quality_score: number | null;
+  status?: string;
 }
