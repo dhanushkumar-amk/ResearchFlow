@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '../lib/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@/constants';
+import useAuth from '@/hooks/useAuth';
 import {
   Brain,
   ArrowRight,
@@ -68,7 +69,6 @@ const Lucide = {
   Globe,
   Database
 };
-
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ResponsiveContainer,
@@ -229,11 +229,8 @@ const FEATURE_TABS = [
 ];
 
 export default function LandingPage() {
-  const router = useRouter();
-  const { user } = useAuth();
-  const isAuthenticated = !!user;
-
-  const [mounted, setMounted] = useState(false);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<'radar' | 'throughput'>('radar');
   const [selectedDemo, setSelectedDemo] = useState(DEMO_QUERIES[0]);
   const [, setDemoStepIndex] = useState(0);
@@ -247,10 +244,6 @@ export default function LandingPage() {
 
   // Active Feature Showcase Tab State
   const [activeFeatureTab, setActiveFeatureTab] = useState(0);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleUpgradeClick = (planName: string, planPrice: string) => {
     setSelectedPlan({ name: planName, price: planPrice });
@@ -302,14 +295,14 @@ export default function LandingPage() {
       <div className="absolute bottom-[400px] left-10 w-96 h-96 bg-emerald-500/[0.01] rounded-full blur-[120px] pointer-events-none z-0" />
 
       {/* Navigation Header */}
-      <header className="border-b border-neutral-100 sticky top-0 bg-white/80 backdrop-blur-md z-45">
+      <header className="border-b border-neutral-100 sticky top-0 bg-white/80 backdrop-blur-md z-50">
         <div className="max-w-[1100px] mx-auto px-4 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-emerald-500 text-white p-1.5 rounded-[6px] shadow-[0_4px_12px_rgba(16,185,129,0.15)]">
               <Lucide.Brain className="h-5 w-5 text-white" />
             </div>
             <span className="font-bold text-lg tracking-tight text-[#0a0a0a]">
-              ResearchMind
+              ResearchFlow
             </span>
           </div>
 
@@ -324,22 +317,22 @@ export default function LandingPage() {
           <div className="flex items-center gap-2.5">
             {isAuthenticated ? (
               <button
-                onClick={() => router.push('/')}
+                onClick={() => navigate(ROUTES.RESEARCH)}
                 className="bg-[#0a0a0a] hover:bg-[#262626] text-white px-4 py-1.5 rounded-[6px] font-semibold transition-all text-[13px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] flex items-center gap-2"
               >
-                Go to Workspace
+                Go to Research
                 <Lucide.ArrowRight className="h-3.5 w-3.5" />
               </button>
             ) : (
               <>
                 <button
-                  onClick={() => router.push('/login')}
-                  className="bg-transparent border border-neutral-200 hover:border-neutral-300 text-neutral-600 hover:text-neutral-900 px-4 py-1.5 rounded-[6px] font-medium transition-all text-[13px]"
+                  onClick={() => navigate(ROUTES.LOGIN)}
+                  className="bg-transparent border border-neutral-200 hover:border-neutral-300 text-neutral-650 hover:text-neutral-900 px-4 py-1.5 rounded-[6px] font-medium transition-all text-[13px]"
                 >
                   Sign In
                 </button>
                 <button
-                  onClick={() => router.push('/register')}
+                  onClick={() => navigate(ROUTES.REGISTER)}
                   className="bg-[#0a0a0a] hover:bg-[#262626] text-white px-4 py-1.5 rounded-[6px] font-semibold transition-all text-[13px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)]"
                 >
                   Get Started
@@ -391,7 +384,7 @@ export default function LandingPage() {
             className="flex justify-center"
           >
             <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3.5 py-1.2 rounded-full text-[11px] font-mono border border-emerald-100/70 mb-6 font-semibold shadow-xs select-none">
-              <Lucide.Sparkles className="h-3.5 w-3.5 text-emerald-650 animate-pulse" />
+              <Lucide.Sparkles className="h-3.5 w-3.5 text-emerald-655 animate-pulse" />
               <span>Deep Research Agentic Workspace</span>
             </span>
           </motion.div>
@@ -427,18 +420,18 @@ export default function LandingPage() {
             className="flex flex-col sm:flex-row gap-3 justify-center items-center w-full mb-10"
           >
             <button
-              onClick={() => router.push('/register')}
+              onClick={() => navigate(ROUTES.REGISTER)}
               className="bg-emerald-500 text-white hover:bg-emerald-600 px-6 py-3 rounded-[6px] font-bold transition-all text-sm flex items-center justify-center gap-2 group shadow-[0_4px_14px_rgba(16,185,129,0.25)] hover:shadow-[0_6px_18px_rgba(16,185,129,0.35)]"
             >
               Start Your First Report
               <Lucide.ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </button>
-            <a
-              href="#workflow"
-              className="bg-white border border-neutral-200 hover:border-neutral-300 text-neutral-700 px-6 py-3 rounded-[6px] font-semibold transition-all text-sm flex items-center justify-center cursor-pointer"
+            <button
+              onClick={() => navigate(ROUTES.LOGIN)}
+              className="bg-white border border-neutral-200 hover:border-neutral-300 text-neutral-700 px-6 py-3 rounded-[6px] font-semibold transition-all text-sm flex items-center justify-center"
             >
-              View Workflow Demo
-            </a>
+              View Documentation
+            </button>
           </motion.div>
 
           {/* Stats Bar */}
@@ -450,15 +443,15 @@ export default function LandingPage() {
           >
             <div>
               <p className="text-xl font-extrabold text-[#0a0a0a]">98.7%</p>
-              <p className="text-[9px] font-mono uppercase text-neutral-400 tracking-wider">Grounding Accuracy</p>
+              <p className="text-[9px] font-mono uppercase text-neutral-450 tracking-wider">Grounding Accuracy</p>
             </div>
             <div className="border-x border-neutral-200">
               <p className="text-xl font-extrabold text-[#0a0a0a]">4.8x</p>
-              <p className="text-[9px] font-mono uppercase text-neutral-400 tracking-wider">Time Saved</p>
+              <p className="text-[9px] font-mono uppercase text-neutral-450 tracking-wider">Time Saved</p>
             </div>
             <div>
               <p className="text-xl font-extrabold text-[#0a0a0a]">100%</p>
-              <p className="text-[9px] font-mono uppercase text-neutral-400 tracking-wider">Local Option</p>
+              <p className="text-[9px] font-mono uppercase text-neutral-450 tracking-wider">Local Option</p>
             </div>
           </motion.div>
 
@@ -555,8 +548,8 @@ export default function LandingPage() {
               <div className="bg-neutral-50 border-b border-neutral-200 px-4 py-3 flex items-center justify-between">
                 {/* Window Controls */}
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-full bg-red-455/80" />
-                  <span className="w-3 h-3 rounded-full bg-amber-455/80" />
+                  <span className="w-3 h-3 rounded-full bg-red-400/80" />
+                  <span className="w-3 h-3 rounded-full bg-amber-400/80" />
                   <span className="w-3 h-3 rounded-full bg-emerald-450/80" />
                   <span className="text-[11px] font-mono text-neutral-450 ml-4 bg-white border border-neutral-200 px-3 py-0.5 rounded-[4px] shadow-xs">
                     researchmind.ai/workspace/project-delta
@@ -623,7 +616,7 @@ export default function LandingPage() {
                 {/* Workspace Main Area */}
                 <div className="flex-1 flex flex-col min-h-0 bg-white">
                   {/* Informational banner to clarify interactive workspace features */}
-                  <div className="bg-emerald-500/5 border-b border-emerald-100/60 px-4 py-2 flex items-center gap-2 text-[10px] text-neutral-650 font-medium">
+                  <div className="bg-emerald-550/5 border-b border-emerald-100/60 px-4 py-2 flex items-center gap-2 text-[10px] text-neutral-650 font-medium">
                     <Lucide.Info className="h-3.5 w-3.5 text-emerald-500 flex-shrink-0 animate-pulse" />
                     <span><strong>Interactive Demo:</strong> Click the query tabs in the browser header (e.g., <em>Literature Review</em>) to simulate live agent runs.</span>
                   </div>
@@ -695,7 +688,7 @@ export default function LandingPage() {
                             </p>
                             <div className="text-[10px] font-mono text-neutral-450 mt-2 bg-neutral-50 p-2.5 rounded border border-neutral-100 flex justify-between items-center">
                               <span>GROUNDING METRIC (RAGAS):</span>
-                              <span className="text-emerald-650 font-bold flex items-center gap-1">
+                              <span className="text-emerald-600 font-bold flex items-center gap-1">
                                 <Lucide.CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
                                 {(DASHBOARD_MOCKS[selectedDemo.id as keyof typeof DASHBOARD_MOCKS] || DASHBOARD_MOCKS.market).grounding}% Grounding Rating
                               </span>
@@ -711,7 +704,7 @@ export default function LandingPage() {
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-450 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                           </span>
-                          <span className="font-mono text-neutral-450">Agentic loop status: Idle (Awaiting input)</span>
+                          <span className="font-mono text-neutral-400">Agentic loop status: Idle (Awaiting input)</span>
                         </div>
                         <div className="flex gap-2.5">
                           <button className="bg-[#0a0a0a] text-white hover:bg-neutral-800 text-[10px] font-bold px-3 py-1.5 rounded-[4px] transition-colors flex items-center gap-1 shadow-xs">
@@ -738,7 +731,7 @@ export default function LandingPage() {
       <section id="features" className="py-24 border-b border-neutral-200 relative bg-white">
         <div className="max-w-[1100px] mx-auto px-4 lg:px-8">
           <div className="text-center max-w-[600px] mx-auto mb-20">
-            <span className="text-emerald-600 text-xs font-mono tracking-widest uppercase bg-emerald-550/5 border border-emerald-200 px-3 py-1 rounded-full">
+            <span className="text-emerald-600 text-xs font-mono tracking-widest uppercase bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full">
               Engineered Capabilities
             </span>
             <h2 className="text-[36px] font-bold text-[#0a0a0a] tracking-tight mt-4">
@@ -848,68 +841,62 @@ export default function LandingPage() {
               </div>
 
               <div className="w-full flex-1 min-h-0">
-                {mounted ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    {activeTab === 'radar' ? (
-                      <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
-                        <PolarGrid stroke="#f1f5f9" />
-                        <PolarAngleAxis dataKey="metric" stroke="#64748b" fontSize={10} />
-                        <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#f1f5f9" fontSize={9} />
-                        <Radar
-                          name="ResearchMind"
-                          dataKey="ResearchMind"
-                          stroke="#10b981"
-                          fill="#10b981"
-                          fillOpacity={0.2}
-                        />
-                        <Radar
-                          name="Standard RAG"
-                          dataKey="StandardRAG"
-                          stroke="#94a3b8"
-                          fill="#94a3b8"
-                          fillOpacity={0.06}
-                        />
-                      </RadarChart>
-                    ) : (
-                      <AreaChart data={throughputData}>
-                        <defs>
-                          <linearGradient id="accuracyGlowLight" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
-                            <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                          </linearGradient>
-                          <linearGradient id="efficiencyGlowLight" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.05} />
-                            <stop offset="95%" stopColor="#94a3b8" stopOpacity={0} />
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.5} />
-                        <XAxis dataKey="month" stroke="#94a3b8" fontSize={11} />
-                        <YAxis stroke="#94a3b8" fontSize={11} domain={[50, 100]} />
-                        <Tooltip
-                          contentStyle={{ backgroundColor: '#fff', borderColor: '#e2e8f0', borderRadius: '8px', color: '#000' }}
-                        />
-                        <Area
-                          type="monotone"
-                          dataKey="Accuracy"
-                          stroke="#10b981"
-                          fillOpacity={1}
-                          fill="url(#accuracyGlowLight)"
-                        />
-                        <Area
-                          type="monotone"
-                          dataKey="Efficiency"
-                          stroke="#94a3b8"
-                          fillOpacity={1}
-                          fill="url(#efficiencyGlowLight)"
-                        />
-                      </AreaChart>
-                    )}
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-xs font-mono text-neutral-400 animate-pulse">
-                    Loading diagnostics data...
-                  </div>
-                )}
+                <ResponsiveContainer width="100%" height="100%">
+                  {activeTab === 'radar' ? (
+                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                      <PolarGrid stroke="#f1f5f9" />
+                      <PolarAngleAxis dataKey="metric" stroke="#64748b" fontSize={10} />
+                      <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#f1f5f9" fontSize={9} />
+                      <Radar
+                        name="ResearchMind"
+                        dataKey="ResearchMind"
+                        stroke="#10b981"
+                        fill="#10b981"
+                        fillOpacity={0.2}
+                      />
+                      <Radar
+                        name="Standard RAG"
+                        dataKey="StandardRAG"
+                        stroke="#94a3b8"
+                        fill="#94a3b8"
+                        fillOpacity={0.06}
+                      />
+                    </RadarChart>
+                  ) : (
+                    <AreaChart data={throughputData}>
+                      <defs>
+                        <linearGradient id="accuracyGlowLight" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="efficiencyGlowLight" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.05} />
+                          <stop offset="95%" stopColor="#94a3b8" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.5} />
+                      <XAxis dataKey="month" stroke="#94a3b8" fontSize={11} />
+                      <YAxis stroke="#94a3b8" fontSize={11} domain={[50, 100]} />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#fff', borderColor: '#e2e8f0', borderRadius: '8px', color: '#000' }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="Accuracy"
+                        stroke="#10b981"
+                        fillOpacity={1}
+                        fill="url(#accuracyGlowLight)"
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="Efficiency"
+                        stroke="#94a3b8"
+                        fillOpacity={1}
+                        fill="url(#efficiencyGlowLight)"
+                      />
+                    </AreaChart>
+                  )}
+                </ResponsiveContainer>
               </div>
 
               {/* Legends */}
@@ -933,7 +920,7 @@ export default function LandingPage() {
       <section id="solutions" className="py-24 border-b border-neutral-200 relative bg-white">
         <div className="max-w-[1100px] mx-auto px-4 lg:px-8">
           <div className="text-center max-w-[650px] mx-auto mb-20">
-            <span className="text-emerald-600 text-xs font-mono tracking-widest uppercase bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full">
+            <span className="text-emerald-600 text-xs font-mono tracking-widest uppercase bg-emerald-555/5 border border-emerald-200 px-3 py-1 rounded-full">
               Industry Verticals
             </span>
             <h2 className="text-[36px] font-bold text-[#0a0a0a] tracking-tight mt-4">
@@ -982,7 +969,7 @@ export default function LandingPage() {
       <section id="pricing" className="py-24 border-b border-neutral-200 bg-[#f9fafb]/50">
         <div className="max-w-[1100px] mx-auto px-4 lg:px-8">
           <div className="text-center max-w-[650px] mx-auto mb-20">
-            <span className="text-emerald-600 text-xs font-mono tracking-widest uppercase bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full">
+            <span className="text-emerald-600 text-xs font-mono tracking-widest uppercase bg-emerald-550/5 border border-emerald-200 px-3 py-1 rounded-full">
               Flexible Pricing
             </span>
             <h2 className="text-[36px] font-bold text-[#0a0a0a] tracking-tight mt-4">
@@ -1021,7 +1008,7 @@ export default function LandingPage() {
                 </div>
               </div>
               <button 
-                onClick={() => router.push('/register')}
+                onClick={() => navigate(ROUTES.REGISTER)}
                 className="mt-8 w-full border border-neutral-200 hover:border-neutral-300 text-neutral-700 font-semibold py-2.5 rounded-[8px] text-xs transition-colors"
               >
                 Get Started
@@ -1034,7 +1021,7 @@ export default function LandingPage() {
                 Popular
               </div>
               <div>
-                <h3 className="text-sm font-mono font-bold text-emerald-600 uppercase tracking-wider">Professional</h3>
+                <h3 className="text-sm font-mono font-bold text-emerald-650 uppercase tracking-wider">Professional</h3>
                 <div className="flex items-baseline gap-1 mt-4 mb-6">
                   <span className="text-4xl font-extrabold text-[#0a0a0a]">$49</span>
                   <span className="text-neutral-400 text-xs font-semibold">/ month</span>
@@ -1044,23 +1031,23 @@ export default function LandingPage() {
                 </p>
                 <div className="space-y-3.5 border-t border-neutral-100 pt-6">
                   <div className="flex items-center gap-2.5 text-xs text-neutral-600">
-                    <Lucide.Check className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                    <Lucide.Check className="h-4 w-4 text-emerald-550 flex-shrink-0" />
                     <span className="font-semibold text-neutral-850">Unlimited agent research queries</span>
                   </div>
                   <div className="flex items-center gap-2.5 text-xs text-neutral-600">
-                    <Lucide.Check className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                    <Lucide.Check className="h-4 w-4 text-emerald-550 flex-shrink-0" />
                     <span>Priority parallel crawling loops</span>
                   </div>
                   <div className="flex items-center gap-2.5 text-xs text-neutral-600">
-                    <Lucide.Check className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                    <Lucide.Check className="h-4 w-4 text-emerald-550 flex-shrink-0" />
                     <span>100+ document uploads & storage</span>
                   </div>
                   <div className="flex items-center gap-2.5 text-xs text-neutral-600">
-                    <Lucide.Check className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                    <Lucide.Check className="h-4 w-4 text-emerald-550 flex-shrink-0" />
                     <span>Advanced PDF & DOCX reports export</span>
                   </div>
                   <div className="flex items-center gap-2.5 text-xs text-neutral-600">
-                    <Lucide.Check className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                    <Lucide.Check className="h-4 w-4 text-emerald-550 flex-shrink-0" />
                     <span>Custom model configuration routing</span>
                   </div>
                 </div>
@@ -1093,11 +1080,11 @@ export default function LandingPage() {
                     <Lucide.Check className="h-4 w-4 text-emerald-500 flex-shrink-0" />
                     <span>Custom Qdrant private clusters</span>
                   </div>
-                  <div className="flex items-center gap-2.5 text-xs text-neutral-600">
+                  <div className="flex items-center gap-2.5 text-xs text-neutral-650">
                     <Lucide.Check className="h-4 w-4 text-emerald-500 flex-shrink-0" />
                     <span>SSO/SAML authentication support</span>
                   </div>
-                  <div className="flex items-center gap-2.5 text-xs text-neutral-600">
+                  <div className="flex items-center gap-2.5 text-xs text-neutral-650">
                     <Lucide.Check className="h-4 w-4 text-emerald-500 flex-shrink-0" />
                     <span>Dedicated account success team</span>
                   </div>
@@ -1118,7 +1105,7 @@ export default function LandingPage() {
       <section id="workflow" className="py-24 border-b border-neutral-200 bg-white">
         <div className="max-w-[1100px] mx-auto px-4 lg:px-8">
           <div className="text-center max-w-[650px] mx-auto mb-16">
-            <span className="text-emerald-600 text-xs font-mono tracking-widest uppercase bg-emerald-550/5 border border-emerald-200 px-3 py-1 rounded-full">
+            <span className="text-emerald-600 text-xs font-mono tracking-widest uppercase bg-emerald-555/5 border border-emerald-200 px-3 py-1 rounded-full">
               Interactive Pipeline
             </span>
             <h2 className="text-[36px] font-bold text-[#0a0a0a] tracking-tight mt-4">
@@ -1141,7 +1128,7 @@ export default function LandingPage() {
                     onClick={() => setActiveFeatureTab(idx)}
                     className={`w-full flex items-start gap-4 p-4 rounded-[10px] border transition-all text-left ${
                       isActive
-                        ? 'bg-emerald-550/5 border-emerald-500/20 text-emerald-800'
+                        ? 'bg-emerald-555/5 border-emerald-500/20 text-emerald-800'
                         : 'bg-white border-neutral-200 text-neutral-500 hover:bg-neutral-50/50'
                     }`}
                   >
@@ -1159,78 +1146,78 @@ export default function LandingPage() {
             </div>
 
             {/* Workflow Showcase Terminal Panel Right */}
-            <div className="lg:col-span-7 bg-[#0a0a0a] text-neutral-300 font-mono rounded-[12px] border border-neutral-800 p-6 h-[340px] flex flex-col justify-between shadow-lg text-left">
-              <div className="flex items-center justify-between border-b border-neutral-800 pb-3 mb-4">
+            <div className="lg:col-span-7 bg-[#f9fafb] text-neutral-800 font-mono rounded-[12px] border border-neutral-200 p-6 h-[340px] flex flex-col justify-between shadow-[0_4px_20px_rgba(0,0,0,0.02)] text-left">
+              <div className="flex items-center justify-between border-b border-neutral-200 pb-3 mb-4">
                 <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
-                  <span className="text-[10px] text-neutral-500 ml-3">ResearchMind Core Node v1.4.2</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/80" />
+                  <span className="text-[10px] text-neutral-450 ml-3">ResearchFlow Core Node v1.4.2</span>
                 </div>
-                <Lucide.Terminal className="h-4 w-4 text-neutral-600" />
+                <Lucide.Terminal className="h-4 w-4 text-neutral-400" />
               </div>
 
               <div className="flex-1 overflow-y-auto pr-1 text-xs space-y-4">
                 {activeFeatureTab === 0 && (
                   <div className="space-y-2">
-                    <span className="text-emerald-450">&gt; Executing PlannerAgent...</span>
-                    <p className="text-neutral-400 leading-relaxed font-sans">
+                    <span className="text-emerald-600">&gt; Executing PlannerAgent...</span>
+                    <p className="text-neutral-600 leading-relaxed font-sans">
                       The query is parsed and structured into logical sub-tasks. The planner agent generates search criteria, targets relevant databases, and decides whether real-time scraping or vector search is required.
                     </p>
-                    <div className="bg-neutral-900 border border-neutral-850 p-2.5 rounded text-[10px] text-neutral-500">
+                    <div className="bg-neutral-100/80 border border-neutral-200 p-2.5 rounded text-[10px] text-neutral-500">
                       Planner logs: Parallel worker nodes spawned on 3 separate threads. Target domains selected.
                     </div>
                   </div>
                 )}
                 {activeFeatureTab === 1 && (
                   <div className="space-y-2">
-                    <span className="text-emerald-450">&gt; Starting WebScraperAgent...</span>
-                    <p className="text-neutral-400 leading-relaxed font-sans">
+                    <span className="text-emerald-600">&gt; Starting WebScraperAgent...</span>
+                    <p className="text-neutral-600 leading-relaxed font-sans">
                       Fetches live web pages using Tavily APIs. It reads, parses HTML, and isolates the core content while discarding irrelevant navigation menus, sidebars, and advertising cookies.
                     </p>
-                    <div className="bg-neutral-900 border border-neutral-850 p-2.5 rounded text-[10px] text-neutral-500">
+                    <div className="bg-neutral-100/80 border border-neutral-200 p-2.5 rounded text-[10px] text-neutral-500">
                       Scraper logs: Web page response 200 OK. Content density rating: 94%. Paragraph hashes computed.
                     </div>
                   </div>
                 )}
                 {activeFeatureTab === 2 && (
                   <div className="space-y-2">
-                    <span className="text-emerald-450">&gt; Performing Vector DB Lookup...</span>
-                    <p className="text-neutral-400 leading-relaxed font-sans">
+                    <span className="text-emerald-600">&gt; Performing Vector DB Lookup...</span>
+                    <p className="text-neutral-600 leading-relaxed font-sans">
                       Performs semantic matching over indexed PDF and DOCX files. Using text embeddings, it fetches the most relevant document chunks based on cosine similarity scores from Qdrant vector database.
                     </p>
-                    <div className="bg-neutral-900 border border-neutral-850 p-2.5 rounded text-[10px] text-neutral-500">
+                    <div className="bg-neutral-100/80 border border-neutral-200 p-2.5 rounded text-[10px] text-neutral-500">
                       Vector logs: Collection lookup complete. Top 4 matches fetched. Threshold score: &gt;0.82.
                     </div>
                   </div>
                 )}
                 {activeFeatureTab === 3 && (
                   <div className="space-y-2">
-                    <span className="text-emerald-450">&gt; Auditing Citations (CriticAgent)...</span>
-                    <p className="text-neutral-400 leading-relaxed font-sans">
+                    <span className="text-emerald-600">&gt; Auditing Citations (CriticAgent)...</span>
+                    <p className="text-neutral-600 leading-relaxed font-sans">
                       Verifies every statement in the draft against the retrieved sources. Any hallucinated claims, unsupported facts, or misattributed citations are automatically flagged and sent back to the research loop.
                     </p>
-                    <div className="bg-neutral-900 border border-neutral-850 p-2.5 rounded text-[10px] text-neutral-500">
+                    <div className="bg-neutral-100/80 border border-neutral-200 p-2.5 rounded text-[10px] text-neutral-500">
                       Critic logs: RAGAS metrics evaluated. Faithfulness: 96.5%, Context Precision: 94.2%.
                     </div>
                   </div>
                 )}
                 {activeFeatureTab === 4 && (
                   <div className="space-y-2">
-                    <span className="text-emerald-450">&gt; Compiling Report Draft (SummaryAgent)...</span>
-                    <p className="text-neutral-400 leading-relaxed font-sans">
+                    <span className="text-emerald-600">&gt; Compiling Report Draft (SummaryAgent)...</span>
+                    <p className="text-neutral-600 leading-relaxed font-sans">
                       Synthesizes all audited statements, structures them under logical markdown headers, resolves duplicate data points, and exports the final document as clean Markdown or printable PDF format.
                     </p>
-                    <div className="bg-neutral-900 border border-neutral-850 p-2.5 rounded text-[10px] text-neutral-500">
+                    <div className="bg-neutral-100/80 border border-neutral-200 p-2.5 rounded text-[10px] text-neutral-500">
                       Summary logs: Compiling output document. Size: 4,320 words. Citations linked: 12.
                     </div>
                   </div>
                 )}
               </div>
 
-              <div className="border-t border-neutral-900 pt-3 flex justify-between items-center text-[10px] text-neutral-500">
+              <div className="border-t border-neutral-200 pt-3 flex justify-between items-center text-[10px] text-neutral-450">
                 <span>System status: Online</span>
-                <span className="text-emerald-500 font-bold bg-emerald-950 px-2 py-0.5 rounded border border-emerald-900">NODE ACTIVE</span>
+                <span className="text-emerald-650 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">NODE ACTIVE</span>
               </div>
             </div>
           </div>
@@ -1246,7 +1233,7 @@ export default function LandingPage() {
                 <div className="bg-emerald-500 text-white p-1 rounded">
                   <Lucide.Brain className="h-4 w-4" />
                 </div>
-                <span className="font-bold text-base text-[#0a0a0a]">ResearchMind</span>
+                <span className="font-bold text-base text-[#0a0a0a]">ResearchFlow</span>
               </div>
               <p className="text-xs text-neutral-450 leading-relaxed">
                 Empowering investigators, analysts, and companies with multi-agentic context-aware synthesis.
@@ -1278,7 +1265,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="border-t border-neutral-200/60 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-neutral-450">
-            <span>© 2026 ResearchMind Inc. All rights reserved.</span>
+            <span>© 2026 ResearchFlow Inc. All rights reserved.</span>
             <div className="flex gap-6">
               <span className="flex items-center gap-1.5">
                 <Lucide.ShieldCheck className="h-4 w-4 text-emerald-500" />
@@ -1326,7 +1313,7 @@ export default function LandingPage() {
                     className="flex flex-col items-center justify-center py-6 text-center space-y-3"
                   >
                     <div className="bg-emerald-50 border border-emerald-100 text-emerald-600 p-3 rounded-full shadow-xs">
-                      <Lucide.Check className="h-6 w-6 text-emerald-600" />
+                      <Lucide.Check className="h-6 w-6 text-emerald-650" />
                     </div>
                     <h4 className="font-bold text-[#0a0a0a] text-sm">Payment Successful!</h4>
                     <p className="text-neutral-400 text-xs leading-normal">

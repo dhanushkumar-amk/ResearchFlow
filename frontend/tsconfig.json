@@ -19,6 +19,7 @@
       }
     ],
     "paths": {
+      "react-router-dom": ["./lib/react-router-dom-shim.ts"],
       "@/*": ["./*"]
     }
   },
