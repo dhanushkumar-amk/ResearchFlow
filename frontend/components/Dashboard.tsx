@@ -278,22 +278,22 @@ export default function Dashboard() {
               </div>
 
               {history.length > 0 ? (
-                <div className="space-y-2.5">
+                <div className="border border-zinc-100 rounded-xl overflow-hidden divide-y divide-zinc-100 bg-white">
                   {history.slice(0, 5).map((item) => (
                     <Link
                       key={item.session_id}
                       href={`/research/${item.session_id}`}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-neutral-50/20 hover:bg-emerald-50/[0.03] border border-neutral-250 hover:border-emerald-500/10 rounded-lg transition-all group gap-2"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 hover:bg-zinc-50/50 transition-all group gap-2.5"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-8 h-8 bg-white border border-neutral-150 rounded-lg flex items-center justify-center shrink-0 group-hover:border-emerald-500/10 transition-colors shadow-2xs">
-                          <FileText className="w-4 h-4 text-neutral-400 group-hover:text-emerald-500" />
+                        <div className="w-8 h-8 bg-zinc-50 border border-zinc-100 rounded-lg flex items-center justify-center shrink-0 group-hover:border-emerald-500/10 transition-colors shadow-2xs">
+                          <FileText className="w-4 h-4 text-neutral-450 group-hover:text-emerald-500" />
                         </div>
                         <div className="min-w-0">
                           <span className="text-xs font-bold text-[#0a0a0a] truncate block group-hover:text-emerald-700 transition-colors">
                             {item.query}
                           </span>
-                          <span className="text-[9px] text-neutral-400 block mt-0.5">
+                          <span className="text-[9px] text-neutral-400 block mt-0.5 font-medium">
                             {new Date(item.created_at).toLocaleString()}
                           </span>
                         </div>
@@ -309,7 +309,7 @@ export default function Dashboard() {
                             Score: {item.quality_score}/10
                           </span>
                         ) : (
-                          <span className="text-[9px] font-mono bg-neutral-50 text-neutral-450 border border-neutral-150 px-2 py-0.5 rounded-full font-bold">
+                          <span className="text-[9px] font-mono bg-neutral-50 text-neutral-455 border border-neutral-100 px-2 py-0.5 rounded-full font-bold">
                             No Score
                           </span>
                         )}
@@ -465,7 +465,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <Link href="/documents" className="flex items-center justify-between p-3 border border-dashed border-neutral-250 hover:border-emerald-400 hover:bg-emerald-50/[0.02] rounded-lg text-xs font-semibold text-neutral-650 hover:text-emerald-700 transition-colors">
+              <Link href="/documents" className="flex items-center justify-between p-3 border border-dashed border-neutral-200 hover:border-emerald-400 hover:bg-emerald-50/[0.02] rounded-lg text-xs font-semibold text-neutral-650 hover:text-emerald-700 transition-colors">
                 <span className="flex items-center gap-1.5">
                   <Upload className="w-3.5 h-3.5 text-neutral-450" /> Add Grounding Files
                 </span>
