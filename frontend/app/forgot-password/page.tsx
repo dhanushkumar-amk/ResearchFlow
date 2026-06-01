@@ -7,20 +7,17 @@ import useAuth from '@/hooks/useAuth';
 import * as Lucide from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const LoginPage = () => {
+const ForgotPasswordPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { forgotPassword } = useAuth();
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError('Please fill in all fields');
+    if (!email) {
+      setError('Please enter your email address');
       return;
     }
     
@@ -28,12 +25,12 @@ const LoginPage = () => {
     setIsLoading(true);
     
     try {
-      await login(email, password);
+      await forgotPassword(email);
       setIsLoading(false);
-      navigate(ROUTES.RESEARCH);
+      navigate(ROUTES.VERIFY_OTP, { state: { email, fromForgotPassword: true } });
     } catch (err) {
       setIsLoading(false);
-      setError(err instanceof Error ? err.message : 'Unable to sign in.');
+      setError(err instanceof Error ? err.message : 'Unable to send reset code.');
     }
   };
 
@@ -54,14 +51,14 @@ const LoginPage = () => {
           </span>
         </div>
         <h2 className="text-[28px] font-extrabold text-[#0a0a0a] tracking-tight">
-          Welcome back
+          Forgot password?
         </h2>
         <p className="mt-2 text-xs text-neutral-450">
-          Access your autonomous research agent workspace
+          Enter your email to receive a 6-digit verification code
         </p>
       </div>
 
-      {/* Login Card */}
+      {/* Card */}
       <div className="mt-2 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
         <motion.div 
           initial={{ opacity: 0, y: 15 }}
@@ -103,60 +100,6 @@ const LoginPage = () => {
               </div>
             </div>
 
-            {/* Password */}
-            <div>
-              <div className="flex justify-between items-center mb-1.5">
-                <label htmlFor="password" className="block text-xs font-semibold text-neutral-700">
-                  Password
-                </label>
-                <span 
-                  onClick={() => navigate(ROUTES.FORGOT_PASSWORD)}
-                  className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 cursor-pointer transition-colors"
-                >
-                  Forgot password?
-                </span>
-              </div>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-400">
-                  <Lucide.Lock className="h-4 w-4" />
-                </div>
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="block w-full pl-10 pr-10 py-2 border border-neutral-200 rounded-md text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-neutral-955 placeholder-neutral-400"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600 transition-colors"
-                >
-                  {showPassword ? (
-                    <Lucide.EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Lucide.Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Remember Me */}
-            <div className="flex items-center justify-between pt-1">
-              <label className="flex items-center gap-2 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-neutral-250 text-emerald-605 focus:ring-emerald-500/10 cursor-pointer"
-                />
-                <span className="text-xs text-neutral-500 font-medium">Keep me signed in</span>
-              </label>
-            </div>
-
             {/* Submit Button */}
             <button
               type="submit"
@@ -166,31 +109,31 @@ const LoginPage = () => {
               {isLoading ? (
                 <>
                   <Lucide.Loader className="h-4 w-4 animate-spin" />
-                  <span>Signing In...</span>
+                  <span>Sending Code...</span>
                 </>
               ) : (
                 <>
-                  <Lucide.LogIn className="h-4 w-4" />
-                  <span>Sign In</span>
+                  <Lucide.Send className="h-4 w-4" />
+                  <span>Send Verification Code</span>
                 </>
               )}
             </button>
           </form>
 
           {/* Footer Link */}
-          <p className="mt-6 text-center text-xs text-neutral-450">
-            New to ResearchMind?{' '}
+          <div className="mt-6 flex justify-center border-t border-neutral-100 pt-4">
             <span 
-              onClick={() => navigate(ROUTES.REGISTER)}
-              className="font-bold text-emerald-600 hover:text-emerald-700 cursor-pointer transition-colors"
+              onClick={() => navigate(ROUTES.LOGIN)}
+              className="flex items-center gap-1.5 text-xs font-bold text-neutral-500 hover:text-emerald-600 cursor-pointer transition-colors"
             >
-              Create an account
+              <Lucide.ArrowLeft className="h-4 w-4" />
+              Back to Sign In
             </span>
-          </p>
+          </div>
         </motion.div>
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default ForgotPasswordPage;

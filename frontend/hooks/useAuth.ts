@@ -1,11 +1,9 @@
 import { useAuth as useGlobalAuth } from '../lib/AuthContext';
 
 export default function useAuth() {
-  const { user, token, loading } = useGlobalAuth();
+  const context = useGlobalAuth();
   return {
-    isAuthenticated: !!user,
-    user,
-    token,
-    loading
+    ...context,
+    isAuthenticated: !!context.user,
   };
 }

@@ -68,3 +68,19 @@
 {"level":"info","message":"Agent: rag | Session: 4f990804-db01-4776-ab95-93d6d5741289 | Duration: 8607ms | Tokens: 0 | Status: success","timestamp":"2026-06-01 10:38:43"}
 {"level":"info","message":"Agent: synthesizer | Session: 4f990804-db01-4776-ab95-93d6d5741289 | Duration: 5830ms | Tokens: 0 | Status: success","timestamp":"2026-06-01 10:39:00"}
 {"level":"info","message":"GET /4f990804-db01-4776-ab95-93d6d5741289/stream 200 60342ms session:4f990804-db01-4776-ab95-93d6d5741289","timestamp":"2026-06-01 10:39:27"}
+{"level":"info","message":"OPTIONS /api/research/history 204 5ms session:-","timestamp":"2026-06-01 10:43:21"}
+{"level":"info","message":"OPTIONS /api/research/history 204 1ms session:-","timestamp":"2026-06-01 10:43:21"}
+{"level":"info","message":"GET /history 200 4366ms session:-","timestamp":"2026-06-01 10:43:25"}
+{"level":"info","message":"GET /history 304 287ms session:-","timestamp":"2026-06-01 10:43:26"}
+{"level":"info","message":"OPTIONS /api/auth/me 204 13ms session:-","timestamp":"2026-06-01 10:45:03"}
+{"level":"info","message":"GET /me 200 7605ms session:-","timestamp":"2026-06-01 10:45:11"}
+{"level":"info","message":"OPTIONS /api/research/history 204 0ms session:-","timestamp":"2026-06-01 10:45:11"}
+{"level":"info","message":"OPTIONS /api/research/history 204 1ms session:-","timestamp":"2026-06-01 10:45:11"}
+{"level":"info","message":"GET /history 304 298ms session:-","timestamp":"2026-06-01 10:45:11"}
+{"level":"info","message":"GET /history 304 317ms session:-","timestamp":"2026-06-01 10:45:11"}
+{"level":"info","message":"OPTIONS /api/auth/login 204 6ms session:-","timestamp":"2026-06-01 10:48:09"}
+{"level":"info","message":"POST /login 200 7275ms session:-","timestamp":"2026-06-01 10:48:17"}
+{"level":"info","message":"OPTIONS /api/research/history 204 1ms session:-","timestamp":"2026-06-01 10:48:17"}
+{"level":"info","message":"OPTIONS /api/research/history 204 0ms session:-","timestamp":"2026-06-01 10:48:17"}
+{"level":"info","message":"GET /history 304 525ms session:-","timestamp":"2026-06-01 10:48:18"}
+{"level":"info","message":"GET /history 304 289ms session:-","timestamp":"2026-06-01 10:48:18"}
