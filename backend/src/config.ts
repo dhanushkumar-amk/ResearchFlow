@@ -30,5 +30,8 @@ export const config = {
   qdrantApiKey: process.env.QDRANT_API_KEY as string,
   redisUrl: process.env.UPSTASH_REDIS_REST_URL as string,
   redisToken: process.env.UPSTASH_REDIS_REST_TOKEN as string,
-  databaseUrl: process.env.DATABASE_URL as string
+  databaseUrl: process.env.DATABASE_URL as string,
+  newsApiKey: process.env.NEWS_API_KEY as string,
+  pubmedEmail: process.env.PUBMED_EMAIL as string,
+  redditUserAgent: process.env.REDDIT_USER_AGENT as string
 };

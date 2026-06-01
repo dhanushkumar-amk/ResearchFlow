@@ -5,6 +5,13 @@ import dns from 'dns';
 // Load environment variables
 dotenv.config();
 
+// Custom lookup function that forces IPv4 to avoid broken IPv6 TLS handshake hangs on Windows/Wi-Fi
+const lookupIPv4 = (hostname: string, options: any, callback: any) => {
+  dns.lookup(hostname, { family: 4 }, (err, address, family) => {
+    callback(err, address, family);
+  });
+};
+
 // Fix transient DNS resolution issues on Windows/Node.js by preferring IPv4
 if (dns.setDefaultResultOrder) {
   dns.setDefaultResultOrder('ipv4first');
@@ -18,7 +25,9 @@ const pool = new Pool({
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 15000, // 15 seconds to allow serverless cold starts
   ssl: isNeon ? { rejectUnauthorized: false } : undefined,
-});
+  lookup: lookupIPv4
+} as any);
+
 
 // Check connectivity
 pool.on('connect', () => {

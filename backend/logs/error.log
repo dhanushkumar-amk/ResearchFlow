@@ -16,3 +16,13 @@
 {"level":"error","message":"GET /me 500 11930ms session:-","timestamp":"2026-06-01 11:12:45"}
 {"level":"error","message":"POST /login 500 11771ms session:-","timestamp":"2026-06-01 11:13:50"}
 {"level":"error","message":"POST /login 500 11779ms session:-","timestamp":"2026-06-01 11:14:14"}
+{"level":"error","message":"GET /me 500 48073ms session:-","timestamp":"2026-06-01 16:44:22"}
+{"level":"error","message":"POST /login 500 48127ms session:-","timestamp":"2026-06-01 16:45:23"}
+{"level":"error","message":"POST /login 500 48094ms session:-","timestamp":"2026-06-01 16:50:10"}
+{"level":"error","message":"POST /login 500 48111ms session:-","timestamp":"2026-06-01 16:54:48"}
+{"level":"error","message":"POST /login 401 713ms session:-","timestamp":"2026-06-01 17:05:08"}
+{"level":"error","message":"POST /login 401 97ms session:-","timestamp":"2026-06-01 17:05:38"}
+{"level":"error","message":"POST /login 401 69ms session:-","timestamp":"2026-06-01 17:06:12"}
+{"level":"error","message":"POST /login 401 78ms session:-","timestamp":"2026-06-01 17:06:18"}
+{"level":"error","message":"POST /verify-email 400 398ms session:-","timestamp":"2026-06-01 17:14:10"}
+{"level":"error","message":"POST /verify-email 400 357ms session:-","timestamp":"2026-06-01 17:16:00"}

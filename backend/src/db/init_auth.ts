@@ -1,13 +1,22 @@
 import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
+import dns from 'dns';
 dotenv.config();
+
+// Custom lookup function that forces IPv4 to avoid broken IPv6 TLS handshake hangs on Windows/Wi-Fi
+const lookupIPv4 = (hostname: string, options: any, callback: any) => {
+  dns.lookup(hostname, { family: 4 }, (err, address, family) => {
+    callback(err, address, family);
+  });
+};
 
 async function check() {
   const isNeon = process.env.DATABASE_URL?.includes('neon.tech');
   const pool = new Pool({ 
     connectionString: process.env.DATABASE_URL,
     ssl: isNeon ? { rejectUnauthorized: false } : undefined,
-  });
+    lookup: lookupIPv4
+  } as any);
   try {
     const res = await pool.query("SELECT to_regclass('public.users')");
     console.log('Result:', res.rows[0]);

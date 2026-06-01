@@ -80,7 +80,7 @@ router.post('/verify-email', async (req: Request, res: Response) => {
     
     // Fetch OTP from Redis
     const storedCode = await getMemory(`otp:${normalizedEmail}`);
-    if (!storedCode || storedCode !== code.trim()) {
+    if (!storedCode || storedCode.toString() !== code.trim()) {
       res.status(400).json({ error: 'Invalid or expired verification code.' });
       return;
     }
@@ -258,7 +258,7 @@ router.post('/verify-reset-code', async (req: Request, res: Response) => {
     const normalizedEmail = email.toLowerCase().trim();
     const storedCode = await getMemory(`reset_otp:${normalizedEmail}`);
 
-    if (!storedCode || storedCode !== code.trim()) {
+    if (!storedCode || storedCode.toString() !== code.trim()) {
       res.status(400).json({ error: 'Invalid or expired verification code.' });
       return;
     }

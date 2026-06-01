@@ -20,6 +20,84 @@ interface CriticOutput {
 }
 
 /**
+ * Extremely robust text/markdown/JSON extractor fallback for Critic Agent.
+ * Ensures the pipeline never crashes even if LLM returns bad formatting.
+ */
+function robustParseCriticOutput(content: string): CriticOutput {
+  // 1. Try finding a JSON block
+  const jsonMatch = content.match(/\{[\s\S]*\}/);
+  if (jsonMatch) {
+    try {
+      const jsonStr = jsonMatch[0].trim();
+      return JSON.parse(jsonStr) as CriticOutput;
+    } catch (e: any) {
+      console.warn('⚠️ [Critic Agent] Fallback JSON.parse failed, attempting manual text extraction...', e.message);
+    }
+  }
+
+  // 2. Full text manual extraction fallback
+  const normalized = content.toLowerCase();
+  
+  // Determine verdict
+  let verdict: 'approve' | 'revise' = 'approve';
+  if (normalized.includes('verdict: revise') || normalized.includes('"verdict": "revise"') || (normalized.includes('revise') && !normalized.includes('approve'))) {
+    verdict = 'revise';
+  } else if (normalized.includes('verdict: approve') || normalized.includes('"verdict": "approve"') || normalized.includes('approve')) {
+    verdict = 'approve';
+  }
+
+  // Determine score
+  let score = verdict === 'approve' ? 8 : 5;
+  const scoreMatch = content.match(/(?:score|rating|points)\s*[:"\s]*(\d+)/i);
+  if (scoreMatch) {
+    const parsedScore = parseInt(scoreMatch[1], 10);
+    if (!isNaN(parsedScore) && parsedScore >= 0 && parsedScore <= 10) {
+      score = parsedScore;
+    }
+  }
+
+  // Determine issues
+  const issues: string[] = [];
+  const issuesSection = content.match(/(?:issues|weaknesses|problems)\s*[:\s]*\n?([\s\S]*?)(?:\n\n|\n[A-Z]|$)/i);
+  if (issuesSection) {
+    const lines = issuesSection[1].split('\n');
+    for (const line of lines) {
+      const trimmed = line.replace(/^[\s-*>\d.]+\s*/, '').trim();
+      if (trimmed && trimmed.length > 3 && !trimmed.toLowerCase().includes('no issues') && !trimmed.toLowerCase().includes('none')) {
+        issues.push(trimmed);
+      }
+    }
+  }
+
+  // Determine suggestions
+  const suggestions: string[] = [];
+  const suggestionsSection = content.match(/(?:suggestions|recommendations|fixes|improvements)\s*[:\s]*\n?([\s\S]*?)(?:\n\n|\n[A-Z]|$)/i);
+  if (suggestionsSection) {
+    const lines = suggestionsSection[1].split('\n');
+    for (const line of lines) {
+      const trimmed = line.replace(/^[\s-*>\d.]+\s*/, '').trim();
+      if (trimmed && trimmed.length > 3 && !trimmed.toLowerCase().includes('no suggestions') && !trimmed.toLowerCase().includes('none')) {
+        suggestions.push(trimmed);
+      }
+    }
+  }
+
+  // If score doesn't match verdict, align them to maintain state validity
+  if (verdict === 'approve' && score < 7) {
+    score = 7;
+  } else if (verdict === 'revise' && score >= 7) {
+    score = 6;
+  }
+
+  return {
+    score,
+    issues,
+    suggestions,
+    verdict
+  };
+}
+
+/**
  * Agent 5: Critic Agent (Optimized Phase 46)
  * Task: Rigorous quality reviewer for research reports with telemetry.
  */
@@ -78,7 +156,16 @@ export async function runCriticAgent(inputs: CriticInputs): Promise<CriticOutput
     });
 
     const response = await llm.invoke(formatted);
-    const result = await parser.parse(response.content as string);
+    const content = response.content as string;
+    
+    let result: CriticOutput;
+    try {
+      result = await parser.parse(content);
+    } catch (parseError) {
+      console.warn('⚠️ [Critic Agent] Standard parser failed, attempting robust custom extraction fallback...');
+      result = robustParseCriticOutput(content);
+    }
+    
     const totalTokens = (response as any).usage_metadata?.total_tokens || 0;
 
     const durationMs = Date.now() - startTime;

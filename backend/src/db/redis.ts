@@ -34,10 +34,14 @@ export async function getMemory(key: string) {
   try {
     const res = await redis.get(`research:${key}`);
     
-    // Attempt parsing as JSON if it's a string that looks like an object
+    // Attempt parsing as JSON if it's a string that looks like an object or array
     if (typeof res === 'string') {
       try {
-        return JSON.parse(res);
+        const trimmed = res.trim();
+        if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+          return JSON.parse(trimmed);
+        }
+        return res;
       } catch {
         return res;
       }

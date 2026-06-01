@@ -10,6 +10,17 @@ import {
 import { searchWeb } from '../tools/tavilySearch';
 import { searchChunks, collectionExists } from '../rag/vectorStore';
 import { setMemory, getMemory } from '../db/redis';
+import {
+  pubmedSearch,
+  arxivSearch,
+  wikipediaSearch,
+  hackernewsSearch,
+  redditSearch,
+  githubSearch,
+  newsSearch,
+  duckduckgoSearch,
+  youtubeTranscript
+} from '../tools/mcpTools';
 
 /**
  * Phase 26-30: Research Tools MCP Server
@@ -91,6 +102,87 @@ class ResearchMcpServer {
               key: { type: 'string', description: 'The memory key.' },
             },
             required: ['session_id', 'key'],
+          },
+        },
+        {
+          name: 'pubmed_search',
+          description: 'Search PubMed for biomedical literature and clinical study details.',
+          inputSchema: {
+            type: 'object',
+            properties: { query: { type: 'string', description: 'Biomedical or clinical search query.' } },
+            required: ['query'],
+          },
+        },
+        {
+          name: 'arxiv_search',
+          description: 'Search ArXiv for academic publications, physics, computer science, and AI papers.',
+          inputSchema: {
+            type: 'object',
+            properties: { query: { type: 'string', description: 'Academic search query.' } },
+            required: ['query'],
+          },
+        },
+        {
+          name: 'wikipedia_search',
+          description: 'Search Wikipedia for background knowledge, definitions, history, and concepts.',
+          inputSchema: {
+            type: 'object',
+            properties: { query: { type: 'string', description: 'General knowledge query.' } },
+            required: ['query'],
+          },
+        },
+        {
+          name: 'hackernews_search',
+          description: 'Search HackerNews stories and discussions for community opinions and tech news.',
+          inputSchema: {
+            type: 'object',
+            properties: { query: { type: 'string', description: 'Tech community query.' } },
+            required: ['query'],
+          },
+        },
+        {
+          name: 'reddit_search',
+          description: 'Search Reddit user discussions, threads, and reviews.',
+          inputSchema: {
+            type: 'object',
+            properties: { query: { type: 'string', description: 'Social discussion query.' } },
+            required: ['query'],
+          },
+        },
+        {
+          name: 'github_search',
+          description: 'Search GitHub repositories for open source projects, code, and libraries.',
+          inputSchema: {
+            type: 'object',
+            properties: { query: { type: 'string', description: 'Code repository search query.' } },
+            required: ['query'],
+          },
+        },
+        {
+          name: 'news_search',
+          description: 'Search global news articles for breaking announcements and trend reports.',
+          inputSchema: {
+            type: 'object',
+            properties: { query: { type: 'string', description: 'News search query.' } },
+            required: ['query'],
+          },
+        },
+        {
+          name: 'duckduckgo_search',
+          description: 'General web search using DuckDuckGo.',
+          inputSchema: {
+            type: 'object',
+            properties: { query: { type: 'string', description: 'General web query.' } },
+            required: ['query'],
+          },
+        },
+        {
+          name: 'youtube_transcript',
+          description: 'Retrieve transcripts for YouTube videos given their URLs.',
+          inputSchema: {
+            type: 'object',
+            properties: { url: { type: 'string', description: 'The YouTube video URL.' } },
+            required: ['url'],
           },
         },
       ],
@@ -219,6 +311,114 @@ class ResearchMcpServer {
             content: [{ type: 'text', text: `❌ Memory Retrieval Error: ${error.message}` }],
             isError: true,
           };
+        }
+      }
+
+      // ── pubmed_search ─────────────────────────────────────────────────────
+      if (name === 'pubmed_search') {
+        const query = (args as any)?.query as string;
+        if (!query) throw new McpError(ErrorCode.InvalidParams, 'Query is required.');
+        try {
+          const res = await pubmedSearch(query);
+          return { content: [{ type: 'text', text: JSON.stringify(res) }] };
+        } catch (error: any) {
+          return { content: [{ type: 'text', text: `❌ PubMed Error: ${error.message}` }], isError: true };
+        }
+      }
+
+      // ── arxiv_search ──────────────────────────────────────────────────────
+      if (name === 'arxiv_search') {
+        const query = (args as any)?.query as string;
+        if (!query) throw new McpError(ErrorCode.InvalidParams, 'Query is required.');
+        try {
+          const res = await arxivSearch(query);
+          return { content: [{ type: 'text', text: JSON.stringify(res) }] };
+        } catch (error: any) {
+          return { content: [{ type: 'text', text: `❌ ArXiv Error: ${error.message}` }], isError: true };
+        }
+      }
+
+      // ── wikipedia_search ──────────────────────────────────────────────────
+      if (name === 'wikipedia_search') {
+        const query = (args as any)?.query as string;
+        if (!query) throw new McpError(ErrorCode.InvalidParams, 'Query is required.');
+        try {
+          const res = await wikipediaSearch(query);
+          return { content: [{ type: 'text', text: JSON.stringify(res) }] };
+        } catch (error: any) {
+          return { content: [{ type: 'text', text: `❌ Wikipedia Error: ${error.message}` }], isError: true };
+        }
+      }
+
+      // ── hackernews_search ─────────────────────────────────────────────────
+      if (name === 'hackernews_search') {
+        const query = (args as any)?.query as string;
+        if (!query) throw new McpError(ErrorCode.InvalidParams, 'Query is required.');
+        try {
+          const res = await hackernewsSearch(query);
+          return { content: [{ type: 'text', text: JSON.stringify(res) }] };
+        } catch (error: any) {
+          return { content: [{ type: 'text', text: `❌ HackerNews Error: ${error.message}` }], isError: true };
+        }
+      }
+
+      // ── reddit_search ─────────────────────────────────────────────────────
+      if (name === 'reddit_search') {
+        const query = (args as any)?.query as string;
+        if (!query) throw new McpError(ErrorCode.InvalidParams, 'Query is required.');
+        try {
+          const res = await redditSearch(query);
+          return { content: [{ type: 'text', text: JSON.stringify(res) }] };
+        } catch (error: any) {
+          return { content: [{ type: 'text', text: `❌ Reddit Error: ${error.message}` }], isError: true };
+        }
+      }
+
+      // ── github_search ─────────────────────────────────────────────────────
+      if (name === 'github_search') {
+        const query = (args as any)?.query as string;
+        if (!query) throw new McpError(ErrorCode.InvalidParams, 'Query is required.');
+        try {
+          const res = await githubSearch(query);
+          return { content: [{ type: 'text', text: JSON.stringify(res) }] };
+        } catch (error: any) {
+          return { content: [{ type: 'text', text: `❌ GitHub Error: ${error.message}` }], isError: true };
+        }
+      }
+
+      // ── news_search ───────────────────────────────────────────────────────
+      if (name === 'news_search') {
+        const query = (args as any)?.query as string;
+        if (!query) throw new McpError(ErrorCode.InvalidParams, 'Query is required.');
+        try {
+          const res = await newsSearch(query);
+          return { content: [{ type: 'text', text: JSON.stringify(res) }] };
+        } catch (error: any) {
+          return { content: [{ type: 'text', text: `❌ News Error: ${error.message}` }], isError: true };
+        }
+      }
+
+      // ── duckduckgo_search ─────────────────────────────────────────────────
+      if (name === 'duckduckgo_search') {
+        const query = (args as any)?.query as string;
+        if (!query) throw new McpError(ErrorCode.InvalidParams, 'Query is required.');
+        try {
+          const res = await duckduckgoSearch(query);
+          return { content: [{ type: 'text', text: JSON.stringify(res) }] };
+        } catch (error: any) {
+          return { content: [{ type: 'text', text: `❌ DuckDuckGo Error: ${error.message}` }], isError: true };
+        }
+      }
+
+      // ── youtube_transcript ────────────────────────────────────────────────
+      if (name === 'youtube_transcript') {
+        const url = (args as any)?.url as string;
+        if (!url) throw new McpError(ErrorCode.InvalidParams, 'URL is required.');
+        try {
+          const res = await youtubeTranscript(url);
+          return { content: [{ type: 'text', text: JSON.stringify(res) }] };
+        } catch (error: any) {
+          return { content: [{ type: 'text', text: `❌ YouTube Transcript Error: ${error.message}` }], isError: true };
         }
       }
 

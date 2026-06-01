@@ -22,13 +22,14 @@ mermaid.initialize({
 
 export interface MermaidProps {
   chart: string;
+  isStreaming?: boolean;
 }
 
 /**
  * High-Density Mermaid Renderer
  * Uses explicit rendering to prevent 'Syntax error in text' when streaming.
  */
-export default function Mermaid({ chart }: MermaidProps) {
+export default function Mermaid({ chart, isStreaming }: MermaidProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [svg, setSvg] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
@@ -36,6 +37,7 @@ export default function Mermaid({ chart }: MermaidProps) {
   useEffect(() => {
     let isMounted = true;
     const renderChart = async () => {
+      if (isStreaming) return;
       if (!chart || chart.trim() === '') return;
       
       try {
@@ -65,7 +67,17 @@ export default function Mermaid({ chart }: MermaidProps) {
 
     renderChart();
     return () => { isMounted = false; };
-  }, [chart]);
+  }, [chart, isStreaming]);
+
+  if (isStreaming) {
+    return (
+      <div className="my-6 p-6 bg-zinc-50 rounded-2xl border border-dashed border-emerald-200 text-center">
+        <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest animate-pulse">
+           Visualizing Strategic Map...
+        </span>
+      </div>
+    );
+  }
 
   if (error && !svg) {
     return (

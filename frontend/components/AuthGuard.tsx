@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 
 // Pages that don't need auth
-const PUBLIC_PATHS = ['/login', '/register'];
+const PUBLIC_PATHS = ['/login', '/register', '/verify-otp', '/forgot-password', '/reset-password'];
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();

@@ -215,7 +215,7 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
                   const value = String(children).replace(/\n$/, '');
 
                   if (language === 'mermaid') {
-                    return <Mermaid chart={value} />;
+                    return <Mermaid chart={value} isStreaming={isStreaming} />;
                   }
 
                   return (
