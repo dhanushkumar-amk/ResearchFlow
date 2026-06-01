@@ -51,7 +51,6 @@ export default function HistoryPage() {
     return 'bg-red-100 text-red-700';
   };
 
-
   return (
     <div className="min-h-screen bg-white pt-16">
       <main className="max-w-5xl mx-auto px-4 py-10">
@@ -76,13 +75,13 @@ export default function HistoryPage() {
                 placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 pr-4 py-2 border border-zinc-200 rounded-xl text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all w-48"
+                className="pl-9 pr-4 py-2 border border-zinc-200 rounded-xl text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 transition-all w-48 bg-white"
               />
             </div>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'newest' | 'quality')}
-              className="px-3 py-2 border border-zinc-200 rounded-xl text-sm outline-none focus:border-blue-400 bg-white cursor-pointer"
+              className="px-3 py-2 border border-zinc-200 rounded-xl text-sm outline-none focus:border-emerald-500 bg-white cursor-pointer"
             >
               <option value="newest">Newest First</option>
               <option value="quality">Highest Score</option>
@@ -108,7 +107,7 @@ export default function HistoryPage() {
               <div
                 key={item.session_id}
                 onClick={() => router.push(`/research/${item.session_id}`)}
-                className="group relative bg-white border border-zinc-200 rounded-2xl p-5 hover:border-blue-300 hover:shadow-lg transition-all cursor-pointer flex flex-col justify-between gap-4"
+                className="group relative bg-white border border-zinc-200 rounded-2xl p-5 hover:border-emerald-300 hover:shadow-lg transition-all cursor-pointer flex flex-col justify-between gap-4"
               >
                 {/* Score + Delete */}
                 <div className="flex items-center justify-between">
@@ -117,7 +116,7 @@ export default function HistoryPage() {
                   </span>
                   <button
                     onClick={(e) => handleDelete(e, item.session_id)}
-                    className="p-1.5 text-zinc-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                    className="p-1.5 text-zinc-300 hover:text-red-505 hover:bg-red-50 rounded-lg transition-all"
                     title="Delete"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -125,7 +124,7 @@ export default function HistoryPage() {
                 </div>
 
                 {/* Query */}
-                <p className="text-sm font-medium text-zinc-800 line-clamp-3 leading-relaxed group-hover:text-blue-600 transition-colors">
+                <p className="text-sm font-medium text-zinc-800 line-clamp-3 leading-relaxed group-hover:text-emerald-600 transition-colors">
                   {item.query}
                 </p>
 
@@ -135,7 +134,7 @@ export default function HistoryPage() {
                     <Calendar className="w-3.5 h-3.5" />
                     {new Date(item.created_at).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
-                  <span className="text-xs font-medium text-blue-500 flex items-center gap-0.5 group-hover:gap-1.5 transition-all">
+                  <span className="text-xs font-medium text-emerald-600 flex items-center gap-0.5 group-hover:gap-1.5 transition-all">
                     View Report <ChevronRight className="w-3.5 h-3.5" />
                   </span>
                 </div>
@@ -154,7 +153,7 @@ export default function HistoryPage() {
             <p className="text-sm text-zinc-400 mb-6">Start researching from the home page.</p>
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 text-white text-sm font-semibold rounded-xl hover:bg-emerald-600 transition-colors"
             >
               Start Research
             </Link>

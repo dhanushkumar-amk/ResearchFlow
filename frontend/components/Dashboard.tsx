@@ -45,16 +45,16 @@ export default function Dashboard() {
     }
   };
 
-  const suggestions = ['AI Agents in 2025', 'Quantum Computing advances', 'Blockchain in healthcare', 'Climate tech startups'];
+  const suggestions = ['AI Agents in 2026', 'Quantum Computing advances', 'Blockchain in healthcare', 'Climate tech startups'];
 
   return (
     <div className="flex flex-col min-h-screen bg-white pt-16">
       {/* Hero */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-20 text-center">
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-20 text-center animate-in fade-in duration-500">
         <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-sm font-medium border border-blue-100">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-sm font-medium border border-emerald-100">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
             Welcome back, {user?.name.split(' ')[0]}
           </div>
 
@@ -62,7 +62,7 @@ export default function Dashboard() {
           <div className="space-y-4">
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-zinc-900 leading-tight">
               Research anything,{' '}
-              <span className="text-blue-600">instantly.</span>
+              <span className="text-emerald-600">instantly.</span>
             </h1>
             <p className="text-lg text-zinc-500 max-w-2xl mx-auto">
               Ask a question. Our AI agents search the web, analyze documents, and deliver a comprehensive report in seconds.
@@ -76,13 +76,13 @@ export default function Dashboard() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="What do you want to research?"
-              className="w-full px-6 py-5 pr-36 text-lg border-2 border-zinc-200 rounded-2xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 bg-white shadow-lg shadow-zinc-100 transition-all placeholder-zinc-400 text-zinc-900"
+              className="w-full px-6 py-5 pr-36 text-lg border-2 border-zinc-200 rounded-2xl outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 bg-white shadow-lg shadow-zinc-100 transition-all placeholder-zinc-400 text-zinc-900"
               disabled={isLoading}
             />
             <button
               type="submit"
               disabled={!query.trim() || isLoading}
-              className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-semibold rounded-xl transition-all active:scale-95 shadow-md"
+              className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-semibold rounded-xl transition-all active:scale-95 shadow-md cursor-pointer"
             >
               {isLoading ? (
                 <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -109,7 +109,7 @@ export default function Dashboard() {
               <button
                 key={s}
                 onClick={() => setQuery(s)}
-                className="text-sm px-3 py-1.5 bg-zinc-50 hover:bg-blue-50 text-zinc-600 hover:text-blue-600 border border-zinc-200 hover:border-blue-200 rounded-lg transition-all"
+                className="text-sm px-3 py-1.5 bg-zinc-50 hover:bg-emerald-50 text-zinc-600 hover:text-emerald-700 border border-zinc-200 hover:border-emerald-200 rounded-lg transition-all cursor-pointer"
               >
                 {s}
               </button>
@@ -125,20 +125,20 @@ export default function Dashboard() {
             <h2 className="text-base font-semibold text-zinc-700 flex items-center gap-2">
               <Clock className="w-4 h-4" /> Recent Research
             </h2>
-            <Link href="/history" className="text-sm text-blue-600 hover:underline">View all</Link>
+            <Link href="/history" className="text-sm text-emerald-600 hover:underline font-semibold">View all</Link>
           </div>
           <div className="space-y-2">
             {history.slice(0, 5).map((item) => (
               <Link
                 key={item.session_id}
                 href={`/research/${item.session_id}`}
-                className="flex items-center justify-between p-4 bg-white border border-zinc-200 rounded-xl hover:border-blue-300 hover:shadow-md transition-all group"
+                className="flex items-center justify-between p-4 bg-white border border-zinc-200 rounded-xl hover:border-emerald-300 hover:shadow-md transition-all group"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">
-                    <FileText className="w-4 h-4 text-blue-500" />
+                  <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center shrink-0">
+                    <FileText className="w-4 h-4 text-emerald-500" />
                   </div>
-                  <span className="text-sm font-medium text-zinc-800 truncate group-hover:text-blue-600 transition-colors">
+                  <span className="text-sm font-medium text-zinc-800 truncate group-hover:text-emerald-600 transition-colors">
                     {item.query}
                   </span>
                 </div>
@@ -147,7 +147,7 @@ export default function Dashboard() {
                     <span className={`text-xs font-bold px-2 py-1 rounded-lg ${
                       item.quality_score >= 8 ? 'bg-green-50 text-green-600' :
                       item.quality_score >= 6 ? 'bg-amber-50 text-amber-600' :
-                      'bg-red-50 text-red-600'
+                      'bg-red-50 text-red-650'
                     }`}>
                       {item.quality_score}/10
                     </span>
@@ -155,7 +155,7 @@ export default function Dashboard() {
                   <span className="text-xs text-zinc-400">
                     {new Date(item.created_at).toLocaleDateString()}
                   </span>
-                  <ArrowRight className="w-4 h-4 text-zinc-300 group-hover:text-blue-400 transition-colors" />
+                  <ArrowRight className="w-4 h-4 text-zinc-300 group-hover:text-emerald-450 transition-colors" />
                 </div>
               </Link>
             ))}
@@ -169,7 +169,7 @@ export default function Dashboard() {
           <div className="p-8 bg-zinc-50 border border-zinc-200 rounded-2xl text-center space-y-4">
             <Upload className="w-10 h-10 mx-auto text-zinc-300" />
             <p className="text-zinc-500 text-sm">No research yet — try asking something above, or upload documents to enhance research quality.</p>
-            <Link href="/documents" className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:underline">
+            <Link href="/documents" className="inline-flex items-center gap-2 text-sm font-medium text-emerald-600 hover:underline">
               Upload Documents <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>

@@ -27,7 +27,7 @@ export default function TestTimeline() {
               }}
               className={`px-6 py-2 rounded-xl font-bold transition-all active:scale-95 ${
                 activeNode === node 
-                  ? 'bg-blue-600 text-white shadow-lg ring-4 ring-blue-600/20' 
+                  ? 'bg-emerald-500 text-white shadow-lg ring-4 ring-emerald-600/20' 
                   : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200'
               }`}
             >

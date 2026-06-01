@@ -29,11 +29,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-white text-zinc-900 selection:bg-blue-100">
+      <body className="min-h-full flex flex-col bg-white text-zinc-900 selection:bg-emerald-100">
         <ErrorSuppressor />
         <AuthProvider>
           <AuthGuard>
-            <NextTopLoader color="#2563eb" showSpinner={false} height={3} />
+            <NextTopLoader color="#10b981" showSpinner={false} height={3} />
             <Navbar />
             {children}
           </AuthGuard>

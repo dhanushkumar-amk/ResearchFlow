@@ -86,7 +86,7 @@ export default async function SharePage({ params }: { params: { sessionId: strin
           </div>
           <h1 className="text-xl font-black text-zinc-900 mb-2 font-display">Discovery Locked</h1>
           <p className="text-zinc-500 text-sm mb-8">{error}</p>
-          <a href="/" className="inline-block bg-blue-600 text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200">
+          <a href="/" className="inline-block bg-emerald-500 text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg hover:shadow-emerald-100">
             Return to Dashboard
           </a>
         </div>
@@ -101,15 +101,15 @@ export default async function SharePage({ params }: { params: { sessionId: strin
       {/* Dynamic Header with Premium Gradients */}
       <main className="max-w-5xl mx-auto px-6 pt-24 pb-20">
         <div className="relative group mb-12">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-700 blur-[80px] opacity-10 rounded-full" />
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-650 to-teal-700 blur-[80px] opacity-10 rounded-full" />
             <div className="relative bg-zinc-900 text-white rounded-[40px] p-10 md:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-hidden">
                 {/* Decorative Elements */}
                 <div className="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-white/5 to-transparent pointer-events-none" />
-                <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-blue-500/20 rounded-full blur-[100px]" />
+                <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-emerald-500/20 rounded-full blur-[100px]" />
                 
                 <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="flex items-center gap-2 px-3 py-1 bg-blue-500/20 rounded-full border border-blue-500/30 text-[10px] font-black uppercase tracking-[2px] text-blue-400">
+                        <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/20 rounded-full border border-emerald-500/30 text-[10px] font-black uppercase tracking-[2px] text-emerald-400">
                            <Globe className="w-3 h-3" />
                            Public intelligence
                         </div>
@@ -160,7 +160,7 @@ export default async function SharePage({ params }: { params: { sessionId: strin
             <div className="lg:col-span-4 space-y-6">
                 <div className="bg-zinc-50 border border-zinc-200 rounded-3xl p-8 sticky top-24">
                     <h3 className="text-sm font-black text-zinc-900 uppercase tracking-widest mb-4 flex items-center gap-2">
-                        <Zap className="w-4 h-4 text-blue-600" /> 
+                        <Zap className="w-4 h-4 text-emerald-600" /> 
                         Why ResearchFlow?
                     </h3>
                     <p className="text-sm text-zinc-600 leading-relaxed font-medium mb-6">
@@ -169,12 +169,12 @@ export default async function SharePage({ params }: { params: { sessionId: strin
                     <ul className="space-y-4 mb-8">
                         {['Evidence-Based Analysis', 'Deep Citation Network', 'Multi-Agent Synthesis', 'Real-time Verification'].map((item) => (
                             <li key={item} className="flex items-center gap-3 text-xs font-bold text-zinc-800">
-                                <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
+                                <div className="w-1.5 h-1.5 bg-emerald-500" />
                                 {item}
                             </li>
                         ))}
                     </ul>
-                    <a href="/register" className="w-full inline-flex items-center justify-center bg-blue-600 text-white px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-100">
+                    <a href="/register" className="w-full inline-flex items-center justify-center bg-emerald-500 text-white px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg hover:shadow-emerald-100">
                         Create Your Report
                     </a>
                 </div>

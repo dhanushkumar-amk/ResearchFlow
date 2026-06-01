@@ -32,7 +32,7 @@ export default function NeuralMap({ sources, query, highlightedId }: NeuralMapPr
   const data = useMemo(() => {
     // 1. Central Query
     const nodes: Node[] = [
-      { id: 'query', name: query.substring(0, 30) + '...', val: 15, type: 'query', color: '#2563eb' }
+      { id: 'query', name: query.substring(0, 30) + '...', val: 15, type: 'query', color: '#047857' }
     ];
     const links: Link[] = [];
 
@@ -86,7 +86,7 @@ export default function NeuralMap({ sources, query, highlightedId }: NeuralMapPr
           <h2 className="font-bold text-zinc-800 text-xs uppercase tracking-widest">Neural Knowledge Map</h2>
         </div>
         {!sources && (
-          <span className="flex items-center gap-1.5 text-[9px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-black uppercase animate-pulse">
+          <span className="flex items-center gap-1.5 text-[9px] bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full font-black uppercase animate-pulse">
              Wiring Agents...
           </span>
         )}
@@ -146,7 +146,7 @@ export default function NeuralMap({ sources, query, highlightedId }: NeuralMapPr
       {/* Modern Legend */}
       <div className="px-5 py-3 border-t border-zinc-100 bg-white flex justify-between gap-2 shrink-0 overflow-x-auto no-scrollbar">
          {[
-           { color: 'bg-blue-600', label: 'Query' },
+           { color: 'bg-emerald-700', label: 'Query' },
            { color: 'bg-amber-500', label: 'Web' },
            { color: 'bg-emerald-500', label: 'Docs' },
            { color: 'bg-red-500', label: 'Found' }

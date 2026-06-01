@@ -180,7 +180,7 @@ export default function DocumentsPage() {
           <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl flex items-center gap-3">
             <AlertCircle className="w-5 h-5 shrink-0" />
             <span className="text-sm font-medium">{error}</span>
-            <button onClick={() => setError(null)} className="ml-auto text-red-400 hover:text-red-600">×</button>
+            <button onClick={() => setError(null)} className="ml-auto text-red-400 hover:text-red-650">×</button>
           </div>
         )}
 
@@ -198,15 +198,15 @@ export default function DocumentsPage() {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={`relative group bg-white border-2 border-dashed rounded-3xl transition-all duration-300 ${
-            isDragging ? 'border-blue-500 bg-blue-50/10 scale-[1.01]' : 'border-zinc-200'
+            isDragging ? 'border-emerald-500 bg-emerald-5-50/10 scale-[1.01]' : 'border-zinc-200'
           }`}
         >
           <div className="p-12 md:p-20 flex flex-col items-center justify-center text-center space-y-6">
             <div className={`w-20 h-20 rounded-3xl flex items-center justify-center transition-all duration-500 ${
-              isDragging ? 'bg-blue-600 text-white rotate-12 scale-110 shadow-xl' : 'bg-zinc-100 text-zinc-400'
+              isDragging ? 'bg-emerald-500 text-white rotate-12 scale-110 shadow-xl' : 'bg-zinc-100 text-zinc-400'
             }`}>
               {isUploading ? (
-                <Loader2 className="w-10 h-10 animate-spin" />
+                <Loader2 className="w-10 h-10 animate-spin text-white" />
               ) : (
                 <Upload className="w-10 h-10" />
               )}
@@ -233,7 +233,7 @@ export default function DocumentsPage() {
               <span className={`px-8 py-3 rounded-2xl font-semibold transition-all shadow-md block ${
                 isUploading 
                 ? 'bg-zinc-100 text-zinc-400' 
-                : 'bg-zinc-900 text-white hover:scale-105 active:scale-95'
+                : 'bg-zinc-950 text-white hover:scale-105 active:scale-95'
               }`}>
                 {isUploading ? 'Analyzing...' : 'Browse Local Files'}
               </span>
@@ -244,7 +244,7 @@ export default function DocumentsPage() {
               <div className="w-full max-w-md space-y-2 pt-4">
                 <div className="h-2 w-full bg-zinc-100 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-blue-600 transition-all duration-300" 
+                    className="h-full bg-emerald-500 transition-all duration-300" 
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
@@ -275,16 +275,16 @@ export default function DocumentsPage() {
               documents.map((doc) => (
                 <div 
                   key={doc.document_id} 
-                  className="group relative bg-white p-6 rounded-2xl border border-zinc-200 hover:border-blue-400 hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
+                  className="group relative bg-white p-6 rounded-2xl border border-zinc-200 hover:border-emerald-405 hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
                 >
                   <div className="space-y-4">
                     <div className="flex items-start justify-between">
-                      <div className="w-12 h-12 bg-zinc-100 rounded-2xl flex items-center justify-center text-zinc-500 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
+                      <div className="w-12 h-12 bg-zinc-100 rounded-2xl flex items-center justify-center text-zinc-500 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-colors">
                         <FileCheck className="w-6 h-6" />
                       </div>
                       <button 
                         onClick={() => handleDelete(doc.document_id)}
-                        className="p-2 text-zinc-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                        className="p-2 text-zinc-300 hover:text-red-505 hover:bg-red-50 rounded-lg transition-all cursor-pointer"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -306,7 +306,7 @@ export default function DocumentsPage() {
                         {doc.chunk_count}
                       </span>
                     </div>
-                    <span className="text-xs font-semibold px-2.5 py-1 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg">RAG Enabled</span>
+                    <span className="text-xs font-semibold px-2.5 py-1 bg-emerald-50 text-emerald-605 border border-emerald-250 rounded-lg">RAG Enabled</span>
                   </div>
                 </div>
               ))

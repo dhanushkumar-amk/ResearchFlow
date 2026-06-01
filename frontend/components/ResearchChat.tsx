@@ -66,6 +66,7 @@ export default function ResearchChat({ sessionId }: ResearchChatProps) {
           const newMessages = [...prev];
           newMessages[newMessages.length - 1].content = accumulated;
           return newMessages;
+          
         });
       }
     } catch (err) {
@@ -83,7 +84,7 @@ export default function ResearchChat({ sessionId }: ResearchChatProps) {
   return (
     <div className="bg-white border border-zinc-200 rounded-3xl shadow-sm flex flex-col h-125 overflow-hidden">
       <div className="px-5 py-4 border-b border-zinc-100 flex items-center gap-2 bg-zinc-50/50">
-        <MessageSquare className="w-4 h-4 text-blue-500" />
+        <MessageSquare className="w-4 h-4 text-emerald-500" />
         <h2 className="font-bold text-zinc-800 text-xs uppercase tracking-widest">Interactive Intelligence Chat</h2>
       </div>
 
@@ -98,7 +99,7 @@ export default function ResearchChat({ sessionId }: ResearchChatProps) {
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`flex gap-3 max-w-[85%] ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
-              <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${m.role === 'user' ? 'bg-zinc-100' : 'bg-blue-600'}`}>
+              <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${m.role === 'user' ? 'bg-zinc-100' : 'bg-emerald-500'}`}>
                 {m.role === 'user' ? <User className="w-4 h-4 text-zinc-500" /> : <Sparkles className="w-4 h-4 text-white" />}
               </div>
               <div className={`p-3 rounded-2xl text-sm ${m.role === 'user' ? 'bg-zinc-100 text-zinc-800 rounded-tr-none' : 'bg-white border border-zinc-100 shadow-xs text-zinc-700 rounded-tl-none'}`}>
@@ -114,13 +115,13 @@ export default function ResearchChat({ sessionId }: ResearchChatProps) {
         {isTyping && (
            <div className="flex justify-start">
              <div className="flex gap-3">
-               <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center animate-pulse">
+               <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center animate-pulse">
                   <Sparkles className="w-4 h-4 text-white" />
                </div>
                <div className="p-3 bg-zinc-50 rounded-2xl flex gap-1">
-                  <div className="w-1 h-1 bg-blue-300 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                  <div className="w-1 h-1 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                  <div className="w-1 h-1 bg-blue-500 rounded-full animate-bounce" />
+                  <div className="w-1 h-1 bg-emerald-300 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                  <div className="w-1 h-1 bg-emerald-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                  <div className="w-1 h-1 bg-emerald-500 rounded-full animate-bounce" />
                </div>
              </div>
            </div>
@@ -135,12 +136,12 @@ export default function ResearchChat({ sessionId }: ResearchChatProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            className="flex-1 bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-zinc-700"
+            className="flex-1 bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-zinc-700"
           />
           <button
             onClick={handleSend}
             disabled={!input.trim() || isTyping}
-            className="absolute right-2 top-2 p-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-30 flex items-center justify-center"
+            className="absolute right-2 top-2 p-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-colors disabled:opacity-30 flex items-center justify-center cursor-pointer"
           >
             <Send className="w-4 h-4" />
           </button>

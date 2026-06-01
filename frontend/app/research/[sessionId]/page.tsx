@@ -176,14 +176,14 @@ export default function ResearchPage() {
             href="/"
             className="p-2 bg-white border border-zinc-200 rounded-xl hover:bg-zinc-50 transition-colors group"
           >
-            <ArrowLeft className="w-4 h-4 text-zinc-500 group-hover:-translate-x-0.5 transition-transform" />
+            <ArrowLeft className="w-4 h-4 text-zinc-500 group-hover:-translate-x-0.5 transition-transform animate-in slide-in-from-right-1" />
           </Link>
           <div className="text-sm text-zinc-400 flex items-center gap-1">
-            <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
+            <Link href="/" className="hover:text-emerald-600 transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <span className="text-zinc-600 font-medium font-sans">Research</span>
             <ChevronRight className="w-3.5 h-3.5" />
-            <span className="text-blue-600 font-mono text-xs max-w-30 truncate">{sessionId}</span>
+            <span className="text-emerald-600 font-mono text-xs max-w-30 truncate">{sessionId}</span>
           </div>
         </div>
 
@@ -194,16 +194,16 @@ export default function ResearchPage() {
           'bg-white border-zinc-200 text-zinc-700'
         }`}>
           {isLoading ? (
-            <svg className="w-4 h-4 animate-spin text-blue-500" fill="none" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 animate-spin text-emerald-500" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
           ) : isError ? (
             <AlertCircle className="w-4 h-4 shrink-0" />
           ) : isComplete ? (
-            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-green-600" />
           ) : (
-            <Zap className="w-4 h-4 text-blue-500 animate-pulse shrink-0" />
+            <Zap className="w-4 h-4 text-emerald-555 animate-pulse shrink-0" />
           )}
           <span>{isError ? errorMessage : statusMessage}</span>
 
@@ -211,14 +211,14 @@ export default function ResearchPage() {
             {isError && (
               <button
                 onClick={connectToStream}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 text-white text-xs font-semibold rounded-lg hover:bg-emerald-600 transition-colors cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" /> Reconnect
               </button>
             )}
             {isComplete && (
               <span className="flex items-center gap-1.5 text-green-700 text-xs font-semibold">
-                <CheckCircle2 className="w-4 h-4" /> Final Report
+                <CheckCircle2 className="w-4 h-4 text-green-600" /> Final Report
               </span>
             )}
           </div>
@@ -231,7 +231,7 @@ export default function ResearchPage() {
           <div className="lg:col-span-4 space-y-8">
             <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
               <div className="px-5 py-4 border-b border-zinc-100 flex items-center gap-2 bg-zinc-50/50">
-                <Zap className="w-4 h-4 text-blue-500" />
+                <Zap className="w-4 h-4 text-emerald-500" />
                 <h2 className="font-semibold text-zinc-800 text-sm italic">Agent Intelligence Pipeline</h2>
               </div>
               <div className="p-6">
@@ -254,7 +254,7 @@ export default function ResearchPage() {
             {plan && (
               <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
                 <div className="flex items-center gap-2 mb-4">
-                  <Info className="w-4 h-4 text-blue-500" />
+                  <Info className="w-4 h-4 text-emerald-500" />
                   <h3 className="font-semibold text-zinc-800 text-sm italic uppercase tracking-wider">Research Context</h3>
                 </div>
                 <div className="text-[11px] text-zinc-500 leading-relaxed font-mono bg-zinc-50/30 p-5 rounded-xl border border-zinc-100 max-h-60 overflow-y-auto whitespace-pre-wrap no-scrollbar">

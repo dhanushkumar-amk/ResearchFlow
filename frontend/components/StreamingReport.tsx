@@ -76,7 +76,7 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
             key={i}
             onMouseEnter={() => onCitationHover(id)}
             onMouseLeave={() => onCitationHover(null)}
-            className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-blue-50 text-blue-700 font-black text-[10px] cursor-help border border-blue-100 mx-0.5 hover:bg-blue-100 transition-colors shadow-xs"
+            className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-750 font-black text-[10px] cursor-help border border-emerald-100 mx-0.5 hover:bg-emerald-100 transition-colors shadow-xs"
           >
             {part}
           </span>
@@ -91,7 +91,7 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
       {/* Header */}
       <div className="px-6 py-4 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg">
+          <div className="w-10 h-10 bg-emerald-500 text-white rounded-2xl flex items-center justify-center shadow-lg">
             <FileText className="w-5 h-5" />
           </div>
           <div>
@@ -99,7 +99,7 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
             <p className="text-[10px] text-zinc-500 mt-1.5 font-bold uppercase tracking-widest flex items-center gap-1.5">
               {isStreaming ? (
                 <>
-                  <span className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-ping" />
+                  <span className="w-1.5 h-1.5 bg-emerald-550 rounded-full animate-ping" />
                   Live Synthesizing...
                 </>
               ) : content ? (
@@ -121,7 +121,7 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
                 onClick={() => onTogglePublic?.(!isPublic)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
                   isPublic 
-                    ? 'bg-green-50 text-green-700 border-green-200 shadow-[0_0_15px_rgba(34,197,94,0.1)]' 
+                    ? 'bg-green-550/10 text-green-700 border-green-200 shadow-[0_0_15px_rgba(34,197,94,0.1)]' 
                     : 'bg-zinc-100 text-zinc-500 border-zinc-200'
                 }`}
               >
@@ -139,8 +139,8 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
           )}
 
           {!isStreaming && durationSeconds != null && (
-            <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold shadow-xs">
-              <Sparkles className="w-3.5 h-3.5" />
+            <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
               Enlightenment Time: {durationSeconds.toFixed(1)}s
             </div>
           )}
@@ -150,7 +150,7 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
                 onClick={handleCopy}
                 disabled={!content}
                 title={isPublic ? "Copy Public Link" : "Copy Report Content"}
-                className={`p-2 rounded-lg transition-all disabled:opacity-30 tooltip ${copied ? 'text-green-600 bg-green-50' : 'text-zinc-600 hover:text-blue-600 hover:bg-blue-50'}`}
+                className={`p-2 rounded-lg transition-all disabled:opacity-30 tooltip ${copied ? 'text-green-600 bg-green-50' : 'text-zinc-650 hover:text-emerald-605 hover:bg-emerald-50'}`}
              >
                 {copied ? <CheckCircle2 className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
              </button>
@@ -158,7 +158,7 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
              <button
                 onClick={() => setIsExportOpen(!isExportOpen)}
                 disabled={!content}
-                className={`p-2 rounded-lg transition-all disabled:opacity-30 ${isExportOpen ? 'text-blue-600 bg-blue-50' : 'text-zinc-600 hover:text-blue-600 hover:bg-blue-50'}`}
+                className={`p-2 rounded-lg transition-all disabled:opacity-30 ${isExportOpen ? 'text-emerald-600 bg-emerald-50' : 'text-zinc-650 hover:text-emerald-605 hover:bg-emerald-50'}`}
              >
                 <Download className="w-4 h-4" />
              </button>
@@ -174,16 +174,16 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
                     <div className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-50 mb-1">
                       Export Intelligence
                     </div>
-                    <button onClick={() => handleExport('pdf')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-blue-50 text-zinc-700 hover:text-blue-700 rounded-xl text-xs font-bold transition-colors text-left">
+                    <button onClick={() => handleExport('pdf')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-emerald-700 rounded-xl text-xs font-bold transition-colors text-left">
                       <FileText className="w-4 h-4 text-red-500" /> Professional PDF
                     </button>
-                    <button onClick={() => handleExport('docx')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-blue-50 text-zinc-700 hover:text-blue-700 rounded-xl text-xs font-bold transition-colors text-left">
-                      <FileCode className="w-4 h-4 text-blue-500" /> Microsoft Word
+                    <button onClick={() => handleExport('docx')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-emerald-700 rounded-xl text-xs font-bold transition-colors text-left">
+                      <FileCode className="w-4 h-4 text-emerald-555" /> Microsoft Word
                     </button>
-                    <button onClick={() => handleExport('md')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-blue-50 text-zinc-700 hover:text-blue-700 rounded-xl text-xs font-bold transition-colors text-left">
+                    <button onClick={() => handleExport('md')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-emerald-700 rounded-xl text-xs font-bold transition-colors text-left">
                       <Download className="w-4 h-4 text-zinc-600" /> Markdown (Raw)
                     </button>
-                    <button onClick={() => handleExport('json')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-blue-50 text-zinc-700 hover:text-blue-700 rounded-xl text-xs font-bold transition-colors border-t border-zinc-50 mt-1 text-left">
+                    <button onClick={() => handleExport('json')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-emerald-700 rounded-xl text-xs font-bold transition-colors border-t border-zinc-50 mt-1 text-left">
                       <Sparkles className="w-4 h-4 text-amber-500" /> Research JSON
                     </button>
                   </motion.div>
@@ -194,7 +194,7 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
       </div>
 
       {/* Content */}
-      <div className="p-8 md:p-14 overflow-y-auto max-h-300 prose prose-zinc prose-sm md:prose-base max-w-none prose-headings:font-bold prose-h1:text-4xl prose-h1:text-zinc-900 prose-h1:mt-0 prose-h2:text-2xl prose-h2:border-b-2 prose-h2:border-zinc-100 prose-h2:pb-3 prose-h2:mt-12 prose-strong:text-zinc-900 prose-blockquote:border-blue-500 prose-blockquote:bg-blue-50/20 prose-blockquote:p-6 prose-blockquote:rounded-2xl prose-blockquote:not-italic prose-li:my-1.5 bg-white" id="report-content-body">
+      <div className="p-8 md:p-14 overflow-y-auto max-h-300 prose prose-zinc prose-sm md:prose-base max-w-none prose-headings:font-bold prose-h1:text-4xl prose-h1:text-zinc-900 prose-h1:mt-0 prose-h2:text-2xl prose-h2:border-b-2 prose-h2:border-zinc-100 prose-h2:pb-3 prose-h2:mt-12 prose-strong:text-zinc-900 prose-blockquote:border-emerald-500 prose-blockquote:bg-emerald-50/20 prose-blockquote:p-6 prose-blockquote:rounded-2xl prose-blockquote:not-italic prose-li:my-1.5 bg-white" id="report-content-body">
         {content ? (
           <div className="report-content-body font-sans text-zinc-800 leading-relaxed text-lg">
             <ReactMarkdown 
@@ -242,15 +242,15 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
             </ReactMarkdown>
 
             {isStreaming && (
-               <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-blue-600 text-white rounded-2xl text-xs font-black shadow-lg animate-pulse mt-8 border border-blue-500 uppercase tracking-widest">
+               <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-emerald-550 text-white rounded-2xl text-xs font-black shadow-lg animate-pulse mt-8 border border-emerald-500 uppercase tracking-widest">
                   <Sparkles className="w-3.5 h-3.5" /> Intelligence Stream Active
                </div>
             )}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center min-h-120 text-center space-y-6">
-            <div className="w-20 h-20 bg-blue-50 rounded-3xl flex items-center justify-center animate-bounce shadow-inner">
-              <Sparkles className="w-10 h-10 text-blue-500" />
+            <div className="w-20 h-20 bg-emerald-50 rounded-3xl flex items-center justify-center animate-bounce shadow-inner">
+              <Sparkles className="w-10 h-10 text-emerald-500" />
             </div>
             <div>
               <h3 className="text-xl font-black text-zinc-900 uppercase tracking-widest">Synthesizing...</h3>
@@ -267,7 +267,7 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
           <div className="flex items-center gap-3">
              <div className="flex gap-1.5">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className={`w-1.5 h-1.5 rounded-full ${isStreaming ? 'bg-blue-500 animate-pulse' : 'bg-zinc-300'}`} style={{ animationDelay: `${i * 150}ms` }} />
+                  <div key={i} className={`w-1.5 h-1.5 rounded-full ${isStreaming ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-300'}`} style={{ animationDelay: `${i * 150}ms` }} />
                 ))}
              </div>
              <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
@@ -280,7 +280,7 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
                 <FileJson className="w-3 h-3" /> {content.length} CHARS
              </div>
              {content && (
-                <button onClick={() => handleExport('md')} className="text-[10px] font-black text-blue-600 uppercase hover:underline">
+                <button onClick={() => handleExport('md')} className="text-[10px] font-black text-emerald-600 uppercase hover:underline cursor-pointer">
                    Download MD
                 </button>
              )}
