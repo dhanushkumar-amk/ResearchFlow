@@ -12,12 +12,12 @@ import {
   Database, 
   Award, 
   TrendingUp, 
-  CheckCircle, 
-  AlertCircle, 
   Activity, 
   ChevronRight,
   BookOpen,
-  HelpCircle
+  HelpCircle,
+  CheckCircle,
+  AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import { getAllResearchHistory, getHistory } from '../lib/api';
@@ -34,7 +34,10 @@ import {
   Tooltip as RechartsTooltip, 
   BarChart, 
   Bar, 
-  Cell
+  Cell,
+  PieChart,
+  Pie,
+  Legend
 } from 'recharts';
 
 export default function Dashboard() {
@@ -128,13 +131,39 @@ export default function Dashboard() {
     ];
   };
 
+  const getStatusPieData = () => {
+    let complete = 0;
+    let failed = 0;
+    let pending = 0;
+
+    history.forEach(item => {
+      if (item.status === 'complete') complete++;
+      else if (item.status === 'failed') failed++;
+      else pending++;
+    });
+
+    if (history.length === 0) {
+      return [
+        { name: 'Completed', value: 1, color: '#10b981' },
+        { name: 'Failed', value: 0, color: '#ef4444' },
+        { name: 'Pending', value: 0, color: '#f59e0b' },
+      ];
+    }
+
+    return [
+      { name: 'Completed', value: complete, color: '#10b981' },
+      { name: 'Failed', value: failed, color: '#ef4444' },
+      { name: 'Pending', value: pending, color: '#f59e0b' },
+    ];
+  };
+
   // Custom tooltips to match soft style
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white border border-neutral-200 text-[#0a0a0a] px-3.5 py-2.5 rounded-xl text-xs shadow-[0_8px_30px_rgba(0,0,0,0.06)] font-sans">
-          <p className="font-bold text-neutral-800">{label}</p>
-          <p className="text-emerald-600 mt-1 font-bold">Queries: {payload[0].value}</p>
+        <div className="bg-white border border-neutral-200 text-[#0a0a0a] px-3 py-2 rounded-lg text-[11px] shadow-xs font-sans">
+          <p className="font-semibold text-neutral-800">{label}</p>
+          <p className="text-emerald-600 mt-0.5 font-bold">Queries: {payload[0].value}</p>
         </div>
       );
     }
@@ -144,370 +173,304 @@ export default function Dashboard() {
   const QualityTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white border border-neutral-200 text-[#0a0a0a] px-3.5 py-2.5 rounded-xl text-xs shadow-[0_8px_30px_rgba(0,0,0,0.06)] font-sans">
-          <p className="font-bold text-neutral-800">{payload[0].name}</p>
-          <p className="text-indigo-650 mt-1 font-bold">Reports: {payload[0].value}</p>
+        <div className="bg-white border border-neutral-200 text-[#0a0a0a] px-3 py-2 rounded-lg text-[11px] shadow-xs font-sans">
+          <p className="font-semibold text-neutral-800">{payload[0].name}</p>
+          <p className="text-indigo-600 mt-0.5 font-bold">Reports: {payload[0].value}</p>
         </div>
       );
     }
     return null;
   };
 
-  // Stagger animation rules
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.08 }
-    }
-  } as const;
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 15 },
-    show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 100 } }
-  } as const;
-
   return (
     <div className="min-h-screen bg-white text-[#0a0a0a] pt-24 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-emerald-50 selection:text-emerald-700">
       
       {/* Background Decorative Soft Glows */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/[0.02] rounded-full blur-[100px] pointer-events-none z-0" />
-      <div className="absolute top-[400px] right-1/4 w-[500px] h-[500px] bg-teal-500/[0.01] rounded-full blur-[130px] pointer-events-none z-0" />
+      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-emerald-500/[0.015] rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
 
-      <div className="max-w-7xl mx-auto space-y-10 relative z-10">
+      <div className="max-w-7xl mx-auto space-y-8 relative z-10">
         
         {/* HEADER SECTION */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-100 pb-6">
-          <div>
-            <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3.5 py-1.2 rounded-full text-[10px] font-mono border border-emerald-100/70 font-semibold mb-3 shadow-xs select-none">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-100 pb-5">
+          <div className="space-y-1.5 text-left">
+            <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3.5 py-1 rounded-full text-[10px] font-mono border border-emerald-100/70 font-semibold shadow-xs select-none">
               <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
-              <span>Deep Research Management Portal</span>
+              <span>Multi-Agent Research Portal</span>
             </div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-none">
+            <h1 className="text-3xl font-black tracking-tight text-zinc-900 leading-none">
               Welcome back, <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500">{user?.name.split(' ')[0] || 'Researcher'}</span>
             </h1>
-            <p className="text-zinc-500 text-sm mt-2">
+            <p className="text-neutral-500 text-xs">
               Review research metrics, monitor quality evaluations, and start new queries.
             </p>
           </div>
-          
-          <div className="text-xs text-neutral-400 font-medium md:text-right bg-[#f9fafb] border border-neutral-200/80 px-4 py-2.5 rounded-xl self-start shadow-xs">
-            <span className="text-neutral-500 font-bold block mb-0.5">Index Sync Status</span>
-            RAG database connection online
-          </div>
         </div>
 
-        {/* START RESEARCH CTA BANNER */}
-        <motion.div 
-          initial={{ opacity: 0, y: -15 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white border border-neutral-200/80 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_8px_30px_rgba(0,0,0,0.03)] relative overflow-hidden"
-        >
-          <div className="absolute right-[-40px] top-[-40px] opacity-[0.03] pointer-events-none">
-            <Sparkles className="w-48 h-48 text-emerald-600 animate-pulse" />
-          </div>
-          <div className="space-y-2 text-left max-w-xl relative z-10">
-            <h2 className="text-xl font-bold text-zinc-900">Conduct Deep Investigative Research</h2>
-            <p className="text-zinc-500 text-xs leading-relaxed">
-              Launch a new research session. Our multi-agent workspace compiles search logs, aggregates Qdrant database vectors, and synthesizes grounded reports.
-            </p>
-          </div>
-          <Link
-            href="/research"
-            className="bg-[#0a0a0a] hover:bg-[#262626] text-white px-6 py-3 rounded-[8px] font-bold text-xs transition-all active:scale-[0.98] flex items-center justify-center gap-2 shrink-0 cursor-pointer shadow-sm"
-          >
-            Start Research
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </motion.div>
-
-        {/* STATISTICS GRID */}
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
-        >
-          {/* STAT 1: TOTAL QUERIES */}
-          <motion.div variants={cardVariants} className="bg-white border border-neutral-200/80 rounded-xl p-5 shadow-xs hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden group">
-            <div className="flex justify-between items-start">
-              <div className="space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 font-mono block">Total Queries</span>
-                <span className="text-3xl font-extrabold text-neutral-900">{totalQueries}</span>
-              </div>
-              <div className="p-2.5 bg-emerald-50 rounded-lg text-emerald-600">
-                <Search className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="text-[11px] text-neutral-400 mt-4 flex items-center gap-1">
-              <Activity className="w-3 h-3 text-emerald-500 animate-pulse" />
-              All-time research runs logged
-            </div>
-          </motion.div>
-
-          {/* STAT 2: SUCCESS RATE */}
-          <motion.div variants={cardVariants} className="bg-white border border-neutral-200/80 rounded-xl p-5 shadow-xs hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden group">
-            <div className="flex justify-between items-start">
-              <div className="space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 font-mono block">Success Rate</span>
-                <span className="text-3xl font-extrabold text-neutral-900">{successRate}%</span>
-              </div>
-              <div className="p-2.5 bg-blue-50 rounded-lg text-blue-600">
-                <TrendingUp className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="mt-4.5">
-              <div className="w-full bg-neutral-100 rounded-full h-1">
-                <div className="bg-blue-500 h-1 rounded-full" style={{ width: `${successRate}%` }} />
-              </div>
-            </div>
-          </motion.div>
-
-          {/* STAT 3: QUALITY ACHIEVEMENT */}
-          <motion.div variants={cardVariants} className="bg-white border border-neutral-200/80 rounded-xl p-5 shadow-xs hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden group">
-            <div className="flex justify-between items-start">
-              <div className="space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 font-mono block">Avg Quality Score</span>
-                <span className="text-3xl font-extrabold text-neutral-900">
-                  {avgQuality}
-                  {avgQuality !== 'N/A' && <span className="text-xs font-semibold text-neutral-400 ml-0.5">/10</span>}
-                </span>
-              </div>
-              <div className="p-2.5 bg-indigo-50 rounded-lg text-indigo-600">
-                <Award className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="text-[11px] text-neutral-400 mt-4 flex items-center gap-1.5">
-              <span className={`inline-block w-2 h-2 rounded-full ${
-                avgQuality === 'N/A' ? 'bg-neutral-300' :
-                parseFloat(avgQuality) >= 8 ? 'bg-emerald-500' :
-                parseFloat(avgQuality) >= 6 ? 'bg-blue-500' : 'bg-amber-500'
-              }`} />
-              {avgQuality === 'N/A' ? 'No reports scored yet' : 
-               parseFloat(avgQuality) >= 8 ? 'Expert Level Reports' : 
-               parseFloat(avgQuality) >= 6 ? 'Professional Grade' : 'Averaging Competent'}
-            </div>
-          </motion.div>
-
-          {/* STAT 4: CORPUS DOCUMENTS */}
-          <motion.div variants={cardVariants} className="bg-white border border-neutral-200/80 rounded-xl p-5 shadow-xs hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden group">
-            <div className="flex justify-between items-start">
-              <div className="space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 font-mono block">RAG Corpus Files</span>
-                <span className="text-3xl font-extrabold text-neutral-900">{documentCount}</span>
-              </div>
-              <div className="p-2.5 bg-violet-50 rounded-lg text-violet-600">
-                <Database className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="text-[11px] text-neutral-400 mt-4 flex items-center justify-between">
-              <span>Grounding source files</span>
-              <Link href="/documents" className="text-emerald-600 font-bold hover:underline flex items-center">
-                Manage <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </motion.div>
-        </motion.div>
-
-        {/* ANALYTICS VISUALIZATIONS */}
-        {isMounted && history.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
-            {/* CHART 1: WEEKLY ACTIVITY */}
-            <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 shadow-xs space-y-4">
-              <div>
-                <h3 className="font-bold text-neutral-800 text-sm flex items-center gap-1.5">
-                  <Activity className="w-4 h-4 text-emerald-500" /> Research Frequency (Last 7 Days)
-                </h3>
-                <p className="text-[11px] text-neutral-400">Daily breakdown of launched AI queries</p>
-              </div>
-              <div className="h-[240px] w-full text-xs">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={getActivityData()} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorQueries" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.12}/>
-                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f5" />
-                    <XAxis dataKey="date" tickLine={false} axisLine={false} stroke="#a3a3a3" />
-                    <YAxis tickLine={false} axisLine={false} stroke="#a3a3a3" allowDecimals={false} />
-                    <RechartsTooltip content={<CustomTooltip />} />
-                    <Area type="monotone" dataKey="queries" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorQueries)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* CHART 2: QUALITY DISTRIBUTION */}
-            <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 shadow-xs space-y-4">
-              <div>
-                <h3 className="font-bold text-neutral-800 text-sm flex items-center gap-1.5">
-                  <Award className="w-4 h-4 text-indigo-500" /> Quality Grade Distribution
-                </h3>
-                <p className="text-[11px] text-neutral-400">Evaluations of reports generated by Critic agent</p>
-              </div>
-              <div className="h-[240px] w-full text-xs">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={getQualityDistributionData()} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f5" />
-                    <XAxis dataKey="name" tickLine={false} axisLine={false} stroke="#a3a3a3" />
-                    <YAxis tickLine={false} axisLine={false} stroke="#a3a3a3" allowDecimals={false} />
-                    <RechartsTooltip content={<QualityTooltip />} />
-                    <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={36}>
-                      {getQualityDistributionData().map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-          </div>
-        )}
-
-        {/* BOTTOM SECTION: RECENT SESSIONS & TIPS */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* 2-COLUMN PREMIUM WORKSPACE GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* RECENT SESSIONS LIST */}
-          <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 shadow-xs lg:col-span-2 space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-bold text-neutral-800 text-sm flex items-center gap-1.5">
-                  <Clock className="w-4 h-4 text-emerald-600" /> Recent Research Operations
-                </h3>
-                <p className="text-[11px] text-neutral-400">Jump back into your active or completed reports</p>
+          {/* LEFT COLUMN: PRIMARY WORKSPACE & VOLUME TRENDS (2/3 width) */}
+          <div className="lg:col-span-2 space-y-6">
+            
+            {/* START RESEARCH CTA BANNER */}
+            <motion.div 
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white border border-neutral-200/70 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xs relative overflow-hidden"
+            >
+              <div className="space-y-1 text-left max-w-lg">
+                <h2 className="text-base font-extrabold text-zinc-900">Conduct Deep Investigative Research</h2>
+                <p className="text-neutral-500 text-[11px] leading-relaxed">
+                  Launch a new research session. Our multi-agent workspace compiles search logs, aggregates Qdrant database vectors, and synthesizes grounded reports.
+                </p>
               </div>
-              <Link href="/history" className="text-xs font-semibold text-emerald-600 hover:underline flex items-center gap-0.5">
-                View History <ChevronRight className="w-3.5 h-3.5" />
+              <Link
+                href="/research"
+                className="bg-[#0a0a0a] hover:bg-[#262626] text-white px-5 py-2.5 rounded-[8px] font-bold text-xs transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 shrink-0 cursor-pointer shadow-xs"
+              >
+                Start Research
+                <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-            </div>
+            </motion.div>
 
-            {history.length > 0 ? (
-              <div className="space-y-2.5">
-                {history.slice(0, 5).map((item) => (
-                  <Link
-                    key={item.session_id}
-                    href={`/research/${item.session_id}`}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-neutral-50/20 hover:bg-emerald-50/[0.05] border border-neutral-200/60 hover:border-emerald-500/20 rounded-xl transition-all group gap-2.5 hover:shadow-xs"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-9 h-9 bg-white border border-neutral-100 rounded-lg flex items-center justify-center shrink-0 shadow-xs group-hover:border-emerald-500/30 transition-colors">
-                        <FileText className="w-4.5 h-4.5 text-neutral-400 group-hover:text-emerald-500" />
+            {/* CHART 1: WEEKLY ACTIVITY */}
+            {isMounted && history.length > 0 && (
+              <div className="bg-white border border-neutral-200/70 rounded-xl p-5 shadow-2xs space-y-4 text-left">
+                <div>
+                  <h3 className="font-bold text-neutral-800 text-xs uppercase tracking-wider font-mono flex items-center gap-1.5">
+                    <Activity className="w-3.5 h-3.5 text-emerald-500" /> Research Frequency (Last 7 Days)
+                  </h3>
+                  <p className="text-[10px] text-neutral-400">Daily breakdown of launched queries</p>
+                </div>
+                <div className="h-[240px] w-full text-xs">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={getActivityData()} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorQueries" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.1}/>
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f5" />
+                      <XAxis dataKey="date" tickLine={false} axisLine={false} stroke="#a3a3a3" />
+                      <YAxis tickLine={false} axisLine={false} stroke="#a3a3a3" allowDecimals={false} />
+                      <RechartsTooltip content={<CustomTooltip />} />
+                      <Area type="monotone" dataKey="queries" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorQueries)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
+
+            {/* RECENT SESSIONS LIST */}
+            <div className="bg-white border border-neutral-200/70 rounded-xl p-5 shadow-2xs space-y-4 text-left">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-neutral-800 text-xs uppercase tracking-wider font-mono flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-emerald-650" /> Recent Research Operations
+                  </h3>
+                  <p className="text-[10px] text-neutral-400">Jump back into your active or completed reports</p>
+                </div>
+                <Link href="/history" className="text-xs font-semibold text-emerald-650 hover:underline flex items-center gap-0.5">
+                  View History <ChevronRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+
+              {history.length > 0 ? (
+                <div className="space-y-2.5">
+                  {history.slice(0, 5).map((item) => (
+                    <Link
+                      key={item.session_id}
+                      href={`/research/${item.session_id}`}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-neutral-50/20 hover:bg-emerald-50/[0.03] border border-neutral-250 hover:border-emerald-500/10 rounded-lg transition-all group gap-2"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-8 h-8 bg-white border border-neutral-150 rounded-lg flex items-center justify-center shrink-0 group-hover:border-emerald-500/10 transition-colors shadow-2xs">
+                          <FileText className="w-4 h-4 text-neutral-400 group-hover:text-emerald-500" />
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-xs font-bold text-[#0a0a0a] truncate block group-hover:text-emerald-700 transition-colors">
+                            {item.query}
+                          </span>
+                          <span className="text-[9px] text-neutral-400 block mt-0.5">
+                            {new Date(item.created_at).toLocaleString()}
+                          </span>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <span className="text-xs font-bold text-[#0a0a0a] truncate block group-hover:text-emerald-700 transition-colors">
-                          {item.query}
-                        </span>
-                        <span className="text-[10px] text-neutral-400 block mt-0.5">
-                          {new Date(item.created_at).toLocaleString()}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
-                      {/* Quality Score */}
-                      {item.quality_score !== null ? (
-                        <div className="flex items-center gap-1">
+                      
+                      <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
+                        {item.quality_score !== null ? (
                           <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full ${
-                            item.quality_score >= 8 ? 'bg-emerald-50 text-emerald-700 border border-emerald-100/70' :
-                            item.quality_score >= 6 ? 'bg-blue-50 text-blue-700 border border-blue-100/70' :
-                            'bg-amber-50 text-amber-700 border border-amber-100/70'
+                            item.quality_score >= 8 ? 'bg-emerald-50 text-emerald-700 border border-emerald-100/50' :
+                            item.quality_score >= 6 ? 'bg-blue-50 text-blue-700 border border-blue-100/50' :
+                            'bg-amber-50 text-amber-700 border border-amber-100/50'
                           }`}>
                             Score: {item.quality_score}/10
                           </span>
-                        </div>
-                      ) : (
-                        <span className="text-[9px] font-mono bg-neutral-50 text-neutral-450 border border-neutral-150 px-2 py-0.5 rounded-full font-bold">
-                          No Score
-                        </span>
-                      )}
+                        ) : (
+                          <span className="text-[9px] font-mono bg-neutral-50 text-neutral-450 border border-neutral-150 px-2 py-0.5 rounded-full font-bold">
+                            No Score
+                          </span>
+                        )}
 
-                      {/* Status */}
-                      {item.status && (
-                        <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded ${
-                          item.status === 'complete' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100/70' :
-                          item.status === 'failed' ? 'bg-red-50 text-red-700 border border-red-100/70' :
-                          'bg-amber-50 text-amber-700 border border-amber-100/70'
-                        }`}>
-                          {item.status.toUpperCase()}
-                        </span>
-                      )}
+                        {item.status && (
+                          <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded ${
+                            item.status === 'complete' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100/50' :
+                            item.status === 'failed' ? 'bg-red-50 text-red-700 border border-red-100/50' :
+                            'bg-amber-50 text-amber-700 border border-amber-100/50'
+                          }`}>
+                            {item.status.toUpperCase()}
+                          </span>
+                        )}
 
-                      <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-emerald-500 group-hover:translate-x-0.5 transition-all hidden sm:block" />
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="p-8 border border-dashed border-neutral-200 rounded-xl text-center space-y-4">
-                <Upload className="w-10 h-10 mx-auto text-zinc-300" />
-                <div className="max-w-sm mx-auto space-y-1">
-                  <p className="font-semibold text-zinc-700 text-sm">No research sessions active</p>
-                  <p className="text-zinc-400 text-xs">Run a query in the launcher to spin up AI agents or link custom document parameters.</p>
+                        <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-emerald-500 group-hover:translate-x-0.5 transition-all hidden sm:block" />
+                      </div>
+                    </Link>
+                  ))}
                 </div>
-                <Link href="/documents" className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 hover:underline">
-                  Go to documents <ChevronRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            )}
+              ) : (
+                <div className="p-8 border border-dashed border-neutral-200 rounded-xl text-center space-y-4">
+                  <Upload className="w-10 h-10 mx-auto text-zinc-300" />
+                  <div className="max-w-sm mx-auto space-y-1">
+                    <p className="font-semibold text-zinc-700 text-sm">No research sessions active</p>
+                    <p className="text-zinc-400 text-xs">Run a query in the launcher to spin up AI agents or link custom document parameters.</p>
+                  </div>
+                  <Link href="/documents" className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 hover:underline">
+                    Go to documents <ChevronRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              )}
+            </div>
+
           </div>
 
-          {/* SIDEBAR: HELP / DOCUMENT QUICK ACTIONS */}
+          {/* RIGHT COLUMN: ANALYTICS SIDEBAR (1/3 width) */}
           <div className="space-y-6">
             
-            {/* KNOWLEDGE BASE CARD */}
-            <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 shadow-xs space-y-4">
+            {/* COMPACT METRICS GRID */}
+            <div className="grid grid-cols-2 gap-4">
+              
+              {/* METRIC 1: TOTAL QUERIES */}
+              <div className="bg-white border border-neutral-200/70 rounded-xl p-4.5 text-left shadow-2xs">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-neutral-400 font-mono block">Total Runs</span>
+                <span className="text-2xl font-black text-neutral-900 block mt-1">{totalQueries}</span>
+                <span className="text-[9px] text-neutral-400 mt-2 block">All-time operations</span>
+              </div>
+
+              {/* METRIC 2: SUCCESS RATE */}
+              <div className="bg-white border border-neutral-200/70 rounded-xl p-4.5 text-left shadow-2xs">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-neutral-400 font-mono block">Success</span>
+                <span className="text-2xl font-black text-neutral-900 block mt-1">{successRate}%</span>
+                <div className="w-full bg-neutral-100 rounded-full h-1 mt-2.5">
+                  <div className="bg-blue-500 h-1 rounded-full" style={{ width: `${successRate}%` }} />
+                </div>
+              </div>
+
+              {/* METRIC 3: AVG QUALITY */}
+              <div className="bg-white border border-neutral-200/70 rounded-xl p-4.5 text-left shadow-2xs">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-neutral-400 font-mono block">Avg Quality</span>
+                <span className="text-2xl font-black text-neutral-900 block mt-1">
+                  {avgQuality}
+                  {avgQuality !== 'N/A' && <span className="text-xs font-normal text-neutral-450 ml-0.5">/10</span>}
+                </span>
+                <span className="text-[9px] text-neutral-400 mt-2 block">Critic evaluated</span>
+              </div>
+
+              {/* METRIC 4: DOCUMENT COUNT */}
+              <div className="bg-white border border-neutral-200/70 rounded-xl p-4.5 text-left shadow-2xs">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-neutral-400 font-mono block">Corpus Files</span>
+                <span className="text-2xl font-black text-neutral-900 block mt-1">{documentCount}</span>
+                <Link href="/documents" className="text-[9px] text-emerald-650 hover:underline mt-2 block font-semibold">
+                  Manage Files &gt;
+                </Link>
+              </div>
+
+            </div>
+
+            {/* CHART 2: EXECUTION HEALTH STATUS */}
+            {isMounted && history.length > 0 && (
+              <div className="bg-white border border-neutral-200/70 rounded-xl p-4.5 shadow-2xs space-y-3 text-left">
+                <div>
+                  <h4 className="font-bold text-neutral-800 text-[10px] uppercase tracking-wider font-mono">Query Execution status</h4>
+                  <p className="text-[9px] text-neutral-450">Real-time status of database query sessions</p>
+                </div>
+                <div className="h-[140px] w-full flex justify-center items-center">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={getStatusPieData()}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={35}
+                        outerRadius={55}
+                        paddingAngle={4}
+                        dataKey="value"
+                      >
+                        {getStatusPieData().map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Legend verticalAlign="bottom" height={24} iconSize={6} wrapperStyle={{ fontSize: '9px' }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
+
+            {/* CHART 3: REPORT QUALITY SCORING */}
+            {isMounted && history.length > 0 && (
+              <div className="bg-white border border-neutral-200/70 rounded-xl p-4.5 shadow-2xs space-y-3 text-left">
+                <div>
+                  <h4 className="font-bold text-neutral-800 text-[10px] uppercase tracking-wider font-mono">Critic Quality Breakdown</h4>
+                  <p className="text-[9px] text-neutral-455">Quantity count by rating category</p>
+                </div>
+                <div className="h-[140px] w-full text-xs">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={getQualityDistributionData()} margin={{ top: 5, right: 5, left: -32, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f5" />
+                      <XAxis dataKey="name" tickLine={false} axisLine={false} stroke="#a3a3a3" style={{ fontSize: '7px' }} />
+                      <YAxis tickLine={false} axisLine={false} stroke="#a3a3a3" allowDecimals={false} style={{ fontSize: '8px' }} />
+                      <RechartsTooltip content={<QualityTooltip />} />
+                      <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={20}>
+                        {getQualityDistributionData().map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
+
+            {/* KNOWLEDGE BASE GROUNDING PANEL */}
+            <div className="bg-white border border-neutral-200/70 rounded-xl p-5 shadow-2xs space-y-4 text-left">
               <div>
-                <h3 className="font-bold text-neutral-800 text-sm flex items-center gap-1.5">
-                  <BookOpen className="w-4 h-4 text-violet-500" /> Research Grounding
+                <h3 className="font-bold text-neutral-850 text-xs uppercase tracking-wider font-mono flex items-center gap-1.5">
+                  <BookOpen className="w-3.5 h-3.5 text-violet-500" /> Research Grounding
                 </h3>
-                <p className="text-[11px] text-neutral-400">Augment intelligence with local libraries</p>
+                <p className="text-[10px] text-neutral-450">Augment intelligence with local libraries</p>
               </div>
               
-              <div className="p-3.5 bg-[#f9fafb] border border-neutral-200 rounded-xl space-y-2">
-                <div className="flex justify-between items-center text-xs">
+              <div className="p-3 bg-[#f9fafb] border border-neutral-200 rounded-lg space-y-1.5 text-[11px]">
+                <div className="flex justify-between items-center">
                   <span className="text-neutral-500 font-medium">Index Status</span>
                   <span className="text-emerald-600 font-bold flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" /> Active
                   </span>
                 </div>
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-neutral-500 font-medium">Total Vectors</span>
-                  <span className="text-neutral-800 font-bold">{documentCount > 0 ? `${documentCount * 8} chunks` : '0 Chunks'}</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-neutral-500 font-medium">Total Chunks</span>
+                  <span className="text-neutral-800 font-bold">{documentCount > 0 ? `${documentCount * 8} vectors` : '0 Vectors'}</span>
                 </div>
               </div>
 
-              <Link href="/documents" className="flex items-center justify-between p-3 border border-dashed border-neutral-250 hover:border-emerald-400 hover:bg-emerald-50/[0.03] rounded-xl text-xs font-semibold text-neutral-650 hover:text-emerald-700 transition-colors">
-                <span className="flex items-center gap-2">
-                  <Upload className="w-4 h-4 text-neutral-400" /> Add PDFs / Docs
+              <Link href="/documents" className="flex items-center justify-between p-3 border border-dashed border-neutral-250 hover:border-emerald-400 hover:bg-emerald-50/[0.02] rounded-lg text-xs font-semibold text-neutral-650 hover:text-emerald-700 transition-colors">
+                <span className="flex items-center gap-1.5">
+                  <Upload className="w-3.5 h-3.5 text-neutral-450" /> Add Grounding Files
                 </span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </Link>
-            </div>
-
-            {/* QUICK TIP CARD */}
-            <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 text-white rounded-2xl p-5 shadow-sm relative overflow-hidden group">
-              <div className="absolute right-[-20px] bottom-[-20px] opacity-[0.05] pointer-events-none group-hover:scale-110 transition-transform">
-                <Sparkles className="w-32 h-32 text-white" />
-              </div>
-              <div className="space-y-3.5 relative">
-                <div className="w-7 h-7 rounded bg-white/10 flex items-center justify-center text-emerald-400">
-                  <HelpCircle className="w-4 h-4" />
-                </div>
-                <div className="space-y-1">
-                  <h4 className="font-bold text-xs">Smart Query Routing</h4>
-                  <p className="text-[11px] text-neutral-400 leading-relaxed">
-                    ResearchFlow caches search queries for 24 hours. Repeating queries uses instant cached outputs, saving API tokens and research cycles.
-                  </p>
-                </div>
-                <div className="text-[9px] font-mono text-emerald-400 font-bold tracking-wider uppercase">
-                  Agent Network 2.0 Active
-                </div>
-              </div>
             </div>
 
           </div>

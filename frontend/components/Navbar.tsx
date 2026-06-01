@@ -8,10 +8,9 @@ import { useAuth } from '../lib/AuthContext';
 
 const navLinks = [
   { href: '/', label: 'Dashboard' },
-  { href: '/', label: 'Research General' },
+  { href: '/research', label: 'Research General' },
   { href: '/documents', label: 'RAG' },
   { href: '/history', label: 'History' },
-  { href: '/history', label: 'Report Page' },
 ];
 
 export default function Navbar() {
