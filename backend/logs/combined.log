@@ -51,3 +51,20 @@
 {"level":"info","message":"GET /history 304 426ms session:-","timestamp":"2026-05-31 23:07:01"}
 {"level":"info","message":"GET /history 304 661ms session:-","timestamp":"2026-05-31 23:07:02"}
 {"level":"info","message":"OPTIONS /api/auth/me 204 1ms session:-","timestamp":"2026-05-31 23:07:06"}
+{"level":"info","message":"OPTIONS /api/auth/login 204 9ms session:-","timestamp":"2026-06-01 10:37:38"}
+{"level":"info","message":"POST /login 200 6376ms session:-","timestamp":"2026-06-01 10:37:45"}
+{"level":"info","message":"OPTIONS /api/research/history 204 1ms session:-","timestamp":"2026-06-01 10:37:45"}
+{"level":"info","message":"OPTIONS /api/research/history 204 1ms session:-","timestamp":"2026-06-01 10:37:45"}
+{"level":"info","message":"GET /history 304 2773ms session:-","timestamp":"2026-06-01 10:37:48"}
+{"level":"info","message":"GET /history 304 1586ms session:-","timestamp":"2026-06-01 10:37:50"}
+{"level":"info","message":"OPTIONS /api/research/history 204 1ms session:-","timestamp":"2026-06-01 10:38:03"}
+{"level":"info","message":"OPTIONS /api/research/history 204 1ms session:-","timestamp":"2026-06-01 10:38:03"}
+{"level":"info","message":"GET /history 304 6331ms session:-","timestamp":"2026-06-01 10:38:09"}
+{"level":"info","message":"GET /history 304 1552ms session:-","timestamp":"2026-06-01 10:38:11"}
+{"level":"info","message":"OPTIONS /api/research 204 1ms session:-","timestamp":"2026-06-01 10:38:16"}
+{"level":"info","message":"POST / 200 9924ms session:4f990804-db01-4776-ab95-93d6d5741289","timestamp":"2026-06-01 10:38:26"}
+{"level":"info","message":"Agent: planner | Session: 4f990804-db01-4776-ab95-93d6d5741289 | Duration: 8018ms | Tokens: 302 | Status: success","timestamp":"2026-06-01 10:38:37"}
+{"level":"info","message":"Agent: search | Session: 4f990804-db01-4776-ab95-93d6d5741289 | Duration: 5275ms | Tokens: 0 | Status: success","timestamp":"2026-06-01 10:38:40"}
+{"level":"info","message":"Agent: rag | Session: 4f990804-db01-4776-ab95-93d6d5741289 | Duration: 8607ms | Tokens: 0 | Status: success","timestamp":"2026-06-01 10:38:43"}
+{"level":"info","message":"Agent: synthesizer | Session: 4f990804-db01-4776-ab95-93d6d5741289 | Duration: 5830ms | Tokens: 0 | Status: success","timestamp":"2026-06-01 10:39:00"}
+{"level":"info","message":"GET /4f990804-db01-4776-ab95-93d6d5741289/stream 200 60342ms session:4f990804-db01-4776-ab95-93d6d5741289","timestamp":"2026-06-01 10:39:27"}
