@@ -717,3 +717,53 @@
 {"level":"info","message":"GET /history 304 211ms session:-","timestamp":"2026-06-02 12:54:33"}
 {"level":"info","message":"GET / 304 131ms session:-","timestamp":"2026-06-02 12:54:33"}
 {"level":"info","message":"GET /history 304 120ms session:-","timestamp":"2026-06-02 12:54:33"}
+{"level":"info","message":"OPTIONS /api/auth/me 204 20ms session:-","timestamp":"2026-06-02 12:58:58"}
+{"level":"info","message":"GET /me 200 5435ms session:-","timestamp":"2026-06-02 12:59:03"}
+{"level":"info","message":"OPTIONS /api/auth/profile/avatar 204 12ms session:-","timestamp":"2026-06-02 13:00:47"}
+{"level":"info","message":"POST /profile/avatar 200 27782ms session:-","timestamp":"2026-06-02 13:01:15"}
+{"level":"info","message":"OPTIONS /api/research/history 204 1ms session:-","timestamp":"2026-06-02 13:02:06"}
+{"level":"info","message":"OPTIONS /api/documents 204 1ms session:-","timestamp":"2026-06-02 13:02:06"}
+{"level":"info","message":"OPTIONS /api/research/history 204 1ms session:-","timestamp":"2026-06-02 13:02:06"}
+{"level":"info","message":"OPTIONS /api/documents 204 5ms session:-","timestamp":"2026-06-02 13:02:06"}
+{"level":"info","message":"GET / 304 10863ms session:-","timestamp":"2026-06-02 13:02:16"}
+{"level":"info","message":"GET / 304 100ms session:-","timestamp":"2026-06-02 13:02:17"}
+{"level":"info","message":"GET /history 304 13062ms session:-","timestamp":"2026-06-02 13:02:19"}
+{"level":"info","message":"GET /history 304 88ms session:-","timestamp":"2026-06-02 13:02:19"}
+{"level":"info","message":"OPTIONS /api/research 204 17ms session:-","timestamp":"2026-06-02 13:03:52"}
+{"level":"info","message":"POST / 200 926ms session:008c4e05-6302-4ced-909d-a60ddf8943d1","timestamp":"2026-06-02 13:03:53"}
+{"level":"info","message":"Agent: planner | Session: 008c4e05-6302-4ced-909d-a60ddf8943d1 | Duration: 858ms | Tokens: 297 | Status: success","timestamp":"2026-06-02 13:03:54"}
+{"level":"info","message":"Agent: rag | Session: 008c4e05-6302-4ced-909d-a60ddf8943d1 | Duration: 13498ms | Tokens: 0 | Status: success","timestamp":"2026-06-02 13:04:08"}
+{"level":"info","message":"Agent: search | Session: 008c4e05-6302-4ced-909d-a60ddf8943d1 | Duration: 13999ms | Tokens: 0 | Status: success","timestamp":"2026-06-02 13:04:08"}
+{"level":"info","message":"Agent: synthesizer | Session: 008c4e05-6302-4ced-909d-a60ddf8943d1 | Duration: 2859ms | Tokens: 0 | Status: success","timestamp":"2026-06-02 13:04:11"}
+{"level":"info","message":"GET /008c4e05-6302-4ced-909d-a60ddf8943d1/stream 200 16696ms session:008c4e05-6302-4ced-909d-a60ddf8943d1","timestamp":"2026-06-02 13:04:12"}
+{"level":"info","message":"OPTIONS /api/research/008c4e05-6302-4ced-909d-a60ddf8943d1/chat 204 2ms session:-","timestamp":"2026-06-02 13:05:06"}
+{"level":"info","message":"POST /008c4e05-6302-4ced-909d-a60ddf8943d1/chat 200 1604ms session:008c4e05-6302-4ced-909d-a60ddf8943d1","timestamp":"2026-06-02 13:05:07"}
+{"level":"info","message":"OPTIONS /api/research/history 204 1ms session:-","timestamp":"2026-06-02 13:06:01"}
+{"level":"info","message":"OPTIONS /api/research/history 204 0ms session:-","timestamp":"2026-06-02 13:06:01"}
+{"level":"info","message":"GET /history 200 742ms session:-","timestamp":"2026-06-02 13:06:01"}
+{"level":"info","message":"GET /history 304 95ms session:-","timestamp":"2026-06-02 13:06:02"}
+{"level":"info","message":"OPTIONS /api/auth/me 204 170ms session:-","timestamp":"2026-06-02 13:08:40"}
+{"level":"info","message":"GET /me 200 2828ms session:-","timestamp":"2026-06-02 13:08:43"}
+{"level":"info","message":"OPTIONS /api/research/history 204 3ms session:-","timestamp":"2026-06-02 13:08:44"}
+{"level":"info","message":"OPTIONS /api/documents 204 3ms session:-","timestamp":"2026-06-02 13:08:44"}
+{"level":"info","message":"OPTIONS /api/research/history 204 3ms session:-","timestamp":"2026-06-02 13:08:44"}
+{"level":"info","message":"OPTIONS /api/documents 204 2ms session:-","timestamp":"2026-06-02 13:08:44"}
+{"level":"info","message":"GET /history 304 111ms session:-","timestamp":"2026-06-02 13:08:45"}
+{"level":"info","message":"GET /history 304 93ms session:-","timestamp":"2026-06-02 13:08:45"}
+{"level":"info","message":"GET / 304 890ms session:-","timestamp":"2026-06-02 13:08:45"}
+{"level":"info","message":"GET / 304 133ms session:-","timestamp":"2026-06-02 13:08:46"}
+{"level":"info","message":"OPTIONS /api/research/history 204 4ms session:-","timestamp":"2026-06-02 13:08:57"}
+{"level":"info","message":"OPTIONS /api/research/history 204 6ms session:-","timestamp":"2026-06-02 13:08:57"}
+{"level":"info","message":"GET /history 304 200ms session:-","timestamp":"2026-06-02 13:08:57"}
+{"level":"info","message":"GET /history 304 85ms session:-","timestamp":"2026-06-02 13:08:57"}
+{"level":"info","message":"OPTIONS /api/research 204 1ms session:-","timestamp":"2026-06-02 13:09:08"}
+{"level":"info","message":"POST / 200 633ms session:22c13cfe-5432-4a2b-a3eb-6e684d9ba3c2","timestamp":"2026-06-02 13:09:09"}
+{"level":"info","message":"Agent: planner | Session: 22c13cfe-5432-4a2b-a3eb-6e684d9ba3c2 | Duration: 1231ms | Tokens: 290 | Status: success","timestamp":"2026-06-02 13:09:11"}
+{"level":"info","message":"Agent: rag | Session: 22c13cfe-5432-4a2b-a3eb-6e684d9ba3c2 | Duration: 38928ms | Tokens: 0 | Status: success","timestamp":"2026-06-02 13:09:50"}
+{"level":"info","message":"Agent: search | Session: 22c13cfe-5432-4a2b-a3eb-6e684d9ba3c2 | Duration: 39800ms | Tokens: 0 | Status: success","timestamp":"2026-06-02 13:09:50"}
+{"level":"info","message":"Agent: synthesizer | Session: 22c13cfe-5432-4a2b-a3eb-6e684d9ba3c2 | Duration: 2989ms | Tokens: 0 | Status: success","timestamp":"2026-06-02 13:09:53"}
+{"level":"info","message":"GET /22c13cfe-5432-4a2b-a3eb-6e684d9ba3c2/stream 200 44986ms session:22c13cfe-5432-4a2b-a3eb-6e684d9ba3c2","timestamp":"2026-06-02 13:09:55"}
+{"level":"info","message":"OPTIONS /api/research/22c13cfe-5432-4a2b-a3eb-6e684d9ba3c2/chat 204 2ms session:-","timestamp":"2026-06-02 13:10:34"}
+{"level":"info","message":"POST /22c13cfe-5432-4a2b-a3eb-6e684d9ba3c2/chat 200 2266ms session:22c13cfe-5432-4a2b-a3eb-6e684d9ba3c2","timestamp":"2026-06-02 13:10:36"}
+{"level":"info","message":"OPTIONS /api/research/22c13cfe-5432-4a2b-a3eb-6e684d9ba3c2/chat 204 0ms session:-","timestamp":"2026-06-02 13:10:54"}
+{"level":"info","message":"POST /22c13cfe-5432-4a2b-a3eb-6e684d9ba3c2/chat 200 1343ms session:22c13cfe-5432-4a2b-a3eb-6e684d9ba3c2","timestamp":"2026-06-02 13:10:55"}

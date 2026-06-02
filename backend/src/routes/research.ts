@@ -14,7 +14,7 @@ import {
 import { researchGraph } from '../graph/researchGraph';
 import { researchEmitter } from '../events/emitter';
 import { researchRateLimiter } from '../middleware/rateLimit';
-import { validateResearchQuery } from '../middleware/validation';
+import { validateResearchQuery, checkGuardrailViolation } from '../middleware/validation';
 import { AuthRequest, requireAuth } from '../middleware/auth';
 import { runChatAgent } from '../agents/chat';
 
@@ -220,6 +220,13 @@ router.post('/:sessionId/chat', requireAuth, async (req: AuthRequest, res: Respo
   const userId = req.userId!;
 
   if (!chatQuery) return res.status(400).json({ error: 'Query is required' });
+
+  // Security Guardrails check for chat inputs
+  const violationError = checkGuardrailViolation(chatQuery);
+  if (violationError) {
+    console.warn(`🛡️ [Guardrails] Security block on chat input: "${chatQuery}"`);
+    return res.status(400).json({ error: violationError });
+  }
 
   try {
     const session = await getSessionReport(sessionId as string, userId);

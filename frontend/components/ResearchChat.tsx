@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, MessageSquare, User, Sparkles } from 'lucide-react';
+import { Send, MessageSquare, User, Sparkles, ShieldAlert } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useAuth } from '../lib/AuthContext';
 import { API_URL } from '../lib/api';
@@ -24,6 +24,7 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'warning' } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,6 +32,14 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
+
+  // Auto-dismiss toast after 4 seconds
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   useEffect(() => {
     if (externalTrigger && externalTrigger.text && token) {
@@ -53,7 +62,14 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
             body: JSON.stringify({ query: queryText }),
           });
 
-          if (!response.ok) throw new Error('Chat failed');
+          if (!response.ok) {
+            let errorMsg = 'Chat failed';
+            try {
+              const errData = await response.json();
+              errorMsg = errData.error || errorMsg;
+            } catch {}
+            throw new Error(errorMsg);
+          }
 
           const reader = response.body?.getReader();
           if (!reader) throw new Error('No reader found');
@@ -72,13 +88,26 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
               return newMessages;
             });
           }
-        } catch (err) {
+        } catch (err: any) {
           console.error('Chat stream error:', err);
-          setMessages((prev) => {
-            const newMessages = [...prev];
-            newMessages[newMessages.length - 1].content = 'Sorry, experimental chat failed. Please try again.';
-            return newMessages;
-          });
+          const msgText = err?.message || 'Chat failed';
+          if (msgText.includes('Security Warning') || msgText.includes('guardrails') || msgText.includes('Unsafe')) {
+            setToast({
+              message: 'Policy Alert: Jailbreak or instruction-erase attempt blocked.',
+              type: 'warning'
+            });
+            setMessages((prev) => {
+              const newMessages = [...prev];
+              newMessages[newMessages.length - 1].content = '⚠️ **Security Action Taken**: This response was blocked by application guardrails due to unsafe patterns (e.g. system instruction erasure/jailbreak attempt).';
+              return newMessages;
+            });
+          } else {
+            setMessages((prev) => {
+              const newMessages = [...prev];
+              newMessages[newMessages.length - 1].content = 'Sorry, experimental chat failed. Please try again.';
+              return newMessages;
+            });
+          }
         } finally {
           setIsTyping(false);
         }
@@ -109,7 +138,14 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
         body: JSON.stringify({ query: input }),
       });
 
-      if (!response.ok) throw new Error('Chat failed');
+      if (!response.ok) {
+        let errorMsg = 'Chat failed';
+        try {
+          const errData = await response.json();
+          errorMsg = errData.error || errorMsg;
+        } catch {}
+        throw new Error(errorMsg);
+      }
 
       const reader = response.body?.getReader();
       if (!reader) throw new Error('No reader found');
@@ -126,23 +162,43 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
           const newMessages = [...prev];
           newMessages[newMessages.length - 1].content = accumulated;
           return newMessages;
-          
         });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Chat stream error:', err);
-      setMessages((prev) => {
-        const newMessages = [...prev];
-        newMessages[newMessages.length - 1].content = 'Sorry, experimental chat failed. Please try again.';
-        return newMessages;
-      });
+      const msgText = err?.message || 'Chat failed';
+      if (msgText.includes('Security Warning') || msgText.includes('guardrails') || msgText.includes('Unsafe')) {
+        setToast({
+          message: 'Policy Alert: Jailbreak or instruction-erase attempt blocked.',
+          type: 'warning'
+        });
+        setMessages((prev) => {
+          const newMessages = [...prev];
+          newMessages[newMessages.length - 1].content = '⚠️ **Security Action Taken**: This response was blocked by application guardrails due to unsafe patterns (e.g. system instruction erasure/jailbreak attempt).';
+          return newMessages;
+        });
+      } else {
+        setMessages((prev) => {
+          const newMessages = [...prev];
+          newMessages[newMessages.length - 1].content = 'Sorry, experimental chat failed. Please try again.';
+          return newMessages;
+        });
+      }
     } finally {
       setIsTyping(false);
     }
   };
 
   return (
-    <div className="bg-white border border-zinc-200 rounded-3xl shadow-sm flex flex-col h-125 overflow-hidden">
+    <div className="bg-white border border-zinc-200 rounded-3xl shadow-sm flex flex-col h-125 overflow-hidden relative">
+      {/* Toast Notification Alert */}
+      {toast && (
+        <div className="absolute top-16 left-4 right-4 z-20 bg-rose-50 border border-rose-250 p-3 rounded-2xl flex items-center gap-2.5 shadow-md animate-in slide-in-from-top duration-300">
+          <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0" />
+          <p className="text-[11px] font-black text-rose-800 leading-normal">{toast.message}</p>
+        </div>
+      )}
+
       <div className="px-5 py-4 border-b border-zinc-100 flex items-center gap-2 bg-zinc-50/50">
         <MessageSquare className="w-4 h-4 text-emerald-500" />
         <h2 className="font-bold text-zinc-800 text-xs uppercase tracking-widest">Interactive Intelligence Chat</h2>
@@ -201,7 +257,7 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
           <button
             onClick={handleSend}
             disabled={!input.trim() || isTyping}
-            className="absolute right-2 top-2 p-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-colors disabled:opacity-30 flex items-center justify-center cursor-pointer"
+            className="absolute right-2 top-2 p-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-655 transition-colors disabled:opacity-30 flex items-center justify-center cursor-pointer"
           >
             <Send className="w-4 h-4" />
           </button>

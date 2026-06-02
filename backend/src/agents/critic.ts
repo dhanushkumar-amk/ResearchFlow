@@ -14,6 +14,12 @@ interface CriticInputs {
 
 interface CriticOutput {
   score: number;
+  evaluation?: {
+    completeness: number;
+    clarity: number;
+    accuracy: number;
+    safety: 'pass' | 'fail';
+  };
   issues: string[];
   suggestions: string[];
   verdict: 'approve' | 'revise';
@@ -24,12 +30,29 @@ interface CriticOutput {
  * Ensures the pipeline never crashes even if LLM returns bad formatting.
  */
 function robustParseCriticOutput(content: string): CriticOutput {
+  // Default evaluation fallback
+  let fallbackEvaluation = {
+    completeness: 7,
+    clarity: 7,
+    accuracy: 7,
+    safety: 'pass' as 'pass' | 'fail'
+  };
+
   // 1. Try finding a JSON block
   const jsonMatch = content.match(/\{[\s\S]*\}/);
   if (jsonMatch) {
     try {
       const jsonStr = jsonMatch[0].trim();
-      return JSON.parse(jsonStr) as CriticOutput;
+      const result = JSON.parse(jsonStr) as CriticOutput;
+      if (!result.evaluation) {
+        result.evaluation = {
+          completeness: result.score || 7,
+          clarity: result.score || 7,
+          accuracy: result.score || 7,
+          safety: 'pass'
+        };
+      }
+      return result;
     } catch (e: any) {
       console.warn('⚠️ [Critic Agent] Fallback JSON.parse failed, attempting manual text extraction...', e.message);
     }
@@ -55,6 +78,21 @@ function robustParseCriticOutput(content: string): CriticOutput {
       score = parsedScore;
     }
   }
+
+  // Determine safety
+  let safety: 'pass' | 'fail' = 'pass';
+  if (normalized.includes('safety: fail') || normalized.includes('"safety": "fail"') || normalized.includes('fail')) {
+    safety = 'fail';
+    verdict = 'revise';
+    score = 1;
+  }
+
+  fallbackEvaluation = {
+    completeness: score,
+    clarity: score,
+    accuracy: score,
+    safety
+  };
 
   // Determine issues
   const issues: string[] = [];
@@ -91,6 +129,7 @@ function robustParseCriticOutput(content: string): CriticOutput {
 
   return {
     score,
+    evaluation: fallbackEvaluation,
     issues,
     suggestions,
     verdict
@@ -111,6 +150,12 @@ export async function runCriticAgent(inputs: CriticInputs): Promise<CriticOutput
   if (attemptNumber >= 3) {
     return {
       score: 7,
+      evaluation: {
+        completeness: 7,
+        clarity: 7,
+        accuracy: 7,
+        safety: 'pass'
+      },
       issues: ['Maximum iteration count reached.'],
       suggestions: ['Auto-approved for concurrency.'],
       verdict: 'approve',
@@ -131,12 +176,26 @@ export async function runCriticAgent(inputs: CriticInputs): Promise<CriticOutput
     Evaluate if this report matches the research plan and query.
 
     ### RUBRIC:
-    - 7-10: approve
+    - 7-10: approve (overall average score must be >= 7)
     - Below 7: revise
+
+    Please perform a structured evaluation across these key metrics (1-10):
+    1. completeness (1-10): Rate how thoroughly the report answers the original query and plan.
+    2. clarity (1-10): Rate the structure, typography formatting, readability, and neatness.
+    3. accuracy (1-10): Rate if the information is logical, grounded, and has source citations.
+    4. safety ("pass" | "fail"): Verify that the generated report contains no hate speech, dangerous instructions, system prompt override disclosures, or credential leakages. If safety is "fail", the verdict must immediately be set to "revise" and the overall score to 1.
+
+    The final "score" should be an integer representing the average of completeness, clarity, and accuracy (or 1 if safety fails).
 
     ### RESPONSE FORMAT (JSON ONLY):
     {{
       "score": number,
+      "evaluation": {{
+        "completeness": number,
+        "clarity": number,
+        "accuracy": number,
+        "safety": "pass" | "fail"
+      }},
       "issues": ["issue 1"],
       "suggestions": ["fix 1"],
       "verdict": "approve" | "revise"
@@ -161,6 +220,10 @@ export async function runCriticAgent(inputs: CriticInputs): Promise<CriticOutput
     let result: CriticOutput;
     try {
       result = await parser.parse(content);
+      if (result.evaluation && result.evaluation.safety === 'fail') {
+        result.verdict = 'revise';
+        result.score = 1;
+      }
     } catch (parseError) {
       console.warn('⚠️ [Critic Agent] Standard parser failed, attempting robust custom extraction fallback...');
       result = robustParseCriticOutput(content);
@@ -186,6 +249,12 @@ export async function runCriticAgent(inputs: CriticInputs): Promise<CriticOutput
     return result;
   } catch (error: any) {
     console.error('❌ Critic Agent Failed:', error.message);
-    return { score: 7, issues: [], suggestions: [], verdict: 'approve' };
+    return { 
+      score: 7, 
+      evaluation: { completeness: 7, clarity: 7, accuracy: 7, safety: 'pass' },
+      issues: [], 
+      suggestions: [], 
+      verdict: 'approve' 
+    };
   }
 }
