@@ -316,7 +316,7 @@ export default function DocumentsPage() {
       <div className="max-w-[1400px] mx-auto space-y-8">
         
         {/* Banner Welcome Header Card */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-emerald-550/15 via-teal-500/5 to-indigo-550/15 border border-emerald-500/15 rounded-3xl p-6 md:p-8 shadow-sm">
+        <div className="relative overflow-hidden bg-gradient-to-r from-emerald-500/15 via-teal-500/5 to-indigo-500/15 border border-emerald-500/15 rounded-3xl p-6 md:p-8 shadow-sm">
           <div className="relative z-10 space-y-2">
             <div className="flex items-center gap-3">
               <Link 
@@ -340,7 +340,7 @@ export default function DocumentsPage() {
             </p>
           </div>
           {/* Abstract background shapes */}
-          <div className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-emerald-450/10 rounded-full blur-3xl" />
+          <div className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl" />
           <div className="absolute left-1/3 bottom-0 translate-y-1/2 w-64 h-64 bg-indigo-400/5 rounded-full blur-3xl" />
         </div>
 
@@ -478,7 +478,7 @@ export default function DocumentsPage() {
               <button
                 type="submit"
                 disabled={isIngestingUrl || !urlInput.trim()}
-                className="w-full bg-zinc-950 hover:bg-zinc-850 text-white text-xs font-bold py-2 rounded-lg cursor-pointer transition-colors flex items-center justify-center gap-1.5 disabled:opacity-40"
+                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold py-2.5 rounded-lg cursor-pointer transition-all flex items-center justify-center gap-1.5 disabled:opacity-40 shadow-[0_4px_12px_rgba(16,185,129,0.15)] hover:shadow-[0_6px_18px_rgba(16,185,129,0.25)]"
               >
                 {isIngestingUrl ? (
                   <>
@@ -542,7 +542,7 @@ export default function DocumentsPage() {
                   placeholder="Search library documents..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-zinc-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-555 bg-white transition-all text-zinc-800 placeholder-zinc-400"
+                  className="w-full pl-10 pr-4 py-2 border border-zinc-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white transition-all text-zinc-800 placeholder-zinc-400"
                 />
               </div>
 
@@ -550,7 +550,7 @@ export default function DocumentsPage() {
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value as any)}
-                  className="px-3 py-1.5 border border-zinc-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-555 bg-white text-zinc-700 cursor-pointer"
+                  className="px-3 py-1.5 border border-zinc-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white text-zinc-700 cursor-pointer"
                 >
                   <option value="all">All Types</option>
                   <option value="PDF">PDFs</option>

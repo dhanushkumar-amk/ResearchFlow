@@ -60,16 +60,18 @@ const ResetPasswordPage = () => {
   if (!verified || !email || !resetToken) {
     return (
       <div className="min-h-screen bg-white text-[#0a0a0a] font-sans antialiased relative flex flex-col justify-center py-12 sm:px-6 lg:px-8 overflow-hidden">
+        {/* Dot Grid Background */}
+        <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px] opacity-40 pointer-events-none z-0" />
         <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
           <div className="bg-white border border-neutral-200 rounded-[16px] shadow-[0_12px_30px_rgba(0,0,0,0.03)] p-6 sm:p-8 text-center">
             <Lucide.AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-neutral-955 mb-2">Invalid Session</h2>
+            <h2 className="text-xl font-bold text-neutral-900 mb-2">Invalid Session</h2>
             <p className="text-xs text-neutral-500 mb-6">
               Your password reset session has expired or is invalid. Please request a new verification code.
             </p>
             <button
               onClick={() => navigate(ROUTES.FORGOT_PASSWORD)}
-              className="w-full bg-neutral-950 text-white hover:bg-neutral-800 font-semibold py-2.5 rounded-md text-sm transition-all cursor-pointer"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-lg text-sm transition-all flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(16,185,129,0.2)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.3)] cursor-pointer relative"
             >
               Request New Code
             </button>
@@ -84,6 +86,8 @@ const ResetPasswordPage = () => {
       {/* Background Decorative Glows */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/[0.03] rounded-full blur-[100px] pointer-events-none z-0" />
       <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-emerald-500/[0.02] rounded-full blur-[130px] pointer-events-none z-0" />
+      {/* Dot Grid Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px] opacity-40 pointer-events-none z-0" />
 
       {/* Brand Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center mb-6">
@@ -105,14 +109,14 @@ const ResetPasswordPage = () => {
 
       {/* Card */}
       <div className="mt-2 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
           className="bg-white border border-neutral-200 rounded-[16px] shadow-[0_12px_30px_rgba(0,0,0,0.03)] p-6 sm:p-8"
         >
           {error && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               className="mb-4 p-3 rounded-[8px] bg-red-50 border border-red-100 text-xs font-semibold text-red-650 flex items-center gap-2"
@@ -149,7 +153,7 @@ const ResetPasswordPage = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="block w-full pl-10 pr-10 py-2 border border-neutral-200 rounded-md text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-neutral-955 placeholder-neutral-400"
+                    className="block w-full pl-10 pr-10 py-2 border border-neutral-200 rounded-md text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-neutral-900 placeholder-neutral-400"
                   />
                   <button
                     type="button"
@@ -182,7 +186,7 @@ const ResetPasswordPage = () => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-neutral-955 placeholder-neutral-400"
+                    className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-neutral-900 placeholder-neutral-400"
                   />
                 </div>
               </div>
@@ -191,7 +195,7 @@ const ResetPasswordPage = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-neutral-950 text-white hover:bg-neutral-800 font-semibold py-2.5 rounded-md text-sm transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer relative"
+                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-lg text-sm transition-all flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(16,185,129,0.2)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.3)] cursor-pointer relative"
               >
                 {isLoading ? (
                   <>
@@ -211,7 +215,7 @@ const ResetPasswordPage = () => {
           {/* Footer Back Link */}
           {!success && (
             <div className="mt-6 flex justify-center border-t border-neutral-100 pt-4">
-              <span 
+              <span
                 onClick={() => navigate(ROUTES.LOGIN)}
                 className="flex items-center gap-1.5 text-xs font-bold text-neutral-500 hover:text-emerald-600 cursor-pointer transition-colors"
               >

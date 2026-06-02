@@ -2,17 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Sparkles, 
-  ArrowRight, 
-  Clock, 
-  FileText, 
-  Upload, 
-  Search, 
-  Database, 
-  Award, 
-  TrendingUp, 
-  Activity, 
+import {
+  Sparkles,
+  ArrowRight,
+  Clock,
+  FileText,
+  Upload,
+  Search,
+  Database,
+  Award,
+  TrendingUp,
+  Activity,
   ChevronRight,
   BookOpen,
   HelpCircle,
@@ -24,16 +24,16 @@ import { getAllResearchHistory, getHistory } from '../lib/api';
 import { ResearchHistoryItem, Document } from '../types/research';
 import { useAuth } from '../lib/AuthContext';
 import { motion } from 'framer-motion';
-import { 
-  ResponsiveContainer, 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip as RechartsTooltip, 
-  BarChart, 
-  Bar, 
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  BarChart,
+  Bar,
   Cell,
   PieChart,
   Pie,
@@ -53,7 +53,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!token) return;
-    
+
     // Fetch research history
     getAllResearchHistory(token)
       .then(setHistory)
@@ -184,13 +184,13 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-white text-[#0a0a0a] pt-24 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-emerald-50 selection:text-emerald-700">
-      
+
       {/* Background Decorative Soft Glows */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-emerald-500/[0.015] rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
 
       <div className="max-w-7xl mx-auto space-y-8 relative z-10">
-        
+
         {/* HEADER SECTION */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-100 pb-5">
           <div className="space-y-1.5 text-left">
@@ -209,12 +209,12 @@ export default function Dashboard() {
 
         {/* 2-COLUMN PREMIUM WORKSPACE GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* LEFT COLUMN: PRIMARY WORKSPACE & VOLUME TRENDS (2/3 width) */}
           <div className="lg:col-span-2 space-y-6">
-            
+
             {/* START RESEARCH CTA BANNER */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-white border border-neutral-200/70 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xs relative overflow-hidden"
@@ -227,7 +227,7 @@ export default function Dashboard() {
               </div>
               <Link
                 href="/research"
-                className="bg-[#0a0a0a] hover:bg-[#262626] text-white px-5 py-2.5 rounded-[8px] font-bold text-xs transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 shrink-0 cursor-pointer shadow-xs"
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-[8px] font-bold text-xs transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 shrink-0 cursor-pointer shadow-[0_4px_14px_rgba(16,185,129,0.2)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.3)]"
               >
                 Start Research
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -248,8 +248,8 @@ export default function Dashboard() {
                     <AreaChart data={getActivityData()} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorQueries" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.1}/>
-                          <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.1} />
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f5" />
@@ -298,14 +298,13 @@ export default function Dashboard() {
                           </span>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
                         {item.quality_score !== null ? (
-                          <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full ${
-                            item.quality_score >= 8 ? 'bg-emerald-50 text-emerald-700 border border-emerald-100/50' :
-                            item.quality_score >= 6 ? 'bg-blue-50 text-blue-700 border border-blue-100/50' :
-                            'bg-amber-50 text-amber-700 border border-amber-100/50'
-                          }`}>
+                          <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full ${item.quality_score >= 8 ? 'bg-emerald-50 text-emerald-700 border border-emerald-100/50' :
+                              item.quality_score >= 6 ? 'bg-blue-50 text-blue-700 border border-blue-100/50' :
+                                'bg-amber-50 text-amber-700 border border-amber-100/50'
+                            }`}>
                             Score: {item.quality_score}/10
                           </span>
                         ) : (
@@ -315,11 +314,10 @@ export default function Dashboard() {
                         )}
 
                         {item.status && (
-                          <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded ${
-                            item.status === 'complete' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100/50' :
-                            item.status === 'failed' ? 'bg-red-50 text-red-700 border border-red-100/50' :
-                            'bg-amber-50 text-amber-700 border border-amber-100/50'
-                          }`}>
+                          <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded ${item.status === 'complete' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100/50' :
+                              item.status === 'failed' ? 'bg-red-50 text-red-700 border border-red-100/50' :
+                                'bg-amber-50 text-amber-700 border border-amber-100/50'
+                            }`}>
                             {item.status.toUpperCase()}
                           </span>
                         )}
@@ -347,10 +345,10 @@ export default function Dashboard() {
 
           {/* RIGHT COLUMN: ANALYTICS SIDEBAR (1/3 width) */}
           <div className="space-y-6">
-            
+
             {/* COMPACT METRICS GRID */}
             <div className="grid grid-cols-2 gap-4">
-              
+
               {/* METRIC 1: TOTAL QUERIES */}
               <div className="bg-white border border-neutral-200/70 rounded-xl p-4.5 text-left shadow-2xs">
                 <span className="text-[9px] font-bold uppercase tracking-wider text-neutral-400 font-mono block">Total Runs</span>
@@ -451,7 +449,7 @@ export default function Dashboard() {
                 </h3>
                 <p className="text-[10px] text-neutral-450">Augment intelligence with local libraries</p>
               </div>
-              
+
               <div className="p-3 bg-[#f9fafb] border border-neutral-200 rounded-lg space-y-1.5 text-[11px]">
                 <div className="flex justify-between items-center">
                   <span className="text-neutral-500 font-medium">Index Status</span>

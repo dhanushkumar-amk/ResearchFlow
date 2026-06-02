@@ -26,7 +26,7 @@ interface StateItem {
 
 type State = Record<string, StateItem>;
 
-type Action = 
+type Action =
   | { type: 'START_NODE'; node: string }
   | { type: 'COMPLETE_ALL' }
   | { type: 'RESET' };
@@ -37,7 +37,7 @@ type Action =
  */
 function reducer(state: State, action: Action): State {
   const now = Date.now();
-  
+
   switch (action.type) {
     case 'START_NODE': {
       const next = { ...state };
@@ -122,11 +122,10 @@ const AgentTimeline: React.FC<AgentTimelineProps> = ({ activeNode, isComplete })
               className={`flex items-start gap-4 transition-all duration-300 ${status.state === 'waiting' ? 'opacity-30' : 'opacity-100'}`}
             >
               <div className="relative shrink-0">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 border-2 ${
-                  status.state === 'complete' ? 'bg-green-500 border-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.3)]' :
-                  status.state === 'running' ? 'bg-emerald-500 border-emerald-500 text-white ring-4 ring-emerald-50' :
-                  'bg-white border-zinc-100 text-zinc-300'
-                }`}>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 border-2 ${status.state === 'complete' ? 'bg-green-500 border-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.3)]' :
+                    status.state === 'running' ? 'bg-emerald-500 border-emerald-500 text-white ring-4 ring-emerald-50' :
+                      'bg-white border-zinc-100 text-zinc-300'
+                  }`}>
                   <Icon className={`w-5 h-5 ${status.state === 'running' ? 'animate-pulse' : ''}`} />
                 </div>
                 {status.state === 'complete' && (
@@ -135,7 +134,7 @@ const AgentTimeline: React.FC<AgentTimelineProps> = ({ activeNode, isComplete })
                   </div>
                 )}
                 {status.state === 'running' && (
-                  <div className="absolute -bottom-1 -right-1 bg-white rounded-full text-emerald-555 ring-2 ring-white">
+                  <div className="absolute -bottom-1 -right-1 bg-white rounded-full text-emerald-500 ring-2 ring-white">
                     <Loader2 className="w-4 h-4 animate-spin" />
                   </div>
                 )}
@@ -143,11 +142,10 @@ const AgentTimeline: React.FC<AgentTimelineProps> = ({ activeNode, isComplete })
 
               <div className="flex-1">
                 <div className="flex items-center justify-between group">
-                  <h3 className={`text-[13px] font-bold tracking-tight transition-colors ${
-                    status.state === 'complete' ? 'text-green-600' :
-                    status.state === 'running' ? 'text-emerald-600' :
-                    'text-zinc-400'
-                  }`}>
+                  <h3 className={`text-[13px] font-bold tracking-tight transition-colors ${status.state === 'complete' ? 'text-green-600' :
+                      status.state === 'running' ? 'text-emerald-600' :
+                        'text-zinc-400'
+                    }`}>
                     {agent.name}
                   </h3>
                   {status.duration && (

@@ -1,6 +1,6 @@
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas-pro';
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType, AlignmentType, BorderStyle } from 'docx';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from 'docx';
 import { saveAs } from 'file-saver';
 
 /**
@@ -83,7 +83,7 @@ export async function exportToPDF(elementId: string, filename: string) {
 
       // Create stylesheets specific to this density level
       const styleSheet = document.createElement('style');
-      let customCss = `
+      const customCss = `
         .mermaid-container {
           display: flex !important;
           justify-content: center !important;
@@ -337,7 +337,7 @@ export async function exportToPDF(elementId: string, filename: string) {
  */
 export async function exportToDOCX(content: string, title: string, filename: string) {
   const lines = content.split('\n');
-  const children: any[] = [];
+  const children: Paragraph[] = [];
 
   // Title
   children.push(
@@ -386,7 +386,7 @@ export async function exportToDOCX(content: string, title: string, filename: str
 /**
  * Raw JSON export for data scientists.
  */
-export function exportToJSON(data: any, filename: string) {
+export function exportToJSON(data: Record<string, unknown> | unknown, filename: string) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   saveAs(blob, filename);
 }

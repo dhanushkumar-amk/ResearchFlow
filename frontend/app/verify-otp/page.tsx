@@ -11,7 +11,7 @@ const VerifyOtpPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { verifyEmail, resendVerification, verifyResetCode, forgotPassword } = useAuth();
-  
+
   // Get email from router state if available
   const email = location.state?.email || 'your email';
   const fromForgotPassword = location.state?.fromForgotPassword || false;
@@ -112,7 +112,7 @@ const VerifyOtpPage = () => {
 
   const handleResendCode = async () => {
     if (resendTimer > 0) return;
-    
+
     setError('');
     setSuccessMessage('');
     setIsResending(true);
@@ -138,6 +138,8 @@ const VerifyOtpPage = () => {
       {/* Background Decorative Glows */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/[0.03] rounded-full blur-[100px] pointer-events-none z-0" />
       <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-emerald-500/[0.02] rounded-full blur-[130px] pointer-events-none z-0" />
+      {/* Dot Grid Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px] opacity-40 pointer-events-none z-0" />
 
       {/* Brand Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center mb-6">
@@ -153,20 +155,20 @@ const VerifyOtpPage = () => {
           Verify your email
         </h2>
         <p className="mt-2 text-xs text-neutral-450 leading-relaxed max-w-sm mx-auto">
-          We have sent a 6-digit verification code to <span className="font-semibold text-neutral-850 break-all">{email}</span>
+          We have sent a 6-digit verification code to <span className="font-semibold text-neutral-800 break-all">{email}</span>
         </p>
       </div>
 
       {/* Card */}
       <div className="mt-2 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
           className="bg-white border border-neutral-200 rounded-[16px] shadow-[0_12px_30px_rgba(0,0,0,0.03)] p-6 sm:p-8"
         >
           {error && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               className="mb-4 p-3 rounded-[8px] bg-red-50 border border-red-100 text-xs font-semibold text-red-650 flex items-center gap-2"
@@ -177,7 +179,7 @@ const VerifyOtpPage = () => {
           )}
 
           {successMessage && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               className="mb-4 p-3 rounded-[8px] bg-emerald-50 border border-emerald-100 text-xs font-semibold text-emerald-700 flex items-center gap-2"
@@ -206,7 +208,7 @@ const VerifyOtpPage = () => {
                     onChange={(e) => handleChange(e.target, index)}
                     onKeyDown={(e) => handleKeyDown(e, index)}
                     onPaste={handlePaste}
-                    className="w-10 h-12 text-center text-lg font-bold border border-neutral-200 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-neutral-955 shadow-sm transition-colors"
+                    className="w-10 h-12 text-center text-lg font-bold border border-neutral-200 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-neutral-900 shadow-sm transition-colors"
                   />
                 ))}
               </div>
@@ -216,7 +218,7 @@ const VerifyOtpPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-neutral-950 text-white hover:bg-neutral-800 font-semibold py-2.5 rounded-md text-sm transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer relative"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-lg text-sm transition-all flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(16,185,129,0.2)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.3)] cursor-pointer relative"
             >
               {isLoading ? (
                 <>
@@ -253,7 +255,7 @@ const VerifyOtpPage = () => {
 
           {/* Footer Back Link */}
           <div className="mt-6 flex justify-center border-t border-neutral-100 pt-4">
-            <span 
+            <span
               onClick={() => navigate(ROUTES.LOGIN)}
               className="flex items-center gap-1.5 text-xs font-bold text-neutral-500 hover:text-emerald-600 cursor-pointer transition-colors"
             >

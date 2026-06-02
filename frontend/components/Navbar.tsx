@@ -44,7 +44,7 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/60 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.02)] h-16 flex items-center transition-all duration-300">
       <div className="max-w-[1400px] mx-auto px-6 md:px-8 w-full flex items-center justify-between">
-        
+
         {/* Brand Logo - Premium Glow */}
         <Link href="/" className="flex items-center gap-2.5 group">
           <div className="bg-gradient-to-tr from-emerald-500 to-teal-500 text-white p-2 rounded-xl shadow-[0_4px_12px_rgba(16,185,129,0.2)] group-hover:scale-105 transition-transform duration-300">
@@ -63,11 +63,10 @@ export default function Navbar() {
               <Link
                 key={`${link.label}-${index}`}
                 href={link.href}
-                className={`text-xs font-bold tracking-tight transition-all duration-300 py-1.5 px-4 rounded-lg ${
-                  isActive
+                className={`text-xs font-bold tracking-tight transition-all duration-300 py-1.5 px-4 rounded-lg ${isActive
                     ? 'bg-white text-emerald-600 shadow-sm shadow-slate-100 font-extrabold'
                     : 'text-slate-500 hover:text-slate-900 hover:bg-white/40'
-                }`}
+                  }`}
               >
                 {link.label}
               </Link>
@@ -93,7 +92,7 @@ export default function Navbar() {
                 user.name.charAt(0).toUpperCase()
               )}
             </div>
-            <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-305 ${dropdownOpen ? 'rotate-180 text-slate-605' : ''}`} />
+            <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-305 ${dropdownOpen ? 'rotate-180 text-slate-600' : ''}`} />
           </button>
 
           {/* Dropdown Box */}
@@ -154,11 +153,10 @@ export default function Navbar() {
                 key={`${link.label}-mobile-${index}`}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center px-4 py-3 rounded-xl text-xs font-semibold transition-all ${
-                  isActive
+                className={`flex items-center px-4 py-3 rounded-xl text-xs font-semibold transition-all ${isActive
                     ? 'bg-slate-100 text-slate-905 font-bold'
                     : 'text-slate-600 hover:bg-slate-50'
-                }`}
+                  }`}
               >
                 {link.label}
               </Link>

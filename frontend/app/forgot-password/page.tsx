@@ -20,10 +20,10 @@ const ForgotPasswordPage = () => {
       setError('Please enter your email address');
       return;
     }
-    
+
     setError('');
     setIsLoading(true);
-    
+
     try {
       await forgotPassword(email);
       setIsLoading(false);
@@ -39,6 +39,8 @@ const ForgotPasswordPage = () => {
       {/* Background Decorative Glows */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/[0.03] rounded-full blur-[100px] pointer-events-none z-0" />
       <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-emerald-500/[0.02] rounded-full blur-[130px] pointer-events-none z-0" />
+      {/* Dot Grid Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px] opacity-40 pointer-events-none z-0" />
 
       {/* Brand Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center mb-6">
@@ -60,14 +62,14 @@ const ForgotPasswordPage = () => {
 
       {/* Card */}
       <div className="mt-2 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
           className="bg-white border border-neutral-200 rounded-[16px] shadow-[0_12px_30px_rgba(0,0,0,0.03)] p-6 sm:p-8"
         >
           {error && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               className="mb-4 p-3 rounded-[8px] bg-red-50 border border-red-100 text-xs font-semibold text-red-650 flex items-center gap-2"
@@ -95,7 +97,7 @@ const ForgotPasswordPage = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
-                  className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-neutral-955 placeholder-neutral-400"
+                  className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-neutral-900 placeholder-neutral-400"
                 />
               </div>
             </div>
@@ -104,7 +106,7 @@ const ForgotPasswordPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-neutral-950 text-white hover:bg-neutral-800 font-semibold py-2.5 rounded-md text-sm transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer relative"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-lg text-sm transition-all flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(16,185,129,0.2)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.3)] cursor-pointer relative"
             >
               {isLoading ? (
                 <>
@@ -122,7 +124,7 @@ const ForgotPasswordPage = () => {
 
           {/* Footer Link */}
           <div className="mt-6 flex justify-center border-t border-neutral-100 pt-4">
-            <span 
+            <span
               onClick={() => navigate(ROUTES.LOGIN)}
               className="flex items-center gap-1.5 text-xs font-bold text-neutral-500 hover:text-emerald-600 cursor-pointer transition-colors"
             >

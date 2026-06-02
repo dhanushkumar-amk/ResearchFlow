@@ -3,7 +3,6 @@ import {
   createSession,
   updateSessionStatus,
   saveReport,
-  getResearchHistory,
   getSessionReport,
   deleteSession,
   getAllResearchHistory,

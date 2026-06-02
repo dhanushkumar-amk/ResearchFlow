@@ -3,7 +3,6 @@ import { PromptTemplate } from '@langchain/core/prompts';
 import { JsonOutputParser } from '@langchain/core/output_parsers';
 import { config } from '../config';
 import { logAgentActivity } from '../db/queries';
-import { callMcpTool } from '../mcp/toolClient';
 
 // Define the interface for the planner's output
 export interface PlannerOutput {

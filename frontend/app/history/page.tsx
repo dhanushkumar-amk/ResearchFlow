@@ -52,12 +52,16 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white pt-16">
-      <main className="max-w-5xl mx-auto px-4 py-10">
+    <div className="min-h-screen bg-white pt-24 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-emerald-50 selection:text-emerald-700">
+      {/* Background Decorative Soft Glows */}
+      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-emerald-500/[0.015] rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
+
+      <main className="max-w-5xl mx-auto px-4 py-10 relative z-10">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-3">
-            <Link href="/" className="p-2 rounded-xl border border-zinc-200 hover:bg-zinc-50 transition-colors">
+            <Link href="/" className="p-2 rounded-xl border border-zinc-200 hover:bg-zinc-50 transition-colors bg-white">
               <ArrowLeft className="w-4 h-4 text-zinc-500" />
             </Link>
             <div>
@@ -116,7 +120,7 @@ export default function HistoryPage() {
                   </span>
                   <button
                     onClick={(e) => handleDelete(e, item.session_id)}
-                    className="p-1.5 text-zinc-300 hover:text-red-505 hover:bg-red-50 rounded-lg transition-all"
+                    className="p-1.5 text-zinc-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                     title="Delete"
                   >
                     <Trash2 className="w-4 h-4" />

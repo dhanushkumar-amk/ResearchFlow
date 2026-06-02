@@ -144,8 +144,12 @@ export default function FocusedReportView() {
   };
 
   return (
-    <div className="min-h-screen bg-white pt-24 font-sans text-slate-800">
-      <main className="max-w-[760px] mx-auto px-6 py-10 space-y-6">
+    <div className="min-h-screen bg-white pt-24 font-sans text-slate-800 relative overflow-hidden font-sans antialiased selection:bg-emerald-50 selection:text-emerald-700">
+      {/* Background Decorative Soft Glows */}
+      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-emerald-500/[0.015] rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
+
+      <main className="max-w-[760px] mx-auto px-6 py-10 space-y-6 relative z-10">
         
         {/* Back navigation & breadcrumbs */}
         <div className="flex items-center gap-3">
@@ -237,7 +241,7 @@ export default function FocusedReportView() {
                   className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border cursor-pointer ${
                     isPublic 
                       ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-                      : 'bg-slate-55/10 text-slate-500 border-slate-200'
+                      : 'bg-slate-100 text-slate-500 border-slate-200'
                   }`}
                   title={isPublic ? "Shared Link is Public" : "Only Private Access"}
                 >

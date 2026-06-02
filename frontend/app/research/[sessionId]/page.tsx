@@ -165,13 +165,13 @@ export default function ResearchPage() {
         case 'error': {
           const rawData = event.data;
           let message = 'An error occurred during research.';
-          
+
           if (typeof rawData === 'string') {
             message = rawData;
           } else if (rawData && typeof rawData === 'object') {
             message = (rawData as any).message || (rawData as any).error || message;
           }
-          
+
           setIsError(true);
           setErrorMessage(message);
           setIsStreaming(false);
@@ -185,7 +185,7 @@ export default function ResearchPage() {
       // Don't show error if we finished 
       setIsError((prevError) => {
         // We use a functional update to avoid stale closure or dependency on isComplete
-        return !es.readyState ? prevError : true; 
+        return !es.readyState ? prevError : true;
       });
       es.close();
       setIsLoading(false);
@@ -226,11 +226,10 @@ export default function ResearchPage() {
         </div>
 
         {/* Status Banner */}
-        <div className={`flex items-center gap-3 px-5 py-3 rounded-xl border text-sm font-medium transition-all ${
-          isError ? 'bg-red-50 border-red-200 text-red-700' :
-          isComplete ? 'bg-green-50 border-green-200 text-green-700' :
-          'bg-white border-zinc-200 text-zinc-700'
-        }`}>
+        <div className={`flex items-center gap-3 px-5 py-3 rounded-xl border text-sm font-medium transition-all ${isError ? 'bg-red-50 border-red-200 text-red-700' :
+            isComplete ? 'bg-green-50 border-green-200 text-green-700' :
+              'bg-white border-zinc-200 text-zinc-700'
+          }`}>
           {isLoading ? (
             <svg className="w-4 h-4 animate-spin text-emerald-500" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -241,7 +240,7 @@ export default function ResearchPage() {
           ) : isComplete ? (
             <CheckCircle2 className="w-4 h-4 shrink-0 text-green-600" />
           ) : (
-            <Zap className="w-4 h-4 text-emerald-555 animate-pulse shrink-0" />
+            <Zap className="w-4 h-4 text-emerald-500 animate-pulse shrink-0" />
           )}
           <span>{isError ? errorMessage : statusMessage}</span>
 
@@ -378,7 +377,7 @@ export default function ResearchPage() {
                       className="group p-4 bg-white/75 hover:bg-white border border-emerald-100/50 hover:border-emerald-200 rounded-2xl text-left transition-all duration-300 hover:shadow-md active:scale-[0.99] cursor-pointer"
                     >
                       <h4 className="text-xs font-bold text-zinc-800 group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                        <ChevronRight className="w-3.5 h-3.5 text-emerald-555 group-hover:translate-x-0.5 transition-transform" />
+                        <ChevronRight className="w-3.5 h-3.5 text-emerald-500 group-hover:translate-x-0.5 transition-transform" />
                         {item.title}
                       </h4>
                       <p className="text-[11px] text-zinc-500 mt-1.5 leading-relaxed">{item.desc}</p>

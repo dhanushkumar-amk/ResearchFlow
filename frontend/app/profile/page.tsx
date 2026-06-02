@@ -177,8 +177,12 @@ export default function ProfilePage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pt-24 pb-16">
-      <main className="max-w-4xl mx-auto px-6 py-6 animate-in fade-in duration-300">
+    <div className="min-h-screen bg-white pt-24 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-emerald-50 selection:text-emerald-700">
+      {/* Background Decorative Soft Glows */}
+      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-emerald-500/[0.015] rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
+
+      <main className="max-w-4xl mx-auto px-6 py-6 animate-in fade-in duration-300 relative z-10">
         
         {/* Back Link */}
         <div className="flex items-center gap-3 mb-8">

@@ -67,7 +67,7 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
             try {
               const errData = await response.json();
               errorMsg = errData.error || errorMsg;
-            } catch {}
+            } catch { }
             throw new Error(errorMsg);
           }
 
@@ -81,7 +81,7 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
 
             const text = new TextDecoder().decode(value);
             accumulated += text;
-            
+
             setMessages((prev) => {
               const newMessages = [...prev];
               newMessages[newMessages.length - 1].content = accumulated;
@@ -143,7 +143,7 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
         try {
           const errData = await response.json();
           errorMsg = errData.error || errorMsg;
-        } catch {}
+        } catch { }
         throw new Error(errorMsg);
       }
 
@@ -157,7 +157,7 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
 
         const text = new TextDecoder().decode(value);
         accumulated += text;
-        
+
         setMessages((prev) => {
           const newMessages = [...prev];
           newMessages[newMessages.length - 1].content = accumulated;
@@ -211,7 +211,7 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
             <p className="text-xs font-medium text-zinc-500 max-w-45">Ask follow-up questions about the data in this report.</p>
           </div>
         )}
-        
+
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`flex gap-3 max-w-[85%] ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
@@ -229,18 +229,18 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
           </div>
         ))}
         {isTyping && (
-           <div className="flex justify-start">
-             <div className="flex gap-3">
-               <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center animate-pulse">
-                  <Sparkles className="w-4 h-4 text-white" />
-               </div>
-               <div className="p-3 bg-zinc-50 rounded-2xl flex gap-1">
-                  <div className="w-1 h-1 bg-emerald-300 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                  <div className="w-1 h-1 bg-emerald-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                  <div className="w-1 h-1 bg-emerald-500 rounded-full animate-bounce" />
-               </div>
-             </div>
-           </div>
+          <div className="flex justify-start">
+            <div className="flex gap-3">
+              <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center animate-pulse">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <div className="p-3 bg-zinc-50 rounded-2xl flex gap-1">
+                <div className="w-1 h-1 bg-emerald-300 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                <div className="w-1 h-1 bg-emerald-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                <div className="w-1 h-1 bg-emerald-500 rounded-full animate-bounce" />
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
@@ -257,7 +257,7 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
           <button
             onClick={handleSend}
             disabled={!input.trim() || isTyping}
-            className="absolute right-2 top-2 p-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-655 transition-colors disabled:opacity-30 flex items-center justify-center cursor-pointer"
+            className="absolute right-2 top-2 p-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-colors disabled:opacity-30 flex items-center justify-center cursor-pointer"
           >
             <Send className="w-4 h-4" />
           </button>

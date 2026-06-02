@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Sparkles, 
-  ArrowRight, 
-  Search, 
-  AlertCircle, 
+import {
+  Sparkles,
+  ArrowRight,
+  Search,
+  AlertCircle,
   HelpCircle,
   Clock,
   Compass,
@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { startResearch, getAllResearchHistory } from '../../lib/api';
 import { ResearchHistoryItem } from '../../types/research';
 import { useAuth } from '../../lib/AuthContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export default function GeneralResearchPage() {
   const router = useRouter();
@@ -61,14 +61,14 @@ export default function GeneralResearchPage() {
 
   return (
     <div className="min-h-screen bg-white text-[#0a0a0a] pt-24 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-emerald-50 selection:text-emerald-700">
-      
+
       {/* Background Decorative Glows matching Landing Page */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-emerald-500/[0.02] rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute bottom-10 right-1/4 w-[400px] h-[400px] bg-teal-500/[0.015] rounded-full blur-[100px] pointer-events-none z-0" />
       <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
 
       <div className="max-w-[720px] mx-auto space-y-12 relative z-10">
-        
+
         {/* Header Title */}
         <div className="text-center space-y-4">
           <motion.div
@@ -132,11 +132,11 @@ export default function GeneralResearchPage() {
                 <HelpCircle className="w-3.5 h-3.5 text-neutral-400" />
                 <span>Supports complex multi-sentence questions</span>
               </div>
-              
+
               <button
                 type="submit"
                 disabled={!query.trim() || isLoading}
-                className="bg-[#0a0a0a] hover:bg-[#262626] disabled:bg-neutral-100 disabled:text-neutral-400 text-white text-xs font-bold px-6 py-3 rounded-[8px] transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                className="bg-emerald-500 hover:bg-emerald-600 disabled:bg-neutral-100 disabled:text-neutral-400 text-white text-xs font-bold px-6 py-3 rounded-[8px] transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_14px_rgba(16,185,129,0.2)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.3)]"
               >
                 {isLoading ? (
                   <svg className="w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
@@ -145,7 +145,7 @@ export default function GeneralResearchPage() {
                   </svg>
                 ) : (
                   <>
-                    Initialize Research 
+                    Initialize Research
                     <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}
@@ -163,7 +163,7 @@ export default function GeneralResearchPage() {
 
         {/* Suggestions & History */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-          
+
           {/* Query Suggestion List */}
           <motion.div
             initial={{ opacity: 0, x: -15 }}
@@ -219,8 +219,8 @@ export default function GeneralResearchPage() {
                 </div>
               )}
 
-              <Link 
-                href="/" 
+              <Link
+                href="/"
                 className="block text-center p-2.5 bg-neutral-50 hover:bg-neutral-100 border border-neutral-250 rounded-xl text-[11px] font-bold text-neutral-600 transition-all"
               >
                 Back to Dashboard Stats

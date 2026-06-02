@@ -9,3 +9,10 @@ build
 *.db
 *.sqlite
 .DS_Store
+
+# Runtime logs and upload folders
+backend/logs/
+backend/agent_logs/
+backend/uploads/
+backend/upload/
+
