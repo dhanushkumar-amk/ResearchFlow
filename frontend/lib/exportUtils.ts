@@ -49,12 +49,7 @@ export async function exportToPDF(elementId: string, filename: string) {
     // Page dimensions based on A4 aspect ratio (210:297)
     const pxPageWidth = originalWidth;
     const pxPageHeight = Math.floor(pxPageWidth * (297 / 210));
-    
-    // Usable height for page content (reserving space for margins, header, and footer)
-    // 50px top/bottom margins, 45px header, 45px footer
-    const topBottomMargin = 100; // 50px each
-    const headerFooterHeight = 90; // 45px each
-    const usableHeight = pxPageHeight - topBottomMargin - headerFooterHeight;
+    const headerFooterHeight = 90; // estimated combined space for header & footer
 
     // Create a temporary hidden container to hold the pages
     const tempContainer = document.createElement('div');
@@ -64,43 +59,6 @@ export async function exportToPDF(elementId: string, filename: string) {
     tempContainer.style.width = `${pxPageWidth}px`;
     tempContainer.style.boxSizing = 'border-box';
     document.body.appendChild(tempContainer);
-
-    // Apply basic stylesheets for print rendering
-    const styleSheet = document.createElement('style');
-    styleSheet.innerHTML = `
-      .mermaid-container {
-        display: flex !important;
-        justify-content: center !important;
-        width: 100% !important;
-      }
-      .mermaid-container svg {
-        max-width: 90% !important;
-        height: auto !important;
-      }
-      table {
-        width: 100% !important;
-        border-collapse: collapse !important;
-        margin: 15px 0 !important;
-      }
-      th, td {
-        border: 1px solid #e2e8f0 !important;
-        padding: 8px 12px !important;
-        text-align: left !important;
-      }
-      th {
-        background-color: #f8fafc !important;
-        font-weight: 600 !important;
-      }
-      pre {
-        background-color: #f8fafc !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 8px !important;
-        padding: 12px !important;
-        white-space: pre-wrap !important;
-        word-break: break-all !important;
-      }
-    `;
-    tempContainer.appendChild(styleSheet);
 
     const proseClasses = element.className
       .split(' ')
@@ -113,69 +71,181 @@ export async function exportToPDF(elementId: string, filename: string) {
       );
     const textClassName = proseClasses.join(' ');
 
-    const pagesToRender: HTMLDivElement[] = [];
+    let pagesToRender: HTMLDivElement[] = [];
+    let wasTruncated = false;
 
-    const createPage = (): { page: HTMLDivElement, contentArea: HTMLDivElement } => {
-      const page = document.createElement('div');
-      page.style.width = `${pxPageWidth}px`;
-      page.style.height = `${pxPageHeight}px`;
-      page.style.boxSizing = 'border-box';
-      page.style.padding = '50px 60px';
-      page.style.backgroundColor = '#ffffff';
-      page.style.overflow = 'hidden';
-      page.style.display = 'flex';
-      page.style.flexDirection = 'column';
-      page.style.position = 'relative';
+    // Helper pagination runner
+    const runPagination = (densityLevel: number) => {
+      // Clear previous run elements
+      tempContainer.innerHTML = '';
+      pagesToRender = [];
+      wasTruncated = false;
 
-      const contentArea = document.createElement('div');
-      contentArea.className = textClassName;
-      contentArea.style.flex = '1';
-      contentArea.style.display = 'flex';
-      contentArea.style.flexDirection = 'column';
-      contentArea.style.overflow = 'hidden';
-      contentArea.style.width = '100%';
+      // Create stylesheets specific to this density level
+      const styleSheet = document.createElement('style');
+      let customCss = `
+        .mermaid-container {
+          display: flex !important;
+          justify-content: center !important;
+          width: 100% !important;
+        }
+        .mermaid-container svg {
+          max-width: 90% !important;
+          height: auto !important;
+        }
+        table {
+          width: 100% !important;
+          border-collapse: collapse !important;
+        }
+        th, td {
+          border: 1px solid #e2e8f0 !important;
+          text-align: left !important;
+        }
+      `;
 
-      page.appendChild(contentArea);
-      tempContainer.appendChild(page);
-      
-      return { page, contentArea };
-    };
+      let paddingVal = '50px 60px';
+      let elementSpacingCss = `
+        table { margin: 15px 0 !important; }
+        th, td { padding: 8px 12px !important; }
+        pre { padding: 12px !important; margin: 15px 0 !important; }
+        p { margin-bottom: 16px !important; }
+        h1 { margin-top: 24px !important; margin-bottom: 12px !important; }
+        h2 { margin-top: 20px !important; margin-bottom: 10px !important; }
+      `;
+      let fontSizeCss = '';
 
-    let { page: currentPage, contentArea: currentContentArea } = createPage();
-    pagesToRender.push(currentPage);
+      if (densityLevel === 1) {
+        paddingVal = '35px 45px';
+        elementSpacingCss = `
+          table { margin: 8px 0 !important; }
+          th, td { padding: 6px 10px !important; }
+          pre { padding: 8px !important; margin: 8px 0 !important; }
+          p { margin-bottom: 10px !important; }
+          h1 { margin-top: 16px !important; margin-bottom: 8px !important; }
+          h2 { margin-top: 14px !important; margin-bottom: 6px !important; }
+        `;
+      } else if (densityLevel === 2) {
+        paddingVal = '25px 35px';
+        fontSizeCss = `
+          .pdf-text-container {
+            font-size: 13.5px !important;
+            line-height: 1.4 !important;
+          }
+          h1 { font-size: 1.8rem !important; }
+          h2 { font-size: 1.4rem !important; }
+          h3 { font-size: 1.1rem !important; }
+        `;
+        elementSpacingCss = `
+          table { margin: 5px 0 !important; }
+          th, td { padding: 4px 8px !important; }
+          pre { padding: 6px !important; margin: 6px 0 !important; }
+          p { margin-bottom: 6px !important; }
+          h1 { margin-top: 10px !important; margin-bottom: 6px !important; }
+          h2 { margin-top: 8px !important; margin-bottom: 4px !important; }
+        `;
+      }
 
-    for (const child of children) {
-      // Clone the child element including canvas contents if any
-      const clone = cloneWithCanvas(child as HTMLElement);
-      
-      // Append clone to current page content area
-      currentContentArea.appendChild(clone);
-      
-      // Check if it overflows the content area
-      if (currentContentArea.scrollHeight > usableHeight) {
-        // If it's the only element on the page, keep it to prevent infinite loop
-        if (currentContentArea.children.length > 1) {
-          // Remove from current page
-          currentContentArea.removeChild(clone);
-          
-          // Start a new page
-          const newPageObj = createPage();
-          currentPage = newPageObj.page;
-          currentContentArea = newPageObj.contentArea;
-          pagesToRender.push(currentPage);
-          
-          // Append clone to the new page content area
+      styleSheet.innerHTML = customCss + elementSpacingCss + fontSizeCss;
+      tempContainer.appendChild(styleSheet);
+
+      // Usable height for page content (reserving space for padding + header/footer)
+      const topBottomPad = densityLevel === 0 ? 100 : (densityLevel === 1 ? 70 : 50);
+      const usableHeight = pxPageHeight - topBottomPad - headerFooterHeight;
+
+      const createPage = (): { page: HTMLDivElement, contentArea: HTMLDivElement } => {
+        const page = document.createElement('div');
+        page.style.width = `${pxPageWidth}px`;
+        page.style.height = `${pxPageHeight}px`;
+        page.style.boxSizing = 'border-box';
+        page.style.padding = paddingVal;
+        page.style.backgroundColor = '#ffffff';
+        page.style.overflow = 'hidden';
+        page.style.display = 'flex';
+        page.style.flexDirection = 'column';
+        page.style.position = 'relative';
+
+        const contentArea = document.createElement('div');
+        contentArea.className = `${textClassName} pdf-text-container`;
+        contentArea.style.flex = '1';
+        contentArea.style.display = 'flex';
+        contentArea.style.flexDirection = 'column';
+        contentArea.style.overflow = 'hidden';
+        contentArea.style.width = '100%';
+
+        page.appendChild(contentArea);
+        tempContainer.appendChild(page);
+        
+        return { page, contentArea };
+      };
+
+      let { page: currentPage, contentArea: currentContentArea } = createPage();
+      pagesToRender.push(currentPage);
+
+      for (const child of children) {
+        const clone = cloneWithCanvas(child as HTMLElement);
+        
+        // Strict ceiling guard: If we are on Page 3 and adding the element overflows,
+        // we strictly truncate the content and stop.
+        if (pagesToRender.length === 3) {
           currentContentArea.appendChild(clone);
+          const overflows = currentContentArea.scrollHeight > usableHeight;
+          currentContentArea.removeChild(clone);
+
+          if (overflows) {
+            wasTruncated = true;
+            const notice = document.createElement('div');
+            notice.style.marginTop = 'auto';
+            notice.style.padding = '8px';
+            notice.style.border = '1px dashed #cbd5e1';
+            notice.style.borderRadius = '6px';
+            notice.style.backgroundColor = '#f8fafc';
+            notice.style.fontSize = '10px';
+            notice.style.color = '#475569';
+            notice.style.textAlign = 'center';
+            notice.style.fontWeight = '750';
+            notice.style.fontStyle = 'italic';
+            notice.innerText = '--- Remainder of report truncated to fit 3-page limit ---';
+            currentContentArea.appendChild(notice);
+            break;
+          }
+        }
+
+        currentContentArea.appendChild(clone);
+
+        if (currentContentArea.scrollHeight > usableHeight) {
+          if (currentContentArea.children.length > 1) {
+            currentContentArea.removeChild(clone);
+            
+            const newPageObj = createPage();
+            currentPage = newPageObj.page;
+            currentContentArea = newPageObj.contentArea;
+            pagesToRender.push(currentPage);
+            
+            currentContentArea.appendChild(clone);
+          }
         }
       }
+    };
+
+    // 1. Run at default density (Level 0)
+    runPagination(0);
+
+    // 2. If it truncated, retry with compact layout (Level 1)
+    if (wasTruncated) {
+      runPagination(1);
     }
 
-    // Append headers and footers to all generated pages
+    // 3. If it still truncated, retry with high density (Level 2)
+    if (wasTruncated) {
+      runPagination(2);
+    }
+
+    // Append headers and footers to the finalized list of pages
     const totalPages = pagesToRender.length;
     pagesToRender.forEach((pageEl, idx) => {
       const pageNum = idx + 1;
 
-      // 1. Header
+      // Header
       const header = document.createElement('div');
       header.style.display = 'flex';
       header.style.justifyContent = 'space-between';
@@ -201,7 +271,7 @@ export async function exportToPDF(elementId: string, filename: string) {
 
       pageEl.insertBefore(header, pageEl.firstChild);
 
-      // 2. Footer
+      // Footer
       const footer = document.createElement('div');
       footer.style.display = 'flex';
       footer.style.justifyContent = 'space-between';
@@ -225,14 +295,13 @@ export async function exportToPDF(elementId: string, filename: string) {
       pageEl.appendChild(footer);
     });
 
-    // Create jsPDF document
+    // Generate jsPDF
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
       format: 'a4',
     });
 
-    // Render each page canvas to PDF
     for (let i = 0; i < pagesToRender.length; i++) {
       if (i > 0) {
         pdf.addPage();
