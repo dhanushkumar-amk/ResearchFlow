@@ -9,6 +9,9 @@ async function migrate() {
     await query('ALTER TABLE sessions ADD COLUMN IF NOT EXISTS search_meta JSONB DEFAULT \'{}\';', []);
     await query('ALTER TABLE documents ADD COLUMN IF NOT EXISTS s3_url TEXT;', []);
     await query('ALTER TABLE documents ADD COLUMN IF NOT EXISTS s3_key TEXT;', []);
+    await query('ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT;', []);
+    await query('ALTER TABLE users ADD COLUMN IF NOT EXISTS details TEXT;', []);
+    await query('ALTER TABLE users ADD COLUMN IF NOT EXISTS settings JSONB DEFAULT \'{}\';', []);
     console.log('Migration completed successfully!');
     process.exit(0);
   } catch (err) {

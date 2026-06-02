@@ -82,10 +82,18 @@ export default function Navbar() {
             className="flex items-center gap-2 p-1 pl-2 pr-1 rounded-full border border-slate-100 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-205 transition-all duration-300 cursor-pointer"
           >
             <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider hidden sm:inline">{user.name.split(' ')[0]}</span>
-            <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 border border-emerald-400/20 flex items-center justify-center text-white text-xs font-black shadow-sm">
-              {user.name.charAt(0).toUpperCase()}
+            <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 border border-emerald-400/20 flex items-center justify-center text-white text-xs font-black shadow-sm overflow-hidden">
+              {user.avatarUrl ? (
+                <img
+                  src={user.avatarUrl.startsWith('/') ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${user.avatarUrl}` : user.avatarUrl}
+                  alt={user.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                user.name.charAt(0).toUpperCase()
+              )}
             </div>
-            <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-305 ${dropdownOpen ? 'rotate-180 text-slate-600' : ''}`} />
+            <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-305 ${dropdownOpen ? 'rotate-180 text-slate-605' : ''}`} />
           </button>
 
           {/* Dropdown Box */}

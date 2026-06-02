@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 
 import { config } from './config';
 import researchRouter from './routes/research';
@@ -14,6 +15,7 @@ import { requestLogger } from './middleware/requestLogger';
 
 const app = express();
 app.use(requestLogger);
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 const port = config.port;
 
 app.use(cors({

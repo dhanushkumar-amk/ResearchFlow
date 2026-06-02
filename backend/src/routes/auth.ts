@@ -1,10 +1,14 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import multer from 'multer';
+import os from 'os';
+import fs from 'fs';
 import { query } from '../db/postgres';
 import { requireAuth, AuthRequest } from '../middleware/auth';
 import { setMemory, getMemory, deleteMemory } from '../db/redis';
 import { sendEmail } from '../utils/email';
+import { uploadFile } from '../utils/s3';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'researchflow_secret_key_change_in_prod';
@@ -316,7 +320,7 @@ router.post('/reset-password', async (req: Request, res: Response) => {
 router.get('/me', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
     const result = await query(
-      'SELECT user_id, name, email, created_at FROM users WHERE user_id = $1',
+      'SELECT user_id, name, email, avatar_url, details, settings, created_at FROM users WHERE user_id = $1',
       [req.userId]
     );
 
@@ -326,10 +330,224 @@ router.get('/me', requireAuth, async (req: AuthRequest, res: Response) => {
     }
 
     const user = result.rows[0];
-    res.json({ id: user.user_id, name: user.name, email: user.email, createdAt: user.created_at });
+    res.json({
+      id: user.user_id,
+      name: user.name,
+      email: user.email,
+      avatarUrl: user.avatar_url,
+      details: user.details,
+      settings: user.settings || {},
+      createdAt: user.created_at
+    });
   } catch (err: any) {
     console.error('[Auth] Me error:', err);
     res.status(500).json({ error: 'Server error.' });
+  }
+});
+
+// PUT /api/auth/profile - update name, details, and settings
+router.put('/profile', requireAuth, async (req: AuthRequest, res: Response) => {
+  const { name, details, settings } = req.body;
+
+  if (!name) {
+    res.status(400).json({ error: 'Name is required.' });
+    return;
+  }
+
+  try {
+    // If settings are passed, we fetch the existing settings and merge them
+    let finalSettings = null;
+    if (settings) {
+      const currentRes = await query('SELECT settings FROM users WHERE user_id = $1', [req.userId]);
+      const currentSettings = currentRes.rows[0]?.settings || {};
+      finalSettings = { ...currentSettings, ...settings };
+    }
+
+    const result = await query(
+      `UPDATE users 
+       SET name = $1, 
+           details = COALESCE($2, details), 
+           settings = COALESCE($3, settings) 
+       WHERE user_id = $4 
+       RETURNING user_id, name, email, avatar_url, details, settings, created_at`,
+      [name.trim(), details !== undefined ? details : null, finalSettings ? JSON.stringify(finalSettings) : null, req.userId]
+    );
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ error: 'User not found.' });
+      return;
+    }
+
+    const user = result.rows[0];
+    res.json({
+      message: 'Profile updated successfully!',
+      user: {
+        id: user.user_id,
+        name: user.name,
+        email: user.email,
+        avatarUrl: user.avatar_url,
+        details: user.details,
+        settings: user.settings || {},
+        createdAt: user.created_at
+      }
+    });
+  } catch (err: any) {
+    console.error('[Auth] Update profile error:', err);
+    res.status(500).json({ error: 'Server error. Please try again.' });
+  }
+});
+
+// Configure multer for avatar upload
+const avatarUpload = multer({
+  dest: os.tmpdir(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+}).single('avatar');
+
+// POST /api/auth/profile/avatar - upload profile avatar image to S3 / Local fallback
+router.post('/profile/avatar', requireAuth, (req: AuthRequest, res: Response) => {
+  avatarUpload(req, res, async (err) => {
+    if (err) {
+      console.error('[Auth] Multer error:', err.message);
+      res.status(400).json({ error: `Upload failed: ${err.message}` });
+      return;
+    }
+
+    if (!req.file) {
+      res.status(400).json({ error: 'No avatar image file provided' });
+      return;
+    }
+
+    const { path: filePath, originalname, mimetype } = req.file;
+
+    try {
+      // Use userId as a folder scope/session identifier in S3
+      const { url: s3Url } = await uploadFile(filePath, originalname, mimetype, `profile-${req.userId}`);
+
+      // Update database
+      const result = await query(
+        'UPDATE users SET avatar_url = $1 WHERE user_id = $2 RETURNING user_id, name, email, avatar_url, details, settings, created_at',
+        [s3Url, req.userId]
+      );
+
+      // Cleanup local temp file
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+
+      if (result.rows.length === 0) {
+        res.status(404).json({ error: 'User not found.' });
+        return;
+      }
+
+      const user = result.rows[0];
+      res.json({
+        message: 'Avatar uploaded successfully!',
+        avatarUrl: s3Url,
+        user: {
+          id: user.user_id,
+          name: user.name,
+          email: user.email,
+          avatarUrl: user.avatar_url,
+          details: user.details,
+          settings: user.settings || {},
+          createdAt: user.created_at
+        }
+      });
+    } catch (error: any) {
+      console.error('[Auth] Avatar upload error:', error.message);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+      res.status(500).json({ error: `Failed to upload avatar: ${error.message}` });
+    }
+  });
+});
+
+// POST /api/auth/change-password/request - request OTP to change password
+router.post('/change-password/request', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const userRes = await query('SELECT email, name FROM users WHERE user_id = $1', [req.userId]);
+    if (userRes.rows.length === 0) {
+      res.status(404).json({ error: 'User not found.' });
+      return;
+    }
+    const { email, name } = userRes.rows[0];
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    // Store OTP in Redis for 10 minutes
+    await setMemory(`change_pwd_otp:${email}`, code, 600);
+
+    // Send email
+    await sendEmail({
+      to: email,
+      subject: 'Verify your password change request',
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+          <h2 style="color: #10b981; font-weight: bold; margin-bottom: 20px;">Security Verification Code</h2>
+          <p>Hello ${name},</p>
+          <p>We received a request to change the password for your ResearchFlow account. Use the following 6-digit verification code to complete this change:</p>
+          <div style="background-color: #f3f4f6; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 4px; color: #1f2937; margin: 20px 0; border-radius: 6px;">
+            ${code}
+          </div>
+          <p style="color: #6b7280; font-size: 14px;">This code will expire in 10 minutes. If you did not request this, please change your password immediately to protect your account.</p>
+        </div>
+      `
+    });
+
+    res.json({ message: 'Verification code sent to your registered email.' });
+  } catch (err: any) {
+    console.error('[Auth] Request change password error:', err);
+    res.status(500).json({ error: 'Server error. Please try again.' });
+  }
+});
+
+// POST /api/auth/change-password/verify - verify OTP and old password, then change password
+router.post('/change-password/verify', requireAuth, async (req: AuthRequest, res: Response) => {
+  const { oldPassword, newPassword, code } = req.body;
+
+  if (!oldPassword || !newPassword || !code) {
+    res.status(400).json({ error: 'All fields (current password, new password, and verification code) are required.' });
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    res.status(400).json({ error: 'New password must be at least 6 characters.' });
+    return;
+  }
+
+  try {
+    const userRes = await query('SELECT email, password_hash FROM users WHERE user_id = $1', [req.userId]);
+    if (userRes.rows.length === 0) {
+      res.status(404).json({ error: 'User not found.' });
+      return;
+    }
+    const { email, password_hash } = userRes.rows[0];
+
+    // Check old password
+    const isOldPasswordValid = await bcrypt.compare(oldPassword, password_hash);
+    if (!isOldPasswordValid) {
+      res.status(400).json({ error: 'Incorrect current password.' });
+      return;
+    }
+
+    // Check OTP
+    const storedCode = await getMemory(`change_pwd_otp:${email}`);
+    if (!storedCode || storedCode.toString() !== code.trim()) {
+      res.status(400).json({ error: 'Invalid or expired verification code.' });
+      return;
+    }
+
+    // Hash new password and update
+    const newPasswordHash = await bcrypt.hash(newPassword, 12);
+    await query('UPDATE users SET password_hash = $1 WHERE user_id = $2', [newPasswordHash, req.userId]);
+
+    // Clean up Redis OTP
+    await deleteMemory(`change_pwd_otp:${email}`);
+
+    res.json({ message: 'Password updated successfully!' });
+  } catch (err: any) {
+    console.error('[Auth] Verify change password error:', err);
+    res.status(500).json({ error: 'Server error. Please try again.' });
   }
 });
 

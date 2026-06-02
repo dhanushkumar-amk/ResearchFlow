@@ -8,6 +8,9 @@ interface User {
   id: string;
   name: string;
   email: string;
+  avatarUrl?: string;
+  details?: string;
+  settings?: Record<string, any>;
 }
 
 interface RegisterParams {
@@ -28,6 +31,10 @@ interface AuthContextType {
   resendVerification: (email: string) => Promise<void>;
   verifyResetCode: (params: { email: string; code: string }) => Promise<{ resetToken: string }>;
   resetPassword: (params: { email: string; password: string; resetToken: string }) => Promise<void>;
+  updateProfile: (name: string, details?: string, settings?: any) => Promise<void>;
+  uploadAvatar: (file: File) => Promise<string>;
+  requestPasswordChangeOtp: () => Promise<void>;
+  verifyPasswordChange: (params: { oldPassword: string; newPassword: string; code: string }) => Promise<void>;
   loading: boolean;
 }
 
@@ -145,6 +152,65 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
+  const updateProfile = async (name: string, details?: string, settings?: any) => {
+    if (!token) throw new Error('Not authenticated');
+    const res = await fetch(`${API_URL}/api/auth/profile`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ name, details, settings }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update profile');
+    setUser(data.user);
+  };
+
+  const uploadAvatar = async (file: File): Promise<string> => {
+    if (!token) throw new Error('Not authenticated');
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    const res = await fetch(`${API_URL}/api/auth/profile/avatar`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to upload avatar');
+    setUser(data.user);
+    return data.avatarUrl;
+  };
+
+  const requestPasswordChangeOtp = async () => {
+    if (!token) throw new Error('Not authenticated');
+    const res = await fetch(`${API_URL}/api/auth/change-password/request`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to request password change OTP');
+  };
+
+  const verifyPasswordChange = async ({ oldPassword, newPassword, code }: { oldPassword: string; newPassword: string; code: string }) => {
+    if (!token) throw new Error('Not authenticated');
+    const res = await fetch(`${API_URL}/api/auth/change-password/verify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ oldPassword, newPassword, code }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to verify password change');
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -158,6 +224,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         resendVerification,
         verifyResetCode,
         resetPassword,
+        updateProfile,
+        uploadAvatar,
+        requestPasswordChangeOtp,
+        verifyPasswordChange,
         loading,
       }}
     >
