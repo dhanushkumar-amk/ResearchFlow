@@ -3,13 +3,12 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import {
-  ArrowLeft, RotateCcw, CheckCircle2, AlertCircle, Zap, ChevronRight, Info
+  ArrowLeft, RotateCcw, CheckCircle2, AlertCircle, Zap, ChevronRight, Info, Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 
 import AgentTimeline from '../../../components/AgentTimeline';
 import StreamingReport from '../../../components/StreamingReport';
-import NeuralMap from '../../../components/NeuralMap';
 import ResearchChat from '../../../components/ResearchChat';
 import { getResearchStream, getSessionDetails } from '../../../lib/api';
 import { ResearchEvent, ResearchStatus, ResearchComplete, ResearchToken, ResearchPlan, ResearchSources } from '../../../types/research';
@@ -33,6 +32,42 @@ export default function ResearchPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [highlightedSource, setHighlightedSource] = useState<string | null>(null);
   const [isPublic, setIsPublic] = useState(false);
+
+  // Follow-up interaction states
+  const [chatTrigger, setChatTrigger] = useState<{ text: string; timestamp: number } | null>(null);
+  const [selectedText, setSelectedText] = useState('');
+  const [selectionCoords, setSelectionCoords] = useState<{ top: number; left: number } | null>(null);
+
+  const handleSelection = useCallback(() => {
+    const selection = window.getSelection();
+    if (!selection) return;
+    const text = selection.toString().trim();
+    if (text && text.length > 5 && text.length < 300) {
+      try {
+        const range = selection.getRangeAt(0);
+        const container = document.getElementById('report-content-body');
+        if (container && container.contains(range.commonAncestorContainer)) {
+          const rect = range.getBoundingClientRect();
+          const top = rect.top + window.scrollY - 45;
+          const left = rect.left + window.scrollX + rect.width / 2;
+          setSelectedText(text);
+          setSelectionCoords({ top, left });
+          return;
+        }
+      } catch (e) {
+        // Selection range empty or transient error
+      }
+    }
+    setSelectedText('');
+    setSelectionCoords(null);
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('mouseup', handleSelection);
+    return () => {
+      document.removeEventListener('mouseup', handleSelection);
+    };
+  }, [handleSelection]);
 
   const eventSourceRef = useRef<EventSource | null>(null);
 
@@ -105,6 +140,9 @@ export default function ResearchPage() {
           break;
         case 'sources':
           setSources(event.data as ResearchSources);
+          break;
+        case 'report_reset':
+          setReportText('');
           break;
         case 'report':
         case 'token': {
@@ -239,15 +277,9 @@ export default function ResearchPage() {
               </div>
             </div>
 
-            <NeuralMap 
-              sources={sources} 
-              query={plan || 'Analysing Query...'} 
-              highlightedId={highlightedSource}
-            />
-
             {isComplete && (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                <ResearchChat sessionId={sessionId} />
+              <div id="interactive-chat-widget" className="scroll-mt-20 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                <ResearchChat sessionId={sessionId} externalTrigger={chatTrigger} />
               </div>
             )}
 
@@ -265,7 +297,7 @@ export default function ResearchPage() {
           </div>
 
           {/* Right: Report */}
-          <div className="lg:col-span-8">
+          <div className="lg:col-span-8 relative">
             <StreamingReport
               content={reportText}
               isStreaming={isStreaming}
@@ -276,6 +308,85 @@ export default function ResearchPage() {
               isPublic={isPublic}
               onTogglePublic={handleTogglePublic}
             />
+
+            {/* Floating Selection Chat Pill */}
+            {selectionCoords && (
+              <button
+                onClick={() => {
+                  const question = `Regarding the section: "${selectedText}", can you expand on this and provide more technical details?`;
+                  setChatTrigger({ text: question, timestamp: Date.now() });
+                  setSelectedText('');
+                  setSelectionCoords(null);
+                  window.getSelection()?.removeAllRanges();
+                  setTimeout(() => {
+                    document.getElementById('interactive-chat-widget')?.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                }}
+                style={{
+                  position: 'absolute',
+                  top: `${selectionCoords.top}px`,
+                  left: `${selectionCoords.left}px`,
+                  transform: 'translateX(-50%)',
+                  zIndex: 50
+                }}
+                className="flex items-center gap-1.5 px-3 py-2 bg-zinc-900 text-white rounded-xl shadow-xl hover:bg-emerald-600 active:scale-95 transition-all text-[11px] font-black uppercase tracking-wider animate-in fade-in zoom-in-95 duration-200 cursor-pointer border border-zinc-800"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-emerald-450 fill-emerald-400 animate-pulse" /> Ask AI
+              </button>
+            )}
+
+            {/* Deep Dive Suggestions Block */}
+            {isComplete && (
+              <div className="mt-8 bg-gradient-to-r from-emerald-50 via-teal-50/50 to-blue-50/10 border border-emerald-100/70 rounded-3xl p-6 md:p-8 shadow-sm space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div>
+                  <h3 className="text-xs font-black text-emerald-800 uppercase tracking-widest flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-emerald-600 fill-emerald-500/20" /> Deep Dive Intelligence Suggestions
+                  </h3>
+                  <p className="text-xs text-zinc-500 mt-1.5 font-medium">Select any analytical lens to automatically trigger a follow-up session in the interactive intelligence panel.</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                  {[
+                    {
+                      title: "Synthesize Core Contradictions",
+                      desc: "Identify and resolve conflicting data points or varying methodologies across the retrieved sources.",
+                      query: "Synthesize the core contradictions or conflicting data points across all Web and RAG sources in this report."
+                    },
+                    {
+                      title: "Analyze Technical Limitations",
+                      desc: "Extract the exact technical challenges, performance caps, or boundaries highlighted in the research.",
+                      query: "What are the key technical challenges, limitations, or constraints discussed in the documents and search findings?"
+                    },
+                    {
+                      title: "Generate Strategic Roadmap",
+                      desc: "Formulate a concrete, step-by-step roadmap for future development or analysis based on the report.",
+                      query: "Based on the synthesized findings in this report, provide a high-level strategic roadmap and actionable next steps."
+                    },
+                    {
+                      title: "Deconstruct Core Methodologies",
+                      desc: "Unpack the underlying scientific principles, equations, or architectures mentioned in the literature.",
+                      query: "Explain and deconstruct the core methodologies, architectures, or principles underlying the concepts analyzed in this report."
+                    }
+                  ].map((item, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setChatTrigger({ text: item.query, timestamp: Date.now() });
+                        setTimeout(() => {
+                          document.getElementById('interactive-chat-widget')?.scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                      }}
+                      className="group p-4 bg-white/75 hover:bg-white border border-emerald-100/50 hover:border-emerald-200 rounded-2xl text-left transition-all duration-300 hover:shadow-md active:scale-[0.99] cursor-pointer"
+                    >
+                      <h4 className="text-xs font-bold text-zinc-800 group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                        <ChevronRight className="w-3.5 h-3.5 text-emerald-555 group-hover:translate-x-0.5 transition-transform" />
+                        {item.title}
+                      </h4>
+                      <p className="text-[11px] text-zinc-500 mt-1.5 leading-relaxed">{item.desc}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

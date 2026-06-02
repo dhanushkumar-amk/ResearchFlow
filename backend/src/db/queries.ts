@@ -50,16 +50,21 @@ export async function saveReport(
   return res.rows[0];
 }
 
-/**
- * Saves document metadata after processing
- */
-export async function saveDocument(userId: string | null, filename: string, fileType: string, chunkCount: number, collectionName: string) {
+export async function saveDocument(
+  userId: string | null,
+  filename: string,
+  fileType: string,
+  chunkCount: number,
+  collectionName: string,
+  s3Url?: string | null,
+  s3Key?: string | null
+) {
   const text = `
-    INSERT INTO documents (user_id, filename, file_type, chunk_count, qdrant_collection_name)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO documents (user_id, filename, file_type, chunk_count, qdrant_collection_name, s3_url, s3_key)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING *
   `;
-  const res = await query(text, [userId, filename, fileType, chunkCount, collectionName]);
+  const res = await query(text, [userId, filename, fileType, chunkCount, collectionName, s3Url || null, s3Key || null]);
   return res.rows[0];
 }
 

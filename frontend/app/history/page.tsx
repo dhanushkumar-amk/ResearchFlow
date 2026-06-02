@@ -106,7 +106,7 @@ export default function HistoryPage() {
             {filtered.map((item) => (
               <div
                 key={item.session_id}
-                onClick={() => router.push(`/research/${item.session_id}`)}
+                onClick={() => router.push(`/research/${item.session_id}/view`)}
                 className="group relative bg-white border border-zinc-200 rounded-2xl p-5 hover:border-emerald-300 hover:shadow-lg transition-all cursor-pointer flex flex-col justify-between gap-4"
               >
                 {/* Score + Delete */}

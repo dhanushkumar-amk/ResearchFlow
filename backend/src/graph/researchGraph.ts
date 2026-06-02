@@ -76,6 +76,7 @@ async function ragNode(state: ResearchStateType) {
 async function synthesizerNode(state: ResearchStateType) {
   if (state.sessionId) {
     emitResearchEvent(state.sessionId, 'status', { node: 'synthesizer', message: 'Agent 4: Generating Report...' });
+    emitResearchEvent(state.sessionId, 'report_reset', {}); // Clear stale report on client for new attempt
   }
   const generator = runSynthesizerAgent({
     query: state.query,

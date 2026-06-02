@@ -12,7 +12,7 @@ export const researchEmitter = new ResearchEmitter();
  * Unified event helper for the research pipeline.
  * Emits global 'update', 'complete', or 'error' events for the SSE routers to pick up.
  */
-export const emitResearchEvent = (sessionId: string, eventType: 'update' | 'complete' | 'error' | 'plan' | 'sources' | 'report' | 'status', data: any) => {
+export const emitResearchEvent = (sessionId: string, eventType: 'update' | 'complete' | 'error' | 'plan' | 'sources' | 'report' | 'status' | 'report_reset', data: any) => {
   // Map specific types to the main SSE categories
   let category = 'update';
   if (eventType === 'complete' || eventType === 'error') {

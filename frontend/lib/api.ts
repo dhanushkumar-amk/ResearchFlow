@@ -221,3 +221,39 @@ export async function getHealth() {
 
   return response.json();
 }
+
+/**
+ * Ingests a YouTube transcript or Website text into Qdrant
+ */
+export async function ingestUrl(url: string, type: 'youtube' | 'website', sessionId: string, token: string) {
+  const response = await fetch(`${API_URL}/api/documents/ingest-url`, {
+    method: 'POST',
+    headers: getHeaders(token),
+    body: JSON.stringify({ url, type, sessionId }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to ingest URL');
+  }
+
+  return response.json();
+}
+
+/**
+ * Performs similarity search RAG Q&A query on Vault Knowledge Base
+ */
+export async function queryKnowledgeBase(query: string, sessionId: string, token: string) {
+  const response = await fetch(`${API_URL}/api/documents/query`, {
+    method: 'POST',
+    headers: getHeaders(token),
+    body: JSON.stringify({ query, sessionId }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to query knowledge base');
+  }
+
+  return response.json();
+}

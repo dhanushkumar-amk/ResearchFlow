@@ -26,8 +26,63 @@ export interface MermaidProps {
 }
 
 /**
+ * Extremely robust helper to clean up common LLM Mermaid syntax mistakes.
+ */
+const cleanMermaidChart = (rawChart: string): string => {
+  // 1. Basic character and arrow corrections
+  let cleaned = rawChart
+    .replace(/\|>/g, '-->') 
+    .replace(/ -> /g, ' --> ') 
+    .replace(/-- /g, '--> ') 
+    .replace(/&/g, 'and');
+
+  // 2. Process line by line to correct structural errors
+  const lines = cleaned.split('\n');
+  const processedLines = lines.map(line => {
+    let l = line.trim();
+    if (!l) return l;
+
+    // Directives should be preserved
+    if (l.startsWith('graph ') || l.startsWith('flowchart ') || l.startsWith('sequenceDiagram') || l.startsWith('classDiagram')) {
+      return l;
+    }
+
+    // Fix connection spaces: "Query Web --> Synthesize Report" => "Query_Web["Query Web"] --> Synthesize_Report["Synthesize Report"]"
+    if (l.includes('-->') && !l.includes('[') && !l.includes('(') && !l.includes('{') && !l.includes('"')) {
+      const parts = l.split('-->');
+      const cleanParts = parts.map(part => {
+        const p = part.trim();
+        if (!p) return p;
+        const id = p.replace(/[^a-zA-Z0-9]/g, '_');
+        return `${id}["${p}"]`;
+      });
+      return cleanParts.join(' --> ');
+    }
+
+    // Wrap unquoted labels with parentheses or brackets in double quotes: ID[Label (Special)] => ID["Label (Special)"]
+    const bracketRegex = /^([a-zA-Z0-9_-]+)\s*([\[\(\{]+)(.*?)([\]\)\}]+)$/;
+    const match = l.match(bracketRegex);
+    if (match) {
+      const id = match[1];
+      const openBracket = match[2];
+      let label = match[3].trim();
+      const closeBracket = match[4];
+
+      if (!label.startsWith('"') || !label.endsWith('"')) {
+        label = label.replace(/^"+|"+$/g, '').trim();
+        return `${id}${openBracket}"${label}"${closeBracket}`;
+      }
+    }
+
+    return l;
+  });
+
+  return processedLines.join('\n');
+};
+
+/**
  * High-Density Mermaid Renderer
- * Uses explicit rendering to prevent 'Syntax error in text' when streaming.
+ * Uses explicit rendering and a robust parser to prevent 'Syntax error in text'.
  */
 export default function Mermaid({ chart, isStreaming }: MermaidProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -41,12 +96,15 @@ export default function Mermaid({ chart, isStreaming }: MermaidProps) {
       if (!chart || chart.trim() === '') return;
       
       try {
-        // AUTO-CORRECT: Link LLM hallucinations back to valid Mermaid syntax
-        const cleanedChart = chart
-          .replace(/\|>/g, '-->') // Common mistake
-          .replace(/ -> /g, ' --> ') // Compatibility
-          .replace(/-- /g, '--> ') // Missing arrow head
-          .replace(/&/g, 'and'); // Escape ampersands which break some parsers
+        // Clean the chart syntax
+        const cleanedChart = cleanMermaidChart(chart);
+
+        // Pre-validate syntax to prevent library error visual dumps
+        try {
+          await mermaid.parse(cleanedChart);
+        } catch (parseErr: any) {
+          throw new Error(`Syntax validation failed: ${parseErr.message}`);
+        }
 
         // Unique ID for each render to avoid collisions
         const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;

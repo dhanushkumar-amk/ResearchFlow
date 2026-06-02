@@ -13,9 +13,13 @@ interface Message {
 
 interface ResearchChatProps {
   sessionId: string;
+  externalTrigger?: {
+    text: string;
+    timestamp: number;
+  } | null;
 }
 
-export default function ResearchChat({ sessionId }: ResearchChatProps) {
+export default function ResearchChat({ sessionId, externalTrigger }: ResearchChatProps) {
   const { token } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -27,6 +31,62 @@ export default function ResearchChat({ sessionId }: ResearchChatProps) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
+
+  useEffect(() => {
+    if (externalTrigger && externalTrigger.text && token) {
+      const runExternalQuery = async () => {
+        const queryText = externalTrigger.text;
+        const userMsg: Message = { role: 'user', content: queryText };
+        setMessages((prev) => [...prev, userMsg]);
+        setIsTyping(true);
+
+        const assistantMsg: Message = { role: 'assistant', content: '' };
+        setMessages((prev) => [...prev, assistantMsg]);
+
+        try {
+          const response = await fetch(`${API_URL}/api/research/${sessionId}/chat`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ query: queryText }),
+          });
+
+          if (!response.ok) throw new Error('Chat failed');
+
+          const reader = response.body?.getReader();
+          if (!reader) throw new Error('No reader found');
+
+          let accumulated = '';
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const text = new TextDecoder().decode(value);
+            accumulated += text;
+            
+            setMessages((prev) => {
+              const newMessages = [...prev];
+              newMessages[newMessages.length - 1].content = accumulated;
+              return newMessages;
+            });
+          }
+        } catch (err) {
+          console.error('Chat stream error:', err);
+          setMessages((prev) => {
+            const newMessages = [...prev];
+            newMessages[newMessages.length - 1].content = 'Sorry, experimental chat failed. Please try again.';
+            return newMessages;
+          });
+        } finally {
+          setIsTyping(false);
+        }
+      };
+
+      runExternalQuery();
+    }
+  }, [externalTrigger, token, sessionId]);
 
   const handleSend = async () => {
     if (!input.trim() || !token) return;

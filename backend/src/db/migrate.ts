@@ -7,6 +7,8 @@ async function migrate() {
     await query('ALTER TABLE reports ADD COLUMN IF NOT EXISTS rag_context TEXT;', []);
     await query('ALTER TABLE sessions ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT false;', []);
     await query('ALTER TABLE sessions ADD COLUMN IF NOT EXISTS search_meta JSONB DEFAULT \'{}\';', []);
+    await query('ALTER TABLE documents ADD COLUMN IF NOT EXISTS s3_url TEXT;', []);
+    await query('ALTER TABLE documents ADD COLUMN IF NOT EXISTS s3_key TEXT;', []);
     console.log('Migration completed successfully!');
     process.exit(0);
   } catch (err) {

@@ -26,3 +26,6 @@
 {"level":"error","message":"POST /login 401 78ms session:-","timestamp":"2026-06-01 17:06:18"}
 {"level":"error","message":"POST /verify-email 400 398ms session:-","timestamp":"2026-06-01 17:14:10"}
 {"level":"error","message":"POST /verify-email 400 357ms session:-","timestamp":"2026-06-01 17:16:00"}
+{"level":"error","message":"POST /upload 500 2578ms session:5b983465-3203-4f70-b418-b3b583ade657","timestamp":"2026-06-01 18:26:13"}
+{"level":"error","message":"POST /upload 500 4467ms session:5b983465-3203-4f70-b418-b3b583ade657","timestamp":"2026-06-01 18:28:49"}
+{"level":"error","message":"POST /ingest-url 500 730ms session:5b983465-3203-4f70-b418-b3b583ade657","timestamp":"2026-06-01 18:56:48"}

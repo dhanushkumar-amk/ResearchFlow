@@ -28,7 +28,7 @@ export interface ResearchSources {
 }
 
 export interface ResearchEvent {
-  type: 'status' | 'complete' | 'error' | 'connected' | 'token' | 'report' | 'plan' | 'sources';
+  type: 'status' | 'complete' | 'error' | 'connected' | 'token' | 'report' | 'plan' | 'sources' | 'report_reset';
   data: ResearchStatus | ResearchComplete | ResearchError | ResearchToken | ResearchPlan | ResearchSources | string | { sessionId: string; timestamp: string } | null;
 }
 

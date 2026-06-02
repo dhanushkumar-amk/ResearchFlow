@@ -224,18 +224,19 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
                     </code>
                   );
                 },
-                table({ children }) {
-                  return (
-                    <div className="my-10 overflow-x-auto rounded-2xl border border-zinc-200 shadow-sm bg-white">
-                      <table className="min-w-full divide-y divide-zinc-200 text-base">
-                        {children}
-                      </table>
-                    </div>
-                  );
-                },
-                thead({ children }) { return <thead className="bg-zinc-50/80">{children}</thead>; },
-                th({ children }) { return <th className="px-6 py-4 text-left text-xs font-black text-zinc-400 uppercase tracking-[2px]">{children}</th>; },
-                td({ children }) { return <td className="px-6 py-5 whitespace-nowrap text-zinc-600 border-t border-zinc-100 font-medium">{children}</td>; }
+                 table({ children }) {
+                   return (
+                     <div className="not-prose my-10 overflow-x-auto rounded-2xl border border-zinc-150 shadow-[0_4px_24px_rgba(0,0,0,0.02)] bg-white">
+                       <table className="min-w-full divide-y divide-zinc-100 text-sm">
+                         {children}
+                       </table>
+                     </div>
+                   );
+                 },
+                 thead({ children }) { return <thead className="bg-zinc-50/80 border-b border-zinc-100">{children}</thead>; },
+                 th({ children }) { return <th className="px-6 py-4.5 text-left text-[10px] font-black text-zinc-400 uppercase tracking-[1.5px]">{children}</th>; },
+                 tr({ children }) { return <tr className="hover:bg-zinc-50/30 transition-colors duration-200">{children}</tr>; },
+                 td({ children }) { return <td className="px-6 py-4.5 whitespace-normal break-words text-zinc-650 border-t border-zinc-100 text-sm font-medium leading-relaxed max-w-md">{children}</td>; }
               }}
             >
               {content}
