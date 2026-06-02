@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Brain, ChevronDown, User, Settings, LogOut } from 'lucide-react';
+import { Brain, ChevronDown, User, Settings, LogOut, Menu, X } from 'lucide-react';
 import { useAuth } from '../lib/AuthContext';
 
 const navLinks = [
@@ -42,32 +42,31 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-zinc-200/80 shadow-xs h-16 flex items-center">
-      <div className="max-w-7xl mx-auto px-6 w-full flex items-center justify-between">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/60 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.02)] h-16 flex items-center transition-all duration-300">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-8 w-full flex items-center justify-between">
         
-        {/* Brand Logo - ResearchMind styling */}
+        {/* Brand Logo - Premium Glow */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="bg-emerald-500 text-white p-1.5 rounded-[6px] shadow-[0_4px_12px_rgba(16,185,129,0.15)] group-hover:scale-105 transition-transform">
+          <div className="bg-gradient-to-tr from-emerald-500 to-teal-500 text-white p-2 rounded-xl shadow-[0_4px_12px_rgba(16,185,129,0.2)] group-hover:scale-105 transition-transform duration-300">
             <Brain className="h-4.5 w-4.5 text-white" />
           </div>
-          <span className="font-bold text-base tracking-tight text-zinc-950">
+          <span className="font-extrabold text-base tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
             ResearchMind
           </span>
         </Link>
 
-        {/* Desktop Nav Links (Classy, simple Shadcn style) */}
-        <div className="hidden md:flex items-center gap-6">
+        {/* Desktop Nav Links (Clean, modern active pills) */}
+        <div className="hidden md:flex items-center gap-1 bg-slate-100/65 p-1 rounded-xl border border-slate-200/40">
           {navLinks.map((link, index) => {
-            // Match active states. Since some point to same page, we can highlight the matching one.
             const isActive = pathname === link.href;
             return (
               <Link
                 key={`${link.label}-${index}`}
                 href={link.href}
-                className={`text-xs font-semibold tracking-tight transition-colors py-1.5 px-3 rounded-md ${
+                className={`text-xs font-bold tracking-tight transition-all duration-300 py-1.5 px-4 rounded-lg ${
                   isActive
-                    ? 'bg-zinc-100 text-zinc-900 font-bold'
-                    : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50'
+                    ? 'bg-white text-emerald-600 shadow-sm shadow-slate-100 font-extrabold'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-white/40'
                 }`}
               >
                 {link.label}
@@ -76,50 +75,51 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* User Profile Dropdown Menu (Shadcn style) */}
+        {/* User Profile Dropdown Menu */}
         <div className="flex items-center gap-4 relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center gap-1.5 p-1 rounded-full hover:bg-zinc-55/10 focus:outline-none transition-all cursor-pointer"
+            className="flex items-center gap-2 p-1 pl-2 pr-1 rounded-full border border-slate-100 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-205 transition-all duration-300 cursor-pointer"
           >
-            <div className="w-8 h-8 rounded-full bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-800 text-xs font-extrabold select-none shadow-xs">
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider hidden sm:inline">{user.name.split(' ')[0]}</span>
+            <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 border border-emerald-400/20 flex items-center justify-center text-white text-xs font-black shadow-sm">
               {user.name.charAt(0).toUpperCase()}
             </div>
-            <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-305 ${dropdownOpen ? 'rotate-180 text-slate-600' : ''}`} />
           </button>
 
           {/* Dropdown Box */}
           {dropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-zinc-200 rounded-xl shadow-lg p-1.5 z-55 animate-in fade-in slide-in-from-top-2 duration-150">
+            <div className="absolute right-0 top-full mt-2.5 w-56 bg-white border border-slate-200/80 rounded-2xl shadow-xl shadow-slate-100/50 p-1.5 z-55 animate-in fade-in slide-in-from-top-2 duration-150">
               {/* Header */}
-              <div className="px-3 py-2 text-left border-b border-zinc-100 mb-1">
-                <p className="text-xs font-bold text-zinc-900 truncate leading-none">{user.name}</p>
-                <p className="text-[10px] text-zinc-400 truncate mt-1 leading-none">{user.email}</p>
+              <div className="px-3 py-2 text-left border-b border-slate-100 mb-1">
+                <p className="text-xs font-bold text-slate-900 truncate leading-none">{user.name}</p>
+                <p className="text-[9px] text-slate-400 truncate mt-1 leading-none">{user.email}</p>
               </div>
 
               {/* Items */}
               <button
                 onClick={() => { setDropdownOpen(false); router.push('/profile'); }}
-                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-zinc-50 text-zinc-650 hover:text-zinc-900 rounded-lg text-xs font-semibold transition-colors text-left cursor-pointer"
+                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50 text-slate-650 hover:text-slate-900 rounded-xl text-xs font-semibold transition-colors text-left cursor-pointer"
               >
-                <User className="w-3.5 h-3.5 text-zinc-400" />
+                <User className="w-3.5 h-3.5 text-slate-400" />
                 Profile
               </button>
               <button
                 onClick={() => { setDropdownOpen(false); router.push('/settings'); }}
-                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-zinc-50 text-zinc-650 hover:text-zinc-900 rounded-lg text-xs font-semibold transition-colors text-left cursor-pointer"
+                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50 text-slate-650 hover:text-slate-900 rounded-xl text-xs font-semibold transition-colors text-left cursor-pointer"
               >
-                <Settings className="w-3.5 h-3.5 text-zinc-400" />
+                <Settings className="w-3.5 h-3.5 text-slate-400" />
                 Settings
               </button>
 
-              <div className="border-t border-zinc-100 my-1" />
+              <div className="border-t border-slate-150 my-1" />
 
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-red-50 text-zinc-650 hover:text-red-650 rounded-lg text-xs font-bold transition-colors text-left cursor-pointer"
+                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-rose-50 text-slate-650 hover:text-rose-600 rounded-xl text-xs font-bold transition-colors text-left cursor-pointer"
               >
-                <LogOut className="w-3.5 h-3.5 text-red-500" />
+                <LogOut className="w-3.5 h-3.5 text-rose-500" />
                 Log out
               </button>
             </div>
@@ -128,21 +128,17 @@ export default function Navbar() {
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl text-zinc-500 hover:bg-zinc-100 transition-colors"
+            className="md:hidden p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors cursor-pointer"
             aria-label="Open menu"
           >
-            <div className="space-y-1.5">
-              <span className={`block w-5 h-0.5 bg-current transition-all ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-              <span className={`block w-5 h-0.5 bg-current transition-all ${mobileMenuOpen ? 'opacity-0' : ''}`} />
-              <span className={`block w-5 h-0.5 bg-current transition-all ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
-            </div>
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed top-16 left-0 right-0 border-t border-zinc-200 bg-white px-4 py-3 space-y-1 shadow-lg z-45">
+        <div className="md:hidden fixed top-16 left-0 right-0 border-b border-slate-200 bg-white/95 backdrop-blur-md px-4 py-3 space-y-1 shadow-lg z-45 animate-in fade-in slide-in-from-top-2 duration-150">
           {navLinks.map((link, index) => {
             const isActive = pathname === link.href;
             return (
@@ -152,8 +148,8 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center px-4 py-3 rounded-xl text-xs font-semibold transition-all ${
                   isActive
-                    ? 'bg-zinc-100 text-zinc-900 font-bold'
-                    : 'text-zinc-600 hover:bg-zinc-50'
+                    ? 'bg-slate-100 text-slate-905 font-bold'
+                    : 'text-slate-600 hover:bg-slate-50'
                 }`}
               >
                 {link.label}

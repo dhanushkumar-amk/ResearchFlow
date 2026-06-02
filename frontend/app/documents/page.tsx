@@ -312,27 +312,36 @@ export default function DocumentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50/50 p-4 md:p-8 pt-24 font-sans antialiased">
-      <div className="max-w-[1400px] mx-auto space-y-6 lg:space-y-8">
+    <div className="min-h-screen bg-slate-50/50 p-4 md:p-8 pt-32 font-sans antialiased text-slate-800">
+      <div className="max-w-[1400px] mx-auto space-y-8">
         
-        {/* Navigation & Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-zinc-200">
-          <div className="flex items-center gap-4">
-            <Link 
-              href="/" 
-              className="p-2.5 bg-white border border-zinc-200 rounded-xl hover:bg-zinc-50 transition-colors group shadow-sm"
-            >
-              <ArrowLeft className="w-5 h-5 text-zinc-500 group-hover:-translate-x-1 transition-transform" />
-            </Link>
-            <div>
-              <h1 className="text-2xl lg:text-3xl font-extrabold text-neutral-900 tracking-tight">
-                Vector Knowledge Vault
-              </h1>
-              <p className="text-sm text-neutral-500 mt-1 font-medium">
-                Ingest PDFs, websites, Word documents, and YouTube videos into your unified vector workspace.
-              </p>
+        {/* Banner Welcome Header Card */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-emerald-550/15 via-teal-500/5 to-indigo-550/15 border border-emerald-500/15 rounded-3xl p-6 md:p-8 shadow-sm">
+          <div className="relative z-10 space-y-2">
+            <div className="flex items-center gap-3">
+              <Link 
+                href="/" 
+                className="p-2 bg-white/80 border border-slate-200 rounded-xl hover:bg-slate-100 transition-all duration-200 group shadow-xs hover:scale-105"
+              >
+                <ArrowLeft className="w-4 h-4 text-slate-500 group-hover:-translate-x-0.5 transition-transform" />
+              </Link>
+              <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 text-[10px] font-black uppercase tracking-widest rounded-full">
+                Knowledge Space
+              </span>
+              <span className="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-700 text-[10px] font-black uppercase tracking-widest rounded-full">
+                Active Indexing
+              </span>
             </div>
+            <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight mt-2">
+              Vector Knowledge Vault
+            </h1>
+            <p className="text-xs md:text-sm text-slate-500 font-medium max-w-2xl leading-relaxed">
+              Supercharge your research assistant by connecting local documents, website articles, and video transcripts into a single semantic Q&A space.
+            </p>
           </div>
+          {/* Abstract background shapes */}
+          <div className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-emerald-450/10 rounded-full blur-3xl" />
+          <div className="absolute left-1/3 bottom-0 translate-y-1/2 w-64 h-64 bg-indigo-400/5 rounded-full blur-3xl" />
         </div>
 
         {/* Error / Success Alerts */}

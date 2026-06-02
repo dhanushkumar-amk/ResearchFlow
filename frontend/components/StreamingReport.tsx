@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Copy, Check, Award, FileText, Sparkles, Download, FileJson, Share2, MoreVertical, FileCode, CheckCircle2, Globe, Lock } from 'lucide-react';
+import { Copy, Check, Award, FileText, Sparkles, Download, FileJson, Share2, FileCode, CheckCircle2, Globe, Lock } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Mermaid from './Mermaid';
@@ -17,9 +17,20 @@ interface StreamingReportProps {
   sessionId?: string;
   isPublic?: boolean;
   onTogglePublic?: (val: boolean) => void;
+  layout?: 'default' | 'medium';
 }
 
-export default function StreamingReport({ content, isStreaming, qualityScore, durationSeconds, onCitationHover, sessionId, isPublic, onTogglePublic }: StreamingReportProps) {
+export default function StreamingReport({ 
+  content, 
+  isStreaming, 
+  qualityScore, 
+  durationSeconds, 
+  onCitationHover, 
+  sessionId, 
+  isPublic, 
+  onTogglePublic,
+  layout = 'default'
+}: StreamingReportProps) {
   const [copied, setCopied] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
 
@@ -86,6 +97,94 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
     });
   };
 
+  if (layout === 'medium') {
+    return (
+      <div className="w-full flex flex-col bg-white">
+        {/* Content with Medium-style sans-serif typography */}
+        <div className="py-4 md:py-6 overflow-y-visible prose prose-slate prose-lg md:prose-xl max-w-none prose-sans leading-relaxed text-slate-800" id="report-content-body">
+          {content ? (
+            <div className="report-content-body font-sans text-slate-800 leading-relaxed text-lg">
+              <ReactMarkdown 
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  p({ children }) {
+                    return (
+                      <p className="mb-6">
+                        {React.Children.map(children, (child) =>
+                          typeof child === 'string' ? parseCitations(child) : child
+                        )}
+                      </p>
+                    );
+                  },
+                  code({ className, children, ...props }: any) {
+                    const match = /language-(\w+)/.exec(className || '');
+                    const language = match ? match[1] : '';
+                    const value = String(children).replace(/\n$/, '');
+  
+                    if (language === 'mermaid') {
+                      return <Mermaid chart={value} isStreaming={isStreaming} />;
+                    }
+  
+                    return (
+                      <code className={`${className} bg-slate-50 text-slate-850 px-1.5 py-0.5 rounded-md font-mono text-sm border border-slate-200`} {...props}>
+                        {children}
+                      </code>
+                    );
+                  },
+                  pre({ children }: any) {
+                    const childrenArray = React.Children.toArray(children);
+                    const hasMermaid = childrenArray.some(
+                      (child) =>
+                        React.isValidElement(child) &&
+                        (child.props as any)?.className?.includes('language-mermaid')
+                    );
+
+                    if (hasMermaid) {
+                      return <>{children}</>;
+                    }
+                    return (
+                      <pre className="bg-slate-50 border border-slate-200 rounded-2xl p-6 overflow-x-auto font-mono text-sm text-slate-800 leading-normal my-6">
+                        {children}
+                      </pre>
+                    );
+                  },
+                   table({ children }) {
+                     return (
+                       <div className="not-prose my-10 overflow-x-auto rounded-2xl border border-slate-200 shadow-[0_4px_24px_rgba(0,0,0,0.02)] bg-white">
+                         <table className="min-w-full divide-y divide-slate-150 text-sm">
+                           {children}
+                         </table>
+                       </div>
+                     );
+                   },
+                   thead({ children }) { return <thead className="bg-slate-50 border-b border-slate-100">{children}</thead>; },
+                   th({ children }) { return <th className="px-6 py-4.5 text-left text-[10px] font-black text-slate-450 uppercase tracking-wider">{children}</th>; },
+                   tr({ children }) { return <tr className="hover:bg-slate-50/30 transition-colors duration-200">{children}</tr>; },
+                   td({ children }) { return <td className="px-6 py-4 whitespace-normal break-words text-slate-600 border-t border-slate-100 text-sm font-medium leading-relaxed max-w-md">{children}</td>; }
+                }}
+              >
+                {content}
+              </ReactMarkdown>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center min-h-80 text-center space-y-6 py-20">
+              <div className="w-20 h-20 bg-emerald-50 rounded-3xl flex items-center justify-center animate-bounce shadow-inner">
+                <Sparkles className="w-10 h-10 text-emerald-500" />
+              </div>
+              <div>
+                <h3 className="text-xl font-black text-slate-900 uppercase tracking-widest">Synthesizing Report...</h3>
+                <p className="text-slate-550 text-sm max-w-62.5 mx-auto font-medium mt-2">
+                   Please wait while our parallel multi-agent system completes synthesis.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Default layout (scrolling card with header/footer)
   return (
     <div className="w-full bg-white border border-zinc-200 rounded-3xl shadow-sm overflow-hidden flex flex-col">
       {/* Header */}
@@ -138,10 +237,10 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
             </div>
           )}
 
-          {!isStreaming && durationSeconds != null && (
+          {!isStreaming && durationSeconds != null && !isNaN(Number(durationSeconds)) && (
             <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold shadow-xs">
               <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-              Enlightenment Time: {durationSeconds.toFixed(1)}s
+              Enlightenment Time: {Number(durationSeconds).toFixed(1)}s
             </div>
           )}
           
@@ -158,7 +257,7 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
              <button
                 onClick={() => setIsExportOpen(!isExportOpen)}
                 disabled={!content}
-                className={`p-2 rounded-lg transition-all disabled:opacity-30 ${isExportOpen ? 'text-emerald-600 bg-emerald-50' : 'text-zinc-650 hover:text-emerald-605 hover:bg-emerald-50'}`}
+                className={`p-2 rounded-lg transition-all disabled:opacity-30 ${isExportOpen ? 'text-emerald-605 bg-emerald-50' : 'text-zinc-650 hover:text-emerald-605 hover:bg-emerald-50'}`}
              >
                 <Download className="w-4 h-4" />
              </button>
@@ -169,21 +268,21 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute right-0 top-full mt-2 w-48 bg-white border border-zinc-200 rounded-2xl shadow-2xl p-2 z-10"
+                    className="absolute right-0 top-full mt-2.5 w-48 bg-white border border-zinc-200 rounded-2xl shadow-2xl p-2 z-10 animate-in fade-in slide-in-from-top-2 duration-150"
                   >
                     <div className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-50 mb-1">
                       Export Intelligence
                     </div>
-                    <button onClick={() => handleExport('pdf')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-emerald-700 rounded-xl text-xs font-bold transition-colors text-left">
+                    <button onClick={() => handleExport('pdf')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-emerald-700 rounded-xl text-xs font-bold transition-colors text-left cursor-pointer">
                       <FileText className="w-4 h-4 text-red-500" /> Professional PDF
                     </button>
-                    <button onClick={() => handleExport('docx')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-emerald-700 rounded-xl text-xs font-bold transition-colors text-left">
+                    <button onClick={() => handleExport('docx')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-emerald-700 rounded-xl text-xs font-bold transition-colors text-left cursor-pointer">
                       <FileCode className="w-4 h-4 text-emerald-555" /> Microsoft Word
                     </button>
-                    <button onClick={() => handleExport('md')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-emerald-700 rounded-xl text-xs font-bold transition-colors text-left">
+                    <button onClick={() => handleExport('md')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-emerald-700 rounded-xl text-xs font-bold transition-colors text-left cursor-pointer">
                       <Download className="w-4 h-4 text-zinc-600" /> Markdown (Raw)
                     </button>
-                    <button onClick={() => handleExport('json')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-emerald-700 rounded-xl text-xs font-bold transition-colors border-t border-zinc-50 mt-1 text-left">
+                    <button onClick={() => handleExport('json')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-emerald-700 rounded-xl text-xs font-bold transition-colors border-t border-zinc-50 mt-1 text-left cursor-pointer">
                       <Sparkles className="w-4 h-4 text-amber-500" /> Research JSON
                     </button>
                   </motion.div>
@@ -219,9 +318,26 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
                   }
 
                   return (
-                    <code className={`${className} bg-zinc-100 text-zinc-800 px-1.5 py-0.5 rounded-md font-mono text-sm border border-zinc-200`} {...props}>
+                    <code className={`${className} bg-zinc-100 text-zinc-805 px-1.5 py-0.5 rounded-md font-mono text-sm border border-zinc-200`} {...props}>
                       {children}
                     </code>
+                  );
+                },
+                pre({ children }: any) {
+                  const childrenArray = React.Children.toArray(children);
+                  const hasMermaid = childrenArray.some(
+                    (child) =>
+                      React.isValidElement(child) &&
+                      (child.props as any)?.className?.includes('language-mermaid')
+                  );
+
+                  if (hasMermaid) {
+                    return <>{children}</>;
+                  }
+                  return (
+                    <pre className="bg-zinc-50 border border-zinc-200 rounded-2xl p-6 overflow-x-auto font-mono text-sm text-zinc-800 leading-normal my-6">
+                      {children}
+                    </pre>
                   );
                 },
                  table({ children }) {
@@ -234,7 +350,7 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
                    );
                  },
                  thead({ children }) { return <thead className="bg-zinc-50/80 border-b border-zinc-100">{children}</thead>; },
-                 th({ children }) { return <th className="px-6 py-4.5 text-left text-[10px] font-black text-zinc-400 uppercase tracking-[1.5px]">{children}</th>; },
+                 th({ children }) { return <th className="px-6 py-4.5 text-left text-[10px] font-black text-zinc-405 uppercase tracking-[1.5px]">{children}</th>; },
                  tr({ children }) { return <tr className="hover:bg-zinc-50/30 transition-colors duration-200">{children}</tr>; },
                  td({ children }) { return <td className="px-6 py-4.5 whitespace-normal break-words text-zinc-650 border-t border-zinc-100 text-sm font-medium leading-relaxed max-w-md">{children}</td>; }
               }}
@@ -255,7 +371,7 @@ export default function StreamingReport({ content, isStreaming, qualityScore, du
             </div>
             <div>
               <h3 className="text-xl font-black text-zinc-900 uppercase tracking-widest">Synthesizing...</h3>
-              <p className="text-zinc-500 text-sm max-w-62.5 mx-auto font-medium mt-2">
+              <p className="text-zinc-550 text-sm max-w-62.5 mx-auto font-medium mt-2">
                  Agents are combining global archives with your private storage to build a comprehensive report.
               </p>
             </div>
