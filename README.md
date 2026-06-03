@@ -1,12 +1,39 @@
-# 🌊 ResearchFlow: Multi-Agent Research & Synthesis Engine
+<h1 align="center">🌊 ResearchFlow: Multi-Agent Research & Synthesis Engine</h1>
 
-ResearchFlow is a state-of-the-art, multi-agent AI research assistant designed to automate deep-dive information gathering, validation, and professional report synthesis. Built using **TypeScript**, **Next.js**, **LangGraph**, and **Qdrant Vector Database**, it orchestrates a swarm of specialized agents to gather web search results, retrieve private document context, and iteratively evaluate reports for safety and accuracy.
+<div align="center">
+
+[![Next.js](https://img.shields.io/badge/Next.js-16-emerald?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-teal?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-4.x-emerald?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![LangGraph](https://img.shields.io/badge/LangGraph-Orchestrated-blue?style=for-the-badge&logo=chainlink&logoColor=white)](https://js.langchain.com/docs/langgraph)
+[![Qdrant](https://img.shields.io/badge/Qdrant-Vector_DB-red?style=for-the-badge&logo=qdrant&logoColor=white)](https://qdrant.tech)
+
+<p align="center">
+  <strong>An automated, secure, and production-ready intelligence engine that parallelizes web search swarms and private knowledge vector database retrieval into verified, scholarly reports.</strong>
+</p>
+
+</div>
+
+---
+
+## 💡 Why ResearchFlow?
+
+In today's information-heavy landscape, conducting comprehensive research is a slow, manual chore. Typically, a researcher has to:
+1. **Search**: Enter multiple search queries and open dozens of browser tabs.
+2. **Read & Extract**: Filter out noise, ads, and irrelevant blog posts to find verified facts.
+3. **Retrieve Private Context**: Cross-reference web results with internal PDFs, local document libraries, or academic databases.
+4. **Synthesize**: Manually assemble findings, organize sections, build diagrams, and insert citations.
+5. **Verify**: Double-check for factual contradictions, hallucinations, or security leaks before sharing.
+
+**ResearchFlow automates this entire pipeline in seconds.** By dividing the cognitive workload across a specialized agent graph, it schedules parallel searches, checks private vector databases (RAG), drafts reports with automatic citation anchoring, and puts drafts through an automated Critic loop until they satisfy rigorous quality standards.
 
 ---
 
 ## 🏗️ System Architecture
 
-ResearchFlow uses a directed multi-agent graph to handle queries. The diagram below illustrates how your request is broken down, researched, cross-referenced, and verified:
+<div align="center">
+  <h3>Agentic Execution Graph</h3>
+</div>
 
 ```mermaid
 graph TD
@@ -39,7 +66,7 @@ graph TD
 
 ## 📊 System Performance Benchmarks
 
-ResearchFlow includes an E2E performance validation script that runs diagnostic telemetry across the entire system. Below are the verified metrics:
+Below is the telemetry captured by running the automated diagnostic benchmark suite:
 
 ### 🏆 Key Showcase Summary
 | Metric Category | Measured Output | Status | Technical Details & Optimizations |
@@ -168,4 +195,4 @@ cd backend
 npm run build
 npx ts-node src/test/benchmark-runner.ts
 ```
-This will automatically refresh results and write them directly into the root `benchmark.md` file and update telemetry.
+This will automatically refresh results and write them directly into the root `benchmark.md` file.
