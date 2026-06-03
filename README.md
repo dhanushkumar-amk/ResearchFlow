@@ -7,10 +7,13 @@
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-4.x-emerald?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![LangGraph](https://img.shields.io/badge/LangGraph-Orchestrated-blue?style=for-the-badge&logo=chainlink&logoColor=white)](https://js.langchain.com/docs/langgraph)
 [![Qdrant](https://img.shields.io/badge/Qdrant-Vector_DB-red?style=for-the-badge&logo=qdrant&logoColor=white)](https://qdrant.tech)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-https%3A%2F%2Fresearch--flow--flame.vercel.app-emerald?style=for-the-badge&logo=vercel)](https://research-flow-flame.vercel.app/)
 
 <p align="center">
   <strong>An automated, secure, and production-ready intelligence engine that parallelizes web search swarms and private knowledge vector database retrieval into verified, scholarly reports.</strong>
 </p>
+
+<img src="docs/img/image.png" alt="ResearchFlow Interface" width="90%" style="border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 15px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);" />
 
 </div>
 
