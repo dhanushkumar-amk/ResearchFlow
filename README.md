@@ -8,6 +8,7 @@
 [![LangGraph](https://img.shields.io/badge/LangGraph-Orchestrated-blue?style=for-the-badge&logo=chainlink&logoColor=white)](https://js.langchain.com/docs/langgraph)
 [![Qdrant](https://img.shields.io/badge/Qdrant-Vector_DB-red?style=for-the-badge&logo=qdrant&logoColor=white)](https://qdrant.tech)
 [![Live Demo](https://img.shields.io/badge/Live_Demo-https%3A%2F%2Fresearch--flow--flame.vercel.app-emerald?style=for-the-badge&logo=vercel)](https://research-flow-flame.vercel.app/)
+[![System Architecture](https://img.shields.io/badge/System_Architecture-View_Diagrams-blue?style=for-the-badge&logo=diagrams)](docs/architecture.md)
 
 <p align="center">
   <strong>An automated, secure, and production-ready intelligence engine that parallelizes web search swarms and private knowledge vector database retrieval into verified, scholarly reports.</strong>
@@ -200,68 +201,5 @@ npx ts-node src/test/benchmark-runner.ts
 ```
 This will automatically refresh results and write them directly into the root `benchmark.md` file.
 
----
 
-## 🔄 Detailed Sequence Diagram
-
-Below is the detailed interaction flow of the multi-agent orchestration and database lifecycle:
-
-```mermaid
-sequenceDiagram
-    actor User
-    participant API as Express API
-    participant Graph as LangGraph
-    participant Planner as Agent 1: Planner
-    participant Search as Agent 2: Search
-    participant RAG as Agent 3: RAG
-    participant Synth as Agent 4: Synthesizer
-    participant Critic as Agent 5: Critic
-    participant DB as PostgreSQL
-    participant Redis as Redis Cache
-    participant Qdrant as Qdrant Vector DB
-
-    User->>API: POST /api/research { query }
-    API->>DB: Check 24h cache (getCachedReport)
-    DB-->>API: Cache miss
-    API->>DB: createSession()
-    API-->>User: { sessionId } (immediate)
-    API->>Graph: invoke({ sessionId, query })
-
-    Graph->>Planner: plannerNode(state)
-    Planner->>Redis: (optional) save_memory
-    Planner-->>Graph: { researchPlan }
-    Graph-->>User: SSE: plan event
-
-    par Parallel execution
-        Graph->>Search: researcherNode(state)
-        Search->>Search: classifyQuery()
-        Search->>Search: arxivSearch + pubmedSearch + githubSearch + newsSearch
-        Search-->>Graph: { searchResults }
-    and
-        Graph->>RAG: ragNode(state)
-        RAG->>Qdrant: document_search via MCP
-        Qdrant-->>RAG: relevant chunks
-        RAG-->>Graph: { ragResults }
-    end
-
-    Graph->>Synth: synthesizerNode(state)
-    Synth-->>User: SSE: streaming report chunks
-    Synth-->>Graph: { report }
-
-    Graph->>Critic: criticNode(state)
-    Critic->>Critic: evaluate completeness, clarity, accuracy, safety
-    Critic-->>Graph: { score, verdict }
-
-    alt verdict = revise AND retryCount < 2
-        Graph->>Synth: re-synthesize (revision loop)
-    else verdict = approve
-        Graph->>DB: saveReport(content, score)
-        Graph->>DB: updateSessionStatus(complete)
-        Graph-->>User: SSE: complete event
-    end
-
-    User->>API: POST /:sessionId/chat { query }
-    API->>DB: getSessionReport()
-    API-->>User: streaming chat response
-```
 
