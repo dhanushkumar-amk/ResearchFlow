@@ -81,7 +81,7 @@ const RegisterPage = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="bg-white border border-neutral-200 rounded-[16px]  p-6 sm:p-8"
+          className="rf-auth-card p-6 sm:p-8"
         >
           {error && (
             <motion.div
@@ -112,7 +112,7 @@ const RegisterPage = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="John Doe"
-                  className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
+                  className="block w-full pl-10 pr-3 py-2 border border-ui-border rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand bg-white text-neutral-900 placeholder-neutral-400"
                 />
               </div>
             </div>
@@ -134,7 +134,7 @@ const RegisterPage = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
-                  className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
+                  className="block w-full pl-10 pr-3 py-2 border border-ui-border rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand bg-white text-neutral-900 placeholder-neutral-400"
                 />
               </div>
             </div>
@@ -156,7 +156,7 @@ const RegisterPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="block w-full pl-10 pr-10 py-2 border border-neutral-200 rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
+                  className="block w-full pl-10 pr-10 py-2 border border-ui-border rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand bg-white text-neutral-900 placeholder-neutral-400"
                 />
                 <button
                   type="button"
@@ -189,7 +189,7 @@ const RegisterPage = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
+                  className="block w-full pl-10 pr-3 py-2 border border-ui-border rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand bg-white text-neutral-900 placeholder-neutral-400"
                 />
               </div>
             </div>
@@ -201,12 +201,12 @@ const RegisterPage = () => {
                   type="checkbox"
                   checked={agreeTerms}
                   onChange={(e) => setAgreeTerms(e.target.checked)}
-                  className="w-4 h-4 rounded border-neutral-200 text-indigo-600 focus:ring-indigo-500/10 mt-0.5 cursor-pointer"
+                  className="w-4 h-4 rounded border-ui-border text-brand focus:ring-brand/10 mt-0.5 cursor-pointer"
                 />
                 <span className="text-xs text-neutral-500 font-medium leading-tight">
                   I agree to the{' '}
-                  <span className="text-indigo-600 hover:underline">Terms of Service</span> and{' '}
-                  <span className="text-indigo-600 hover:underline">Privacy Policy</span>.
+                  <span className="text-brand hover:underline">Terms of Service</span> and{' '}
+                  <span className="text-brand hover:underline">Privacy Policy</span>.
                 </span>
               </label>
             </div>
@@ -215,7 +215,7 @@ const RegisterPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-sm transition-all flex items-center justify-center gap-2   cursor-pointer relative"
+              className="w-full rf-button rf-button-primary cursor-pointer relative"
             >
               {isLoading ? (
                 <>
@@ -232,11 +232,11 @@ const RegisterPage = () => {
           </form>
 
           {/* Footer Link */}
-          <p className="mt-6 text-center text-xs text-slate-600">
+          <p className="mt-6 text-center text-sm text-ui-muted">
             Already have an account?{' '}
             <span
               onClick={() => navigate(ROUTES.LOGIN)}
-              className="font-bold text-indigo-600 hover:text-indigo-700 cursor-pointer transition-colors"
+              className="font-bold text-brand hover:text-brand-hover cursor-pointer transition-colors"
             >
               Sign In
             </span>

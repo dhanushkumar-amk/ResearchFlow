@@ -120,7 +120,7 @@ const AgentTimeline: React.FC<AgentTimelineProps> = ({ activeNode, isComplete })
         const Icon = status.state === 'complete' ? CheckCircle2 : status.state === 'running' ? Loader2 : agent.icon;
         return (
           <li key={agent.id} className="flex items-center gap-2.5 py-2.5 text-sm">
-            <Icon size={16} className={status.state === 'complete' ? 'text-green-700' : status.state === 'running' ? 'text-indigo-700 motion-safe:animate-spin' : 'text-zinc-600'} aria-hidden="true" />
+            <Icon size={16} className={status.state === 'complete' ? 'text-green-700' : status.state === 'running' ? 'text-brand motion-safe:animate-spin' : 'text-zinc-600'} aria-hidden="true" />
             <span className="flex-1 font-medium">{agent.name}</span>
             <span className="text-xs text-zinc-600">{status.state === 'complete' ? status.duration ? `${(status.duration / 1000).toFixed(1)} s` : 'Done' : status.state === 'running' ? 'Running' : 'Waiting'}</span>
           </li>

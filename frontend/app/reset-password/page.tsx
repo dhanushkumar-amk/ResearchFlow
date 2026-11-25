@@ -65,7 +65,7 @@ const ResetPasswordPage = () => {
         {/* Dot Grid Background */}
         <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px] opacity-40 pointer-events-none z-0" />
         <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
-          <div className="bg-white border border-neutral-200 rounded-[16px]  p-6 sm:p-8 text-center">
+          <div className="rf-auth-card p-6 sm:p-8 text-center">
             <Lucide.AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
             <h2 className="text-xl font-bold text-neutral-900 mb-2">Invalid Session</h2>
             <p className="text-xs text-neutral-500 mb-6">
@@ -73,7 +73,7 @@ const ResetPasswordPage = () => {
             </p>
             <button
               onClick={() => navigate(ROUTES.FORGOT_PASSWORD)}
-              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-sm transition-all flex items-center justify-center gap-2   cursor-pointer relative"
+              className="w-full rf-button rf-button-primary cursor-pointer relative"
             >
               Request New Code
             </button>
@@ -97,7 +97,7 @@ const ResetPasswordPage = () => {
         <h1 className="text-3xl font-bold tracking-tight text-slate-950">
           Reset password
         </h1>
-        <p className="mt-2 text-xs text-slate-600">
+        <p className="mt-2 text-sm text-ui-muted">
           Enter your new password to regain access to your account
         </p>
       </div>
@@ -108,7 +108,7 @@ const ResetPasswordPage = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="bg-white border border-neutral-200 rounded-[16px]  p-6 sm:p-8"
+          className="rf-auth-card p-6 sm:p-8"
         >
           {error && (
             <motion.div
@@ -148,7 +148,7 @@ const ResetPasswordPage = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="block w-full pl-10 pr-10 py-2 border border-neutral-200 rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
+                    className="block w-full pl-10 pr-10 py-2 border border-ui-border rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand bg-white text-neutral-900 placeholder-neutral-400"
                   />
                   <button
                     type="button"
@@ -181,7 +181,7 @@ const ResetPasswordPage = () => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
+                    className="block w-full pl-10 pr-3 py-2 border border-ui-border rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand bg-white text-neutral-900 placeholder-neutral-400"
                   />
                 </div>
               </div>
@@ -190,7 +190,7 @@ const ResetPasswordPage = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-sm transition-all flex items-center justify-center gap-2   cursor-pointer relative"
+                className="w-full rf-button rf-button-primary cursor-pointer relative"
               >
                 {isLoading ? (
                   <>
@@ -212,7 +212,7 @@ const ResetPasswordPage = () => {
             <div className="mt-6 flex justify-center border-t border-neutral-100 pt-4">
               <span
                 onClick={() => navigate(ROUTES.LOGIN)}
-                className="flex items-center gap-1.5 text-xs font-bold text-neutral-500 hover:text-indigo-600 cursor-pointer transition-colors"
+                className="flex items-center gap-1.5 text-xs font-bold text-neutral-500 hover:text-brand cursor-pointer transition-colors"
               >
                 <Lucide.ArrowLeft className="h-4 w-4" />
                 Back to Sign In

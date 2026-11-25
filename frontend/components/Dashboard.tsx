@@ -45,7 +45,7 @@ function ResearchActivity({ history }: { history: ResearchHistoryItem[] }) {
       {days.map(({ key, label, count }) => (
         <li key={key} aria-label={`${label}, ${count} runs`} className="min-w-0" title={`${label}: ${count} runs`}>
           <div className="flex h-28 items-end justify-center rounded-lg bg-slate-50 px-1 pb-1" aria-hidden="true">
-            <div className="w-full max-w-9 rounded-md bg-emerald-500" style={{ height: count ? `${count / largestCount * 88}%` : '3px', opacity: count ? 1 : .2 }} />
+            <div className="w-full max-w-9 rounded-md bg-brand" style={{ height: count ? `${count / largestCount * 88}%` : '3px', opacity: count ? 1 : .2 }} />
           </div>
           <span className="mt-2 block font-semibold">{label}</span>
         </li>
@@ -125,11 +125,11 @@ export default function Dashboard() {
         ))}
       </dl>
 
-      <div className="grid gap-4 xl:grid-cols-[1.4fr_1fr]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <section className="rf-panel" aria-labelledby="recent-heading">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 id="recent-heading">Recent research</h2>
-            <Link href="/history" className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-800 hover:underline">View history <ArrowRight size={15} aria-hidden="true" /></Link>
+            <Link href="/history" className="inline-flex items-center gap-1 text-sm font-semibold text-brand hover:underline">View history <ArrowRight size={15} aria-hidden="true" /></Link>
           </div>
           {!workspace ? (
             <p className="mt-5 text-sm text-slate-600" role="status">Loading recent research…</p>
@@ -141,8 +141,8 @@ export default function Dashboard() {
                 const completed = isComplete(item);
                 return (
                   <li key={item.session_id}>
-                    <Link href={`/research/${item.session_id}`} className="flex items-center gap-3 rounded-lg px-2 py-3 hover:bg-emerald-50">
-                      <FileText size={17} className="shrink-0 text-emerald-800" aria-hidden="true" />
+                    <Link href={`/research/${item.session_id}`} className="flex items-center gap-3 rounded-lg px-2 py-3 hover:bg-brand-soft">
+                      <FileText size={17} className="shrink-0 text-brand" aria-hidden="true" />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-semibold">{item.query}</span>
                         <time dateTime={item.created_at} className="mt-1 block text-xs text-slate-600">{recentDate.format(new Date(item.created_at))}</time>
@@ -156,10 +156,10 @@ export default function Dashboard() {
               })}
             </ul>
           ) : (
-            <div className="mt-4 rounded-xl border border-dashed border-emerald-200 bg-emerald-50/40 px-4 py-7 text-center">
-              <Clock3 size={22} className="mx-auto text-emerald-800" aria-hidden="true" />
+            <div className="mt-4 rounded-xl border border-dashed border-ui-border bg-brand-soft/45 px-4 py-7 text-center">
+              <Clock3 size={22} className="mx-auto text-brand" aria-hidden="true" />
               <p className="mt-2 text-sm font-semibold">No research runs yet</p>
-              <Link href="/research" className="mt-2 inline-block text-sm font-semibold text-emerald-800 hover:underline">Start your first investigation</Link>
+              <Link href="/research" className="mt-2 inline-block text-sm font-semibold text-brand hover:underline">Start your first investigation</Link>
             </div>
           )}
         </section>
@@ -183,9 +183,9 @@ export default function Dashboard() {
           <h2 id="quality-heading">Report quality</h2>
           <dl className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {qualityBands.map(({ label, count }) => (
-              <div key={label} className="rounded-lg bg-emerald-50 px-3 py-2">
-                <dt className="text-xs text-emerald-900">{label}</dt>
-                <dd className="text-lg font-bold text-emerald-950">{count}</dd>
+              <div key={label} className="rounded-lg bg-brand-soft px-3 py-2">
+                <dt className="text-xs text-brand-hover">{label}</dt>
+                <dd className="text-lg font-bold text-foreground">{count}</dd>
               </div>
             ))}
           </dl>

@@ -52,8 +52,8 @@ const LoginPage = () => {
         <h1 className="text-3xl font-bold tracking-tight text-slate-950">
           Welcome back
         </h1>
-        <p className="mt-2 text-xs text-slate-600">
-          Access your autonomous research agent workspace
+        <p className="mt-2 text-sm text-ui-muted">
+          Sign in to your research workspace.
         </p>
       </div>
 
@@ -63,7 +63,7 @@ const LoginPage = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="bg-white border border-neutral-200 rounded-[16px]  p-6 sm:p-8"
+          className="rf-auth-card p-6 sm:p-8"
         >
           {error && (
             <motion.div
@@ -94,7 +94,7 @@ const LoginPage = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
-                  className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
+                  className="block w-full pl-10 pr-3 py-2 border border-ui-border rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand bg-white text-neutral-900 placeholder-neutral-400"
                 />
               </div>
             </div>
@@ -107,7 +107,7 @@ const LoginPage = () => {
                 </label>
                 <span
                   onClick={() => navigate(ROUTES.FORGOT_PASSWORD)}
-                  className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 cursor-pointer transition-colors"
+                  className="text-xs font-semibold text-brand hover:text-brand-hover cursor-pointer transition-colors"
                 >
                   Forgot password?
                 </span>
@@ -124,7 +124,7 @@ const LoginPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="block w-full pl-10 pr-10 py-2 border border-neutral-200 rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
+                  className="block w-full pl-10 pr-10 py-2 border border-ui-border rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand bg-white text-neutral-900 placeholder-neutral-400"
                 />
                 <button
                   type="button"
@@ -147,7 +147,7 @@ const LoginPage = () => {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-neutral-200 text-indigo-600 focus:ring-indigo-500/10 cursor-pointer"
+                  className="w-4 h-4 rounded border-ui-border text-brand focus:ring-brand/10 cursor-pointer"
                 />
                 <span className="text-xs text-neutral-500 font-medium">Keep me signed in</span>
               </label>
@@ -157,7 +157,7 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-sm transition-all flex items-center justify-center gap-2   cursor-pointer relative"
+              className="w-full rf-button rf-button-primary cursor-pointer relative"
             >
               {isLoading ? (
                 <>
@@ -174,11 +174,11 @@ const LoginPage = () => {
           </form>
 
           {/* Footer Link */}
-          <p className="mt-6 text-center text-xs text-slate-600">
+          <p className="mt-6 text-center text-sm text-ui-muted">
             New to ResearchFlow?{' '}
             <span
               onClick={() => navigate(ROUTES.REGISTER)}
-              className="font-bold text-indigo-600 hover:text-indigo-700 cursor-pointer transition-colors"
+              className="font-bold text-brand hover:text-brand-hover cursor-pointer transition-colors"
             >
               Create an account
             </span>

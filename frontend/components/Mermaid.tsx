@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { AlertCircle } from 'lucide-react';
 
 export interface MermaidProps {
@@ -76,111 +76,81 @@ const cleanMermaidChart = (rawChart: string): string => {
   return finalChart;
 };
 
-/**
- * High-Density Mermaid Renderer
- * Uses dynamic import on client-side to prevent Node SSR failures and 
- * provides a beautiful fail-safe UI in case of syntax rendering issues.
- */
+type DiagramResult = { chart: string; svg: string } | { chart: string; error: true };
+
 export default function Mermaid({ chart, isStreaming }: MermaidProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [svg, setSvg] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
+  const id = useId().replace(/[^a-zA-Z0-9_-]/g, '');
+  const revision = useRef(0);
+  const [result, setResult] = useState<DiagramResult | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
-    
-    const renderChart = async () => {
-      if (isStreaming) return;
-      if (!chart || chart.trim() === '') return;
-      
+    let active = true;
+    const render = async () => {
+      const source = chart.trim();
+      if (!source) {
+        if (active) setResult({ chart, error: true });
+        return;
+      }
+
       try {
-        // Dynamic client-only import to resolve document/window SSR issues
         const mermaid = (await import('mermaid')).default;
-        
+        if (!active) return;
         mermaid.initialize({
           startOnLoad: false,
           theme: 'base',
-          securityLevel: 'loose',
+          securityLevel: 'strict',
           fontFamily: 'Inter, sans-serif',
           themeVariables: {
-            primaryColor: '#f8fafc',
-            primaryTextColor: '#0f172a',
-            primaryBorderColor: '#cbd5e1',
-            lineColor: '#64748b',
-            secondaryColor: '#f1f5f9',
+            primaryColor: '#eef2ff',
+            primaryTextColor: '#151f3b',
+            primaryBorderColor: '#8c9ed1',
+            lineColor: '#536894',
+            secondaryColor: '#f4f6fc',
             tertiaryColor: '#ffffff',
             edgeLabelBackground: '#ffffff',
           },
         });
 
-        // Clean the chart syntax
-        const cleanedChart = cleanMermaidChart(chart);
-
-        // Pre-validate syntax before rendering
-        try {
-          await mermaid.parse(cleanedChart);
-        } catch (parseErr: any) {
-          throw new Error(`Syntax check failed: ${parseErr.message}`);
-        }
-
-        // Unique ID for each render to avoid collisions
-        const id = `mermaid-${Math.random().toString(36).substring(2, 11)}`;
-        
-        const { svg: generatedSvg } = await mermaid.render(id, cleanedChart);
-        
-        if (isMounted) {
-          setSvg(generatedSvg);
-          setError(null);
-        }
-      } catch (err: any) {
-        console.error('❌ [Mermaid Render Error]:', err);
-        if (isMounted) {
-          setError(err instanceof Error ? err.message : String(err));
-        }
+        // Render valid source as written. Repairs are only attempted for a finished report.
+        const valid = await mermaid.parse(source, { suppressErrors: true });
+        if (!active) return;
+        const diagram = valid || isStreaming ? source : cleanMermaidChart(source);
+        if (!valid && isStreaming) return;
+        const { svg } = await mermaid.render(`mermaid-${id}-${++revision.current}`, diagram);
+        if (active) setResult({ chart, svg });
+      } catch {
+        if (active && !isStreaming) setResult({ chart, error: true });
       }
     };
 
-    renderChart();
-    return () => { isMounted = false; };
-  }, [chart, isStreaming]);
+    const timer = window.setTimeout(render, isStreaming ? 400 : 0);
+    return () => {
+      active = false;
+      window.clearTimeout(timer);
+    };
+  }, [chart, id, isStreaming]);
 
-  if (isStreaming) {
+  const current = result?.chart === chart ? result : null;
+
+  if (current && 'svg' in current) {
     return (
-      <div className="my-6 p-6 bg-slate-50/50 rounded-2xl border border-dashed border-emerald-200 text-center animate-pulse">
-        <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">
-           Visualizing Strategic Map...
-        </span>
+      <div className="rf-diagram not-prose">
+        <div className="rf-diagram-content" dangerouslySetInnerHTML={{ __html: current.svg }} />
       </div>
     );
   }
 
-  if (error && !svg) {
-    return (
-      <div className="my-6 p-5 bg-rose-50/50 rounded-2xl border border-rose-100 text-left space-y-3 animate-in fade-in duration-200">
-        <div className="flex items-center gap-2 text-rose-800 text-[10px] font-black uppercase tracking-wider">
-          <AlertCircle className="w-4 h-4 text-rose-500" />
-          <span>Diagram Render Warning</span>
-        </div>
-        <p className="text-xs text-rose-600 font-semibold leading-relaxed">
-          The generated report map contains formatting syntax issues: <code className="bg-white/80 px-1 py-0.5 rounded text-[10px] font-mono border border-rose-100">{error.slice(0, 100)}</code>
-        </p>
-        <details className="text-[9px] text-slate-400 font-medium">
-          <summary className="cursor-pointer hover:text-slate-655 uppercase tracking-widest font-black">View Raw Diagram Code</summary>
-          <pre className="mt-2 p-3 bg-slate-50 border border-slate-200 rounded-xl overflow-x-auto font-mono text-[10px] text-slate-700 leading-normal">
-            {chart}
-          </pre>
-        </details>
-      </div>
-    );
-  }
-
+  const failed = current && 'error' in current;
   return (
-    <div className="my-6 overflow-x-auto bg-slate-50 rounded-2xl p-6 border border-slate-100 shadow-xs flex justify-center animate-in fade-in duration-300">
-      <div 
-        ref={containerRef} 
-        className="mermaid-container w-full max-w-full flex justify-center text-slate-800"
-        dangerouslySetInnerHTML={{ __html: svg }}
-      />
+    <div className="rf-diagram not-prose text-sm text-ui-muted">
+      <p role="status" className="flex items-center gap-2">
+        {failed && <AlertCircle size={17} className="text-brand" aria-hidden="true" />}
+        {failed ? 'This diagram could not be displayed.' : isStreaming ? 'Waiting for the diagram text…' : 'Rendering diagram…'}
+      </p>
+      <details className="mt-2">
+        <summary className="cursor-pointer text-brand">View diagram source</summary>
+        <pre className="mt-2 overflow-x-auto text-xs">{chart}</pre>
+      </details>
     </div>
   );
 }

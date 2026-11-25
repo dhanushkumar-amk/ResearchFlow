@@ -148,7 +148,7 @@ const VerifyOtpPage = () => {
         <h1 className="text-3xl font-bold tracking-tight text-slate-950">
           Verify your email
         </h1>
-        <p className="mt-2 text-xs text-slate-600 leading-relaxed max-w-sm mx-auto">
+        <p className="mt-2 text-sm text-ui-muted leading-relaxed max-w-sm mx-auto">
           We have sent a 6-digit verification code to <span className="font-semibold text-neutral-800 break-all">{email}</span>
         </p>
       </div>
@@ -159,7 +159,7 @@ const VerifyOtpPage = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="bg-white border border-neutral-200 rounded-[16px]  p-6 sm:p-8"
+          className="rf-auth-card p-6 sm:p-8"
         >
           {error && (
             <motion.div
@@ -176,7 +176,7 @@ const VerifyOtpPage = () => {
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
-              className="mb-4 p-3 rounded-[8px] bg-indigo-50 border border-indigo-100 text-xs font-semibold text-indigo-700 flex items-center gap-2"
+              className="mb-4 p-3 rounded-[8px] bg-indigo-50 border border-indigo-100 text-xs font-semibold text-brand-hover flex items-center gap-2"
             >
               <Lucide.CheckCircle2 className="h-4 w-4 text-indigo-500 flex-shrink-0" />
               <span>{successMessage}</span>
@@ -202,7 +202,7 @@ const VerifyOtpPage = () => {
                     onChange={(e) => handleChange(e.target, index)}
                     onKeyDown={(e) => handleKeyDown(e, index)}
                     onPaste={handlePaste}
-                    className="w-10 h-12 text-center text-lg font-bold border border-neutral-200 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900  transition-colors"
+                    className="w-full max-w-10 h-12 min-w-0 text-center text-lg font-bold border border-ui-border rounded-md focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand bg-white text-neutral-900  transition-colors"
                   />
                 ))}
               </div>
@@ -212,7 +212,7 @@ const VerifyOtpPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-sm transition-all flex items-center justify-center gap-2   cursor-pointer relative"
+              className="w-full rf-button rf-button-primary cursor-pointer relative"
             >
               {isLoading ? (
                 <>
@@ -240,7 +240,7 @@ const VerifyOtpPage = () => {
                 type="button"
                 onClick={handleResendCode}
                 disabled={isResending}
-                className="font-bold text-indigo-600 hover:text-indigo-700 cursor-pointer transition-colors"
+                className="font-bold text-brand hover:text-brand-hover cursor-pointer transition-colors"
               >
                 {isResending ? 'Resending Code...' : 'Resend Verification Code'}
               </button>
@@ -251,7 +251,7 @@ const VerifyOtpPage = () => {
           <div className="mt-6 flex justify-center border-t border-neutral-100 pt-4">
             <span
               onClick={() => navigate(ROUTES.LOGIN)}
-              className="flex items-center gap-1.5 text-xs font-bold text-neutral-500 hover:text-indigo-600 cursor-pointer transition-colors"
+              className="flex items-center gap-1.5 text-xs font-bold text-neutral-500 hover:text-brand cursor-pointer transition-colors"
             >
               <Lucide.ArrowLeft className="h-4 w-4" />
               Back to Sign In
