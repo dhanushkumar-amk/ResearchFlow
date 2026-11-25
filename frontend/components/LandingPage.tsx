@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, FileText, Globe2, History, Search } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, BookOpen, FileText, Globe2, History, Search } from 'lucide-react';
 import Brand from './Brand';
 import ObservatoryArt from './ObservatoryArt';
 
@@ -60,16 +60,28 @@ export default function LandingPage() {
       </header>
 
       <main>
-        <section className="rf-public-hero rf-public-width" aria-labelledby="public-title">
-          <ObservatoryArt className="rf-hero-landscape" sizes="(max-width: 1240px) 100vw, 1240px" priority />
+        <section className="rf-public-width rf-public-hero" aria-labelledby="public-title">
           <div className="rf-public-hero-copy">
-            <h1 id="public-title">Find the bigger picture.</h1>
-            <p>Start with a question. Follow the evidence across the web and your own sources, then bring it together in a report.</p>
+            <h1 id="public-title">Turn a question into a clear report.</h1>
+            <p>Research the web alongside your own documents. Follow the sources, ask better follow-up questions, and save what you find.</p>
             <div className="rf-public-hero-actions">
               <Link href="/get-started" className="rf-public-action">Start researching <ArrowRight size={17} aria-hidden="true" /></Link>
-              <a href="#process" className="rf-public-secondary">See how it works <ArrowDown size={16} aria-hidden="true" /></a>
+              <a href="#process" className="rf-public-secondary">See how it works</a>
             </div>
           </div>
+
+          <figure className="rf-hero-preview">
+            <ObservatoryArt className="rf-hero-preview-art" sizes="(max-width: 760px) 100vw, 600px" priority />
+            <figcaption className="rf-hero-preview-sheet">
+              <span className="rf-hero-preview-label"><FileText size={16} aria-hidden="true" /> Sample report outline</span>
+              <p className="rf-hero-preview-title">How can cities cool their streets?</p>
+              <ul>
+                <li><Globe2 size={17} aria-hidden="true" /> Compare shade from trees and built structures</li>
+                <li><BookOpen size={17} aria-hidden="true" /> Review local heat maps and planting plans</li>
+                <li><Search size={17} aria-hidden="true" /> Identify streets to prioritize</li>
+              </ul>
+            </figcaption>
+          </figure>
         </section>
 
         <section id="workflow" className="rf-public-width rf-public-workflow" aria-labelledby="workflow-title">
@@ -128,8 +140,8 @@ export default function LandingPage() {
         <section className="rf-public-width rf-public-invitation" aria-labelledby="invitation-title">
           <ObservatoryArt className="rf-public-landscape" sizes="(max-width: 760px) 100vw, 560px" />
           <div>
-            <h2 id="invitation-title">What are you curious about?</h2>
-            <p>Bring a question, a document, or a link to get your first investigation underway.</p>
+            <h2 id="invitation-title">Start with one question.</h2>
+            <p>Add a document or a link if you have one. You can also start with a question alone.</p>
             <Link href="/get-started" className="rf-public-action">Get started <ArrowRight size={16} aria-hidden="true" /></Link>
           </div>
         </section>
