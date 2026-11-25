@@ -58,16 +58,17 @@ export default function HistoryPage() {
       <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
 
       <main className="max-w-5xl mx-auto py-8 relative z-10">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <header className="rf-dashboard-banner rf-workspace-hero rf-workspace-history mb-5">
+          <div className="rf-workspace-hero-content">
+            <h1 className="text-3xl tracking-tight sm:text-4xl">Research History</h1>
+            <p className="text-sm leading-relaxed text-zinc-600">Find past investigations and pick up where you left off.</p>
+          </div>
+        </header>
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <div className="flex items-center gap-3">
-            <Link href="/" className="p-2 rounded-xl border border-zinc-200 hover:bg-zinc-50 transition-colors bg-white">
+            <Link href="/" aria-label="Back to overview" className="p-2 rounded-xl border border-zinc-200 hover:bg-zinc-50 transition-colors bg-white">
               <ArrowLeft className="w-4 h-4 text-zinc-500" />
             </Link>
-            <div>
-              <h1 className="text-2xl font-bold text-zinc-900">Research History</h1>
-              <p className="text-sm text-zinc-500">Revisit your past AI-driven research sessions</p>
-            </div>
           </div>
 
           {/* Controls */}

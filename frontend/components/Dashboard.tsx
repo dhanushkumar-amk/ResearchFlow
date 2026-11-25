@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import ObservatoryArt from './ObservatoryArt';
 import { Activity, ArrowRight, BookOpen, Clock3, Compass, FileText } from 'lucide-react';
 import { useAuth } from '../lib/AuthContext';
 import { getAllResearchHistory, getHistory } from '../lib/api';
@@ -44,7 +45,7 @@ function ResearchActivity({ history }: { history: ResearchHistoryItem[] }) {
       {days.map(({ key, label, count }) => (
         <li key={key} aria-label={`${label}, ${count} runs`} className="min-w-0" title={`${label}: ${count} runs`}>
           <div className="flex h-28 items-end justify-center rounded-lg bg-slate-50 px-1 pb-1" aria-hidden="true">
-            <div className="w-full max-w-9 rounded-md bg-indigo-500" style={{ height: count ? `${count / largestCount * 88}%` : '3px', opacity: count ? 1 : .2 }} />
+            <div className="w-full max-w-9 rounded-md bg-emerald-500" style={{ height: count ? `${count / largestCount * 88}%` : '3px', opacity: count ? 1 : .2 }} />
           </div>
           <span className="mt-2 block font-semibold">{label}</span>
         </li>
@@ -96,15 +97,19 @@ export default function Dashboard() {
 
   return (
     <main className="rf-dashboard space-y-6">
-      <div className="rf-dashboard-banner flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
-        <div>
-          <h1>Welcome, {user?.name.trim().split(/\s+/)[0] || 'researcher'}</h1>
-          <p className="mt-3 max-w-lg text-sm leading-relaxed text-zinc-600">Start a new investigation, revisit your reports, or add sources to your library.</p>
+      <header className="rf-dashboard-banner rf-workspace-hero">
+        <ObservatoryArt className="rf-workspace-hero-art" sizes="(max-width: 767px) 100vw, 380px" />
+        <div className="rf-workspace-hero-content">
+          <div>
+            <h1>Welcome, {user?.name.trim().split(/\s+/)[0] || 'researcher'}</h1>
+            <p className="mt-3 max-w-lg text-sm leading-relaxed text-zinc-600">Start a new investigation, revisit your reports, or add sources to your library.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/research" className="rf-button rf-button-primary">New research <ArrowRight size={17} aria-hidden="true" /></Link>
+            <Link href="/documents" className="rf-button rf-button-outline">Open library</Link>
+          </div>
         </div>
-        <Link href="/research" className="rf-button rf-button-primary shrink-0">
-          New research <ArrowRight size={17} aria-hidden="true" />
-        </Link>
-      </div>
+      </header>
 
       {workspace && (!workspace.history || !workspace.documents) && (
         <p role="status" className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950">Some workspace data could not be loaded. Refresh the page to try again.</p>
@@ -124,7 +129,7 @@ export default function Dashboard() {
         <section className="rf-panel" aria-labelledby="recent-heading">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 id="recent-heading">Recent research</h2>
-            <Link href="/history" className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-700 hover:underline">View history <ArrowRight size={15} aria-hidden="true" /></Link>
+            <Link href="/history" className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-800 hover:underline">View history <ArrowRight size={15} aria-hidden="true" /></Link>
           </div>
           {!workspace ? (
             <p className="mt-5 text-sm text-slate-600" role="status">Loading recent research…</p>
@@ -136,8 +141,8 @@ export default function Dashboard() {
                 const completed = isComplete(item);
                 return (
                   <li key={item.session_id}>
-                    <Link href={`/research/${item.session_id}`} className="flex items-center gap-3 rounded-lg px-2 py-3 hover:bg-indigo-50">
-                      <FileText size={17} className="shrink-0 text-indigo-700" aria-hidden="true" />
+                    <Link href={`/research/${item.session_id}`} className="flex items-center gap-3 rounded-lg px-2 py-3 hover:bg-emerald-50">
+                      <FileText size={17} className="shrink-0 text-emerald-800" aria-hidden="true" />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-semibold">{item.query}</span>
                         <time dateTime={item.created_at} className="mt-1 block text-xs text-slate-600">{recentDate.format(new Date(item.created_at))}</time>
@@ -151,10 +156,10 @@ export default function Dashboard() {
               })}
             </ul>
           ) : (
-            <div className="mt-4 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/40 px-4 py-7 text-center">
-              <Clock3 size={22} className="mx-auto text-indigo-700" aria-hidden="true" />
+            <div className="mt-4 rounded-xl border border-dashed border-emerald-200 bg-emerald-50/40 px-4 py-7 text-center">
+              <Clock3 size={22} className="mx-auto text-emerald-800" aria-hidden="true" />
               <p className="mt-2 text-sm font-semibold">No research runs yet</p>
-              <Link href="/research" className="mt-2 inline-block text-sm font-semibold text-indigo-700 hover:underline">Start your first investigation</Link>
+              <Link href="/research" className="mt-2 inline-block text-sm font-semibold text-emerald-800 hover:underline">Start your first investigation</Link>
             </div>
           )}
         </section>
@@ -178,9 +183,9 @@ export default function Dashboard() {
           <h2 id="quality-heading">Report quality</h2>
           <dl className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {qualityBands.map(({ label, count }) => (
-              <div key={label} className="rounded-lg bg-indigo-50 px-3 py-2">
-                <dt className="text-xs text-indigo-900">{label}</dt>
-                <dd className="text-lg font-bold text-indigo-950">{count}</dd>
+              <div key={label} className="rounded-lg bg-emerald-50 px-3 py-2">
+                <dt className="text-xs text-emerald-900">{label}</dt>
+                <dd className="text-lg font-bold text-emerald-950">{count}</dd>
               </div>
             ))}
           </dl>

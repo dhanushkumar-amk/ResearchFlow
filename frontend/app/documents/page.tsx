@@ -315,9 +315,11 @@ export default function DocumentsPage() {
     <div className="min-h-screen bg-background p-4 md:p-8 font-sans antialiased text-slate-800">
       <div className="max-w-[1400px] mx-auto space-y-8">
         
-        <header className="rf-dashboard-banner">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Source library</h1>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-600">Add documents, web pages, and video transcripts. Ask questions about the sources you have added.</p>
+        <header className="rf-dashboard-banner rf-workspace-hero rf-workspace-library">
+          <div className="rf-workspace-hero-content">
+            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Source library</h1>
+            <p className="max-w-xl text-sm leading-relaxed text-zinc-600">Add documents, web pages, and video transcripts. Ask questions about the sources you have added.</p>
+          </div>
         </header>
 
         {/* Error / Success Alerts */}

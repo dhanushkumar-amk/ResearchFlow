@@ -1,5 +1,7 @@
 'use client';
 
+import ObservatoryArt from '../../components/ObservatoryArt';
+
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -66,9 +68,12 @@ export default function GeneralResearchPage() {
 
       <div className="max-w-[850px] mx-auto space-y-8 relative z-10">
 
-        <header className="space-y-3">
-          <h1 className="text-4xl font-bold leading-tight tracking-tight text-slate-950 sm:text-5xl">Start a new investigation</h1>
-          <p className="max-w-xl text-base leading-relaxed text-slate-600">Ask a specific question. ResearchFlow will search the web and your library, then write a report based on the sources it finds.</p>
+        <header className="rf-dashboard-banner rf-workspace-hero">
+          <ObservatoryArt className="rf-workspace-hero-art" sizes="(max-width: 767px) 100vw, 320px" />
+          <div className="rf-workspace-hero-content">
+            <h1 className="text-4xl font-bold leading-tight tracking-tight text-slate-950 sm:text-5xl">Start a new investigation</h1>
+            <p className="max-w-xl text-base leading-relaxed text-slate-600">Ask a specific question. ResearchFlow will search the web and your library, then write a report based on the sources it finds.</p>
+          </div>
         </header>
 
         {/* Query Input Box */}
