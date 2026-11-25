@@ -1,16 +1,42 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, BookOpen, FileText, Globe2, History, MessageSquare, Share2 } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, BookOpen, FileText, Globe2, History, Search } from 'lucide-react';
 import Brand from './Brand';
 import ObservatoryArt from './ObservatoryArt';
 
-const features = [
-  { title: 'Investigate a question', description: 'Search the web for relevant material and bring the findings together in a report.', icon: Globe2, tone: 'blue' },
-  { title: 'Collect your sources', description: 'Keep documents, articles, and video transcripts together in your own library.', icon: BookOpen, tone: 'sand' },
-  { title: 'Read the report', description: 'See the findings and their source references in one readable view.', icon: FileText, tone: 'lavender' },
-  { title: 'Ask a follow-up', description: 'Clarify a passage or explore a question that came up while reading.', icon: MessageSquare, tone: 'mint' },
-  { title: 'Return to earlier work', description: 'Find previous investigations and reopen the reports you saved.', icon: History, tone: 'peach' },
-  { title: 'Share your findings', description: 'Export a report or choose to make it available through a public link.', icon: Share2, tone: 'rose' },
+const workflows = [
+  {
+    title: 'Investigate a question',
+    description: 'Search the web and your library together. Follow the research as it runs and see the findings in a single report.',
+    image: '/landing/research.webp',
+    tone: 'blue',
+    links: [
+      { label: 'Start an investigation', icon: Search, href: '/login?next=%2Fresearch' },
+      { label: 'Explore the workspace', icon: Globe2, href: '/get-started' },
+    ],
+  },
+  {
+    title: 'Build a source library',
+    description: 'Bring the documents, articles, and video transcripts you already use into a library you can search and ask about.',
+    image: '/landing/library.webp',
+    tone: 'amber',
+    links: [
+      { label: 'Add documents and links', icon: BookOpen, href: '/login?next=%2Fdocuments' },
+    ],
+  },
+  {
+    title: 'Work with your findings',
+    description: 'Pick up a saved investigation, ask questions about the report, or export it for your own notes.',
+    image: '/landing/reports.webp',
+    tone: 'mint',
+    links: [
+      { label: 'Browse research history', icon: History, href: '/login?next=%2Fhistory' },
+      { label: 'Open the dashboard', icon: FileText, href: '/login?next=%2F' },
+    ],
+  },
 ];
+
+const repository = 'https://github.com/dhanushkumar-amk/ResearchFlow';
 
 export default function LandingPage() {
   return (
@@ -26,36 +52,57 @@ export default function LandingPage() {
         </div>
       </header>
 
-      <main className="rf-public-width rf-public-main">
+      <main>
         <section className="rf-public-hero" aria-labelledby="public-title">
-          <div className="rf-public-hero-frame">
-            <ObservatoryArt className="rf-public-landscape" sizes="(max-width: 800px) 100vw, 44vw" priority />
-            <div className="rf-public-hero-copy">
-              <h1 id="public-title">Good research starts with a better question.</h1>
-              <p>Search the web, bring your own sources, and turn what you find into a report you can keep working with.</p>
-              <Link href="/get-started" className="rf-public-action">Start researching <ArrowRight size={16} aria-hidden="true" /></Link>
+          <div className="rf-public-width rf-public-hero-copy">
+            <h1 id="public-title">Follow the evidence.<br />Find the bigger picture.</h1>
+            <p>Search the web, bring your own sources, and turn what you find into a report you can keep working with.</p>
+            <div className="rf-public-hero-actions">
+              <Link href="/get-started" className="rf-public-action">Start researching <ArrowRight size={17} aria-hidden="true" /></Link>
+              <a href={repository} className="rf-public-secondary">View on GitHub <ArrowUpRight size={16} aria-hidden="true" /></a>
             </div>
           </div>
         </section>
 
-        <section id="workflow" className="rf-public-workflow" aria-labelledby="workflow-title">
+        <section id="workflow" className="rf-public-width rf-public-workflow" aria-labelledby="workflow-title">
           <h2 id="workflow-title">From question to findings</h2>
-          <p>Keep the sources, the report, and your follow-up questions in one workspace.</p>
           <div className="rf-public-grid">
-            {features.map(({ title, description, icon: Icon, tone }) => (
+            {workflows.map(({ title, description, image, tone, links }) => (
               <article key={title} className="rf-public-feature" data-tone={tone}>
-                <Icon size={20} aria-hidden="true" />
+                <div className="rf-public-feature-art">
+                  <Image src={image} alt="" fill sizes="(max-width: 760px) 100vw, (max-width: 1240px) 33vw, 390px" />
+                </div>
                 <h3>{title}</h3>
                 <p>{description}</p>
+                <ul>
+                  {links.map(({ label, icon: Icon, href }) => (
+                    <li key={label}>
+                      <Link href={href} className="rf-public-feature-link">
+                        <Icon size={17} aria-hidden="true" />
+                        <span>{label}</span>
+                        <ArrowRight size={16} aria-hidden="true" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </article>
             ))}
+          </div>
+        </section>
+
+        <section className="rf-public-width rf-public-invitation" aria-labelledby="invitation-title">
+          <ObservatoryArt className="rf-public-landscape" sizes="(max-width: 760px) 100vw, 560px" />
+          <div>
+            <h2 id="invitation-title">What are you curious about?</h2>
+            <p>Bring a question, a document, or a link to get your first investigation underway.</p>
+            <Link href="/get-started" className="rf-public-action">Get started <ArrowRight size={16} aria-hidden="true" /></Link>
           </div>
         </section>
       </main>
 
       <footer className="rf-public-width rf-public-footer">
         <Brand />
-        <a href="https://github.com/dhanushkumar-amk/ResearchFlow" className="text-sm font-medium">View on GitHub</a>
+        <a href={repository} className="text-sm font-medium">View on GitHub</a>
       </footer>
     </div>
   );
