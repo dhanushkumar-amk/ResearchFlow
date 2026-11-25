@@ -97,18 +97,18 @@ export default function SettingsPage() {
         
         {/* Back Link */}
         <div className="flex items-center gap-3 mb-8">
-          <Link href="/" className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-xs">
+          <Link href="/" className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors ">
             <ArrowLeft className="w-4 h-4 text-slate-650" />
           </Link>
           <div>
-            <h1 className="text-xl font-black text-slate-900 tracking-tight">Application Settings</h1>
+            <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">Settings</h1>
             <p className="text-xs text-slate-500">Configure search models, agent pipelines, and user interface options</p>
           </div>
         </div>
 
         {/* Settings Status Banner */}
         {statusMessage && (
-          <div className={`mb-6 p-4 rounded-2xl flex items-start gap-3 border ${
+          <div className={`mb-6 p-4 rounded-xl flex items-start gap-3 border ${
             statusMessage.type === 'success' 
               ? 'bg-emerald-50/80 border-emerald-250 text-emerald-800' 
               : 'bg-rose-50/80 border-rose-250 text-rose-800'
@@ -125,7 +125,7 @@ export default function SettingsPage() {
         <form onSubmit={handleSaveSettings} className="space-y-6">
           
           {/* Card 1: AI Model Settings */}
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-sm">
+          <div className="bg-white border border-slate-200/80 rounded-xl p-8 ">
             <h2 className="text-sm font-black text-slate-900 mb-2 flex items-center gap-2 pb-1">
               <Brain className="w-4.5 h-4.5 text-emerald-500" />
               Inference & LLM Settings
@@ -136,7 +136,7 @@ export default function SettingsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="model" className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2">
+                <label htmlFor="model" className="block text-xs font-semibold text-slate-500 mb-2">
                   Primary Research Model
                 </label>
                 <select
@@ -154,7 +154,7 @@ export default function SettingsPage() {
 
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label htmlFor="temperature" className="block text-[10px] font-black uppercase tracking-wider text-slate-500">
+                  <label htmlFor="temperature" className="block text-xs font-semibold text-slate-500">
                     Creativity / Temperature
                   </label>
                   <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 rounded-md">
@@ -180,7 +180,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Card 2: Research Engine Settings */}
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-sm">
+          <div className="bg-white border border-slate-200/80 rounded-xl p-8 ">
             <h2 className="text-sm font-black text-slate-900 mb-2 flex items-center gap-2 pb-1">
               <Search className="w-4.5 h-4.5 text-emerald-500" />
               Intelligence Research Engine
@@ -193,7 +193,7 @@ export default function SettingsPage() {
               
               {/* Research depth selection */}
               <div>
-                <label htmlFor="searchDepth" className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2">
+                <label htmlFor="searchDepth" className="block text-xs font-semibold text-slate-500 mb-2">
                   Default Research Depth
                 </label>
                 <select
@@ -210,7 +210,7 @@ export default function SettingsPage() {
 
               {/* Max search sources */}
               <div>
-                <label htmlFor="maxSources" className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2">
+                <label htmlFor="maxSources" className="block text-xs font-semibold text-slate-500 mb-2">
                   Max Search Sources
                 </label>
                 <select
@@ -228,7 +228,7 @@ export default function SettingsPage() {
 
               {/* Default Web Source */}
               <div>
-                <label htmlFor="searchSource" className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2">
+                <label htmlFor="searchSource" className="block text-xs font-semibold text-slate-500 mb-2">
                   Primary Search Scope
                 </label>
                 <select
@@ -247,7 +247,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Card 3: App System Preferences */}
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-sm">
+          <div className="bg-white border border-slate-200/80 rounded-xl p-8 ">
             <h2 className="text-sm font-black text-slate-900 mb-2 flex items-center gap-2 pb-1">
               <Sliders className="w-4.5 h-4.5 text-emerald-500" />
               Workspace & Interface Preferences
@@ -259,7 +259,7 @@ export default function SettingsPage() {
             <div className="space-y-4">
               
               {/* Theme Settings Selector */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-50/50 border border-slate-200/60 rounded-2xl gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-50/50 border border-slate-200/60 rounded-xl gap-3">
                 <div>
                   <h3 className="text-xs font-extrabold text-slate-800">Visual Color Theme</h3>
                   <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Toggle between standard light layout and relaxing dark viewports</p>
@@ -268,7 +268,7 @@ export default function SettingsPage() {
                   <button
                     type="button"
                     onClick={() => setTheme('light')}
-                    className={`flex items-center gap-1.5 px-4 py-2 border rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-4 py-2 border rounded-xl text-xs font-bold transition-colors cursor-pointer ${
                       theme === 'light'
                         ? 'bg-white border-emerald-450 text-emerald-600 font-extrabold'
                         : 'bg-transparent border-slate-200 text-slate-600 hover:bg-slate-100'
@@ -280,7 +280,7 @@ export default function SettingsPage() {
                   <button
                     type="button"
                     onClick={() => setTheme('dark')}
-                    className={`flex items-center gap-1.5 px-4 py-2 border rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-4 py-2 border rounded-xl text-xs font-bold transition-colors cursor-pointer ${
                       theme === 'dark'
                         ? 'bg-slate-900 border-slate-950 text-white font-extrabold shadow-sm'
                         : 'bg-transparent border-slate-200 text-slate-600 hover:bg-slate-100'
@@ -296,7 +296,7 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
                 {/* Auto Save Toggle */}
-                <div className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-200/60 rounded-2xl">
+                <div className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-200/60 rounded-xl">
                   <div>
                     <h3 className="text-xs font-extrabold text-slate-800">Auto-Save Research Sessions</h3>
                     <p className="text-[9px] text-slate-400 font-semibold mt-0.5">Automatically save session history into database queries</p>
@@ -309,7 +309,7 @@ export default function SettingsPage() {
                     }`}
                   >
                     <span
-                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white  ring-0 transition duration-200 ease-in-out ${
                         autoSave ? 'translate-x-5' : 'translate-x-0'
                       }`}
                     />
@@ -317,7 +317,7 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Real-time SSE Streams Toggle */}
-                <div className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-200/60 rounded-2xl">
+                <div className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-200/60 rounded-xl">
                   <div>
                     <h3 className="text-xs font-extrabold text-slate-800">Stream Updates (SSE)</h3>
                     <p className="text-[9px] text-slate-400 font-semibold mt-0.5">Enable real-time agent output streaming during investigations</p>
@@ -330,7 +330,7 @@ export default function SettingsPage() {
                     }`}
                   >
                     <span
-                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white  ring-0 transition duration-200 ease-in-out ${
                         streamUpdates ? 'translate-x-5' : 'translate-x-0'
                       }`}
                     />
@@ -346,7 +346,7 @@ export default function SettingsPage() {
           <div className="flex justify-end gap-3">
             <Link 
               href="/"
-              className="px-6 py-3 border border-slate-200 hover:bg-slate-100 text-slate-700 bg-white rounded-2xl text-xs font-bold transition-all shadow-xs"
+              className="px-6 py-3 border border-slate-200 hover:bg-slate-100 text-slate-700 bg-white rounded-xl text-xs font-bold transition-all "
             >
               Discard Changes
             </Link>
@@ -354,7 +354,7 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-2 px-8 py-3 bg-gradient-to-tr from-indigo-500 to-violet-500 hover:from-indigo-650 hover:to-violet-650 text-white rounded-2xl text-xs font-black transition-all shadow-[0_4px_14px_rgba(79,70,229,0.2)] disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-2 px-8 py-3 bg-indigo-700 text-white rounded-xl text-xs font-black transition-colors disabled:opacity-50 cursor-pointer"
             >
               {saving ? (
                 <>

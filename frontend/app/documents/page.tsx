@@ -317,7 +317,7 @@ export default function DocumentsPage() {
         
         <header className="rf-dashboard-banner">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Source library</h1>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-indigo-100">Add documents, web pages, and video transcripts. Ask questions about the sources you have added.</p>
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-600">Add documents, web pages, and video transcripts. Ask questions about the sources you have added.</p>
         </header>
 
         {/* Error / Success Alerts */}
@@ -362,7 +362,7 @@ export default function DocumentsPage() {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onClick={triggerFileInput}
-            className={`border-2 border-dashed rounded-2xl p-6 text-center flex flex-col items-center justify-center cursor-pointer transition-all h-[210px] ${
+            className={`border-2 border-dashed rounded-xl p-6 text-center flex flex-col items-center justify-center cursor-pointer transition-all h-[210px] ${
               isDragging
                 ? 'border-emerald-500 bg-emerald-50/[0.15]'
                 : 'border-zinc-200 bg-white hover:border-zinc-350 hover:bg-zinc-50/30'
@@ -398,7 +398,7 @@ export default function DocumentsPage() {
           </div>
 
           {/* Column 2: Web & YouTube URL Scraper */}
-          <div className="bg-white border border-zinc-200 rounded-2xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.01)] flex flex-col justify-between gap-4 h-[210px]">
+          <div className="bg-white border border-zinc-200 rounded-xl p-5  flex flex-col justify-between gap-4 h-[210px]">
             <div className="flex items-center justify-between pb-1 border-b border-zinc-50">
               <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
                 <Link2 className="h-4 w-4 text-zinc-400" /> Scrape & Vectorize URL
@@ -408,7 +408,7 @@ export default function DocumentsPage() {
                   onClick={() => setUrlType('website')}
                   className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider transition-all ${
                     urlType === 'website'
-                      ? 'bg-white text-zinc-800 shadow-xs font-bold'
+                      ? 'bg-white text-zinc-800  font-bold'
                       : 'text-zinc-400 hover:text-zinc-600'
                   }`}
                 >
@@ -418,7 +418,7 @@ export default function DocumentsPage() {
                   onClick={() => setUrlType('youtube')}
                   className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider transition-all ${
                     urlType === 'youtube'
-                      ? 'bg-white text-red-650 shadow-xs font-bold'
+                      ? 'bg-white text-red-650  font-bold'
                       : 'text-zinc-400 hover:text-zinc-600'
                   }`}
                 >
@@ -454,7 +454,7 @@ export default function DocumentsPage() {
               <button
                 type="submit"
                 disabled={isIngestingUrl || !urlInput.trim()}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 rounded-lg cursor-pointer transition-all flex items-center justify-center gap-1.5 disabled:opacity-40 shadow-[0_4px_12px_rgba(79,70,229,0.15)] hover:shadow-[0_6px_18px_rgba(79,70,229,0.25)]"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 rounded-lg cursor-pointer transition-all flex items-center justify-center gap-1.5 disabled:opacity-40  "
               >
                 {isIngestingUrl ? (
                   <>
@@ -472,7 +472,7 @@ export default function DocumentsPage() {
           </div>
 
           {/* Column 3: Storage usage & metrics */}
-          <div className="bg-white border border-zinc-200 rounded-2xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.01)] flex flex-col justify-between h-[210px]">
+          <div className="bg-white border border-zinc-200 rounded-xl p-5  flex flex-col justify-between h-[210px]">
             <div className="space-y-1">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Storage Capacity (AWS S3)</span>
@@ -510,7 +510,7 @@ export default function DocumentsPage() {
           <div className="lg:col-span-8 space-y-6">
             
             {/* Search & Filter Controls */}
-            <div className="bg-white border border-zinc-200 rounded-xl p-4 flex flex-col sm:flex-row items-center gap-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.01)]">
+            <div className="bg-white border border-zinc-200 rounded-xl p-4 flex flex-col sm:flex-row items-center gap-3.5 ">
               <div className="relative flex-1 w-full">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
                 <input
@@ -538,7 +538,7 @@ export default function DocumentsPage() {
             </div>
 
             {/* Document Table */}
-            <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.01)]">
+            <div className="bg-white border border-zinc-200 rounded-xl overflow-hidden ">
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-left text-xs">
                   <thead>
@@ -610,7 +610,7 @@ export default function DocumentsPage() {
 
           {/* RIGHT: SEMANTIC RAG Q&A CHAT */}
           <div className="lg:col-span-4">
-            <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm flex flex-col h-[480px] justify-between">
+            <div className="bg-white border border-zinc-200 rounded-xl p-6  flex flex-col h-[480px] justify-between">
               
               <div>
                 <div className="pb-3 border-b border-zinc-100 flex items-center justify-between mb-4">
@@ -626,11 +626,11 @@ export default function DocumentsPage() {
                 <div className="h-[300px] overflow-y-auto pr-1 py-1 space-y-4 no-scrollbar">
                   {!chatAnswer && !isQuerying && (
                     <div className="h-full flex flex-col items-center justify-center text-center space-y-3 opacity-50 my-10">
-                      <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center shadow-inner">
+                      <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center ">
                         <BookOpen className="w-5 h-5 text-emerald-500" />
                       </div>
                       <div>
-                        <h4 className="text-[10px] font-black text-zinc-700 uppercase tracking-widest">Ask Your Knowledge Base</h4>
+                        <h4 className="text-[10px] font-black text-zinc-700 uppercase tracking-widest">Ask about your sources</h4>
                         <p className="text-[9px] text-zinc-500 max-w-[240px] mx-auto mt-1 leading-relaxed font-semibold uppercase tracking-wider">
                           Enter any question to search matching vector chunks and get cited answers.
                         </p>

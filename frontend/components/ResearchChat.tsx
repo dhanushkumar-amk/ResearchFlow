@@ -190,7 +190,7 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
   };
 
   return (
-    <div className="bg-white border border-zinc-200 rounded-3xl shadow-sm flex flex-col h-125 overflow-hidden relative">
+    <div className="bg-white border border-zinc-200 rounded-xl flex flex-col h-100 overflow-hidden relative">
       {/* Toast Notification Alert */}
       {toast && (
         <div className="absolute top-16 left-4 right-4 z-20 bg-rose-50 border border-rose-250 p-3 rounded-2xl flex items-center gap-2.5 shadow-md animate-in slide-in-from-top duration-300">
@@ -200,14 +200,13 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
       )}
 
       <div className="px-5 py-4 border-b border-zinc-100 flex items-center gap-2 bg-zinc-50/50">
-        <MessageSquare className="w-4 h-4 text-emerald-500" />
-        <h2 className="font-bold text-zinc-800 text-xs uppercase tracking-widest">Interactive Intelligence Chat</h2>
+        <MessageSquare className="w-4 h-4 text-violet-700" />
+        <h2 className="font-bold text-zinc-800 text-sm">Ask about this report</h2>
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-4 no-scrollbar">
         {messages.length === 0 && (
-          <div className="h-full flex flex-col items-center justify-center text-center space-y-3 opacity-40">
-            <Sparkles className="w-8 h-8 text-zinc-300" />
+          <div className="h-full flex flex-col items-center justify-center text-center space-y-3">
             <p className="text-xs font-medium text-zinc-500 max-w-45">Ask follow-up questions about the data in this report.</p>
           </div>
         )}
@@ -215,7 +214,7 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`flex gap-3 max-w-[85%] ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
-              <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${m.role === 'user' ? 'bg-zinc-100' : 'bg-emerald-500'}`}>
+              <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${m.role === 'user' ? 'bg-zinc-100' : 'bg-indigo-700'}`}>
                 {m.role === 'user' ? <User className="w-4 h-4 text-zinc-500" /> : <Sparkles className="w-4 h-4 text-white" />}
               </div>
               <div className={`p-3 rounded-2xl text-sm ${m.role === 'user' ? 'bg-zinc-100 text-zinc-800 rounded-tr-none' : 'bg-white border border-zinc-100 shadow-xs text-zinc-700 rounded-tl-none'}`}>
@@ -231,13 +230,13 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
         {isTyping && (
           <div className="flex justify-start">
             <div className="flex gap-3">
-              <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center animate-pulse">
+              <div className="w-7 h-7 rounded-lg bg-indigo-700 flex items-center justify-center animate-pulse">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <div className="p-3 bg-zinc-50 rounded-2xl flex gap-1">
                 <div className="w-1 h-1 bg-emerald-300 rounded-full animate-bounce [animation-delay:-0.3s]" />
                 <div className="w-1 h-1 bg-emerald-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                <div className="w-1 h-1 bg-emerald-500 rounded-full animate-bounce" />
+                <div className="w-1 h-1 bg-indigo-700 rounded-full animate-bounce" />
               </div>
             </div>
           </div>
@@ -248,16 +247,18 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
         <div className="flex gap-2 relative">
           <input
             type="text"
-            placeholder="Ask a follow-up..."
+            aria-label="Ask a follow-up question"
+            placeholder="Type a question…"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            className="flex-1 bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700"
+            className="min-w-0 w-full bg-zinc-50 border border-zinc-200 rounded-lg pl-3 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700"
           />
           <button
             onClick={handleSend}
+            aria-label="Send question"
             disabled={!input.trim() || isTyping}
-            className="absolute right-2 top-2 p-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-colors disabled:opacity-30 flex items-center justify-center cursor-pointer"
+            className="absolute right-2 top-2 p-2 bg-indigo-700 text-white rounded-xl hover:bg-indigo-800 transition-colors disabled:opacity-30 flex items-center justify-center cursor-pointer"
           >
             <Send className="w-4 h-4" />
           </button>

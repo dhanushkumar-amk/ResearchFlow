@@ -98,11 +98,10 @@ export default function Dashboard() {
     <main className="rf-dashboard space-y-6">
       <div className="rf-dashboard-banner flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
         <div>
-          <p className="mb-2 text-sm font-semibold text-indigo-200">Research overview</p>
           <h1>Welcome, {user?.name.trim().split(/\s+/)[0] || 'researcher'}</h1>
-          <p className="mt-3 max-w-lg text-sm leading-relaxed text-indigo-100">Start a new investigation, revisit your reports, or add sources to your library.</p>
+          <p className="mt-3 max-w-lg text-sm leading-relaxed text-zinc-600">Start a new investigation, revisit your reports, or add sources to your library.</p>
         </div>
-        <Link href="/research" className="rf-button shrink-0 bg-white text-indigo-900 hover:bg-indigo-100">
+        <Link href="/research" className="rf-button rf-button-primary shrink-0">
           New research <ArrowRight size={17} aria-hidden="true" />
         </Link>
       </div>

@@ -76,7 +76,7 @@ export default function GeneralResearchPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.15 }}
-          className="bg-white border border-neutral-200/80 rounded-2xl p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.05)] transition-all duration-300 relative overflow-hidden"
+          className="bg-white border border-neutral-200/80 rounded-xl p-5 sm:p-6   transition-all duration-300 relative overflow-hidden"
         >
           <form onSubmit={handleSearch} className="space-y-4">
             <div>
@@ -99,7 +99,7 @@ export default function GeneralResearchPage() {
                 aria-busy={isLoading}
                 aria-label={isLoading ? 'Starting research' : undefined}
                 disabled={!query.trim() || isLoading}
-                className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-neutral-100 disabled:text-neutral-400 text-white text-xs font-bold px-6 py-3 rounded-[8px] transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_14px_rgba(79,70,229,0.2)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.3)]"
+                className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-neutral-100 disabled:text-neutral-400 text-white text-xs font-bold px-6 py-3 rounded-[8px] transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer  "
               >
                 {isLoading ? (
                   <svg className="w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">

@@ -60,9 +60,9 @@ export default async function SharePage({ params }: SharePageProps) {
         {report ? (
           <>
             <header className="rf-dashboard-banner">
-              <p className="mb-3 text-sm font-semibold text-indigo-200">Shared research report</p>
+              <p className="mb-3 text-sm font-semibold text-violet-700">Shared research report</p>
               <h1 className="break-words text-3xl font-bold leading-tight tracking-tight sm:text-5xl">{report.query}</h1>
-              <time dateTime={report.created_at} className="mt-4 block text-sm text-indigo-100">
+              <time dateTime={report.created_at} className="mt-4 block text-sm text-zinc-600">
                 {new Date(report.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}
               </time>
             </header>

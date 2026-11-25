@@ -99,7 +99,7 @@ export default function HistoryPage() {
         {loading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-44 bg-zinc-100 rounded-2xl animate-pulse flex items-center justify-center">
+              <div key={i} className="h-44 bg-zinc-100 rounded-xl animate-pulse flex items-center justify-center">
                  <Loader2 className="w-6 h-6 animate-spin text-zinc-300" />
               </div>
             ))}
@@ -113,7 +113,7 @@ export default function HistoryPage() {
               <div
                 key={item.session_id}
                 onClick={() => router.push(`/research/${item.session_id}/view`)}
-                className="group relative bg-white border border-zinc-200 rounded-2xl p-5 hover:border-emerald-300 hover:shadow-lg transition-all cursor-pointer flex flex-col justify-between gap-4"
+                className="group relative bg-white border border-zinc-200 rounded-xl p-5 hover:border-emerald-300 hover:shadow-lg transition-all cursor-pointer flex flex-col justify-between gap-4"
               >
                 {/* Score + Delete */}
                 <div className="flex items-center justify-between">
@@ -151,8 +151,8 @@ export default function HistoryPage() {
 
         {/* Empty */}
         {!loading && history.length === 0 && (
-          <div className="text-center py-24 bg-zinc-50 rounded-2xl border border-dashed border-zinc-200">
-            <div className="w-14 h-14 bg-zinc-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="text-center py-24 bg-zinc-50 rounded-xl border border-dashed border-zinc-200">
+            <div className="w-14 h-14 bg-zinc-100 rounded-xl flex items-center justify-center mx-auto mb-4">
               <Search className="w-7 h-7 text-zinc-400" />
             </div>
             <h3 className="text-lg font-semibold text-zinc-700 mb-2">No research yet</h3>
