@@ -12,7 +12,8 @@ const requiredEnvVars = [
   'QDRANT_API_KEY',
   'UPSTASH_REDIS_REST_URL',
   'UPSTASH_REDIS_REST_TOKEN',
-  'DATABASE_URL'
+  'DATABASE_URL',
+  'JWT_SECRET'
 ];
 
 requiredEnvVars.forEach((key) => {
@@ -22,6 +23,7 @@ requiredEnvVars.forEach((key) => {
 });
 
 export const config = {
+  jwtSecret: process.env.JWT_SECRET as string,
   port: process.env.PORT || 3001,
   groqApiKey: process.env.GROQ_API_KEY as string,
   googleApiKey: process.env.GOOGLE_API_KEY as string,
