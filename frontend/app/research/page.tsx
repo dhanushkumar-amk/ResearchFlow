@@ -99,7 +99,7 @@ export default function GeneralResearchPage() {
                 aria-busy={isLoading}
                 aria-label={isLoading ? 'Starting research' : undefined}
                 disabled={!query.trim() || isLoading}
-                className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-neutral-100 disabled:text-neutral-400 text-white text-xs font-bold px-6 py-3 rounded-[8px] transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer  "
+                className="bg-[var(--rf-accent)] hover:bg-[var(--rf-accent-hover)] disabled:bg-neutral-100 disabled:text-neutral-400 text-white text-xs font-bold px-6 py-3 rounded-[8px] transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer  "
               >
                 {isLoading ? (
                   <svg className="w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">

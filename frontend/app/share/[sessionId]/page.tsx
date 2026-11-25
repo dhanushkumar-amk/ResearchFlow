@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { cache } from 'react';
 import { ArrowRight, LockKeyhole } from 'lucide-react';
 import Brand from '@/components/Brand';
+import ObservatoryArt from '@/components/ObservatoryArt';
 import StreamingReport from '@/components/StreamingReport';
 
 interface PublicReport {
@@ -49,34 +50,37 @@ export default async function SharePage({ params }: SharePageProps) {
   const report = await loadReport(sessionId);
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="rf-landing-width flex min-h-18 items-center justify-between gap-3">
-          <Brand />
-          <Link href="/register" className="rf-button rf-button-primary">Get started <ArrowRight size={16} aria-hidden="true" /></Link>
-        </div>
-      </header>
-      <main className="mx-auto max-w-4xl px-4 space-y-5 py-8 sm:py-12">
-        {report ? (
-          <>
-            <header className="rf-dashboard-banner">
-              <p className="mb-3 text-sm font-semibold text-violet-700">Shared research report</p>
-              <h1 className="break-words text-3xl font-bold leading-tight tracking-tight sm:text-5xl">{report.query}</h1>
-              <time dateTime={report.created_at} className="mt-4 block text-sm text-zinc-600">
-                {new Date(report.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}
-              </time>
-            </header>
-            <StreamingReport content={report.content} isStreaming={false} qualityScore={report.quality_score} sessionId={sessionId} />
-          </>
-        ) : (
-          <section className="rf-panel mx-auto max-w-md text-center">
-            <span className="rf-icon-tile"><LockKeyhole size={20} aria-hidden="true" /></span>
-            <h1 className="mt-3 text-xl font-bold">Report unavailable</h1>
-            <p className="my-4 text-sm leading-relaxed text-slate-600">This report may have been removed or its sharing link disabled.</p>
-            <Link href="/" className="rf-button rf-button-outline">Back to ResearchFlow</Link>
-          </section>
-        )}
-      </main>
+    <div className="rf-public-report">
+      <ObservatoryArt className="rf-shared-landscape" sizes="(max-width: 800px) 100vw, 27vw" priority />
+      <div className="min-w-0">
+        <header className="border-b border-slate-200 bg-white">
+          <div className="rf-landing-width flex min-h-18 items-center justify-between gap-3">
+            <Brand />
+            <Link href="/get-started" className="rf-button rf-button-primary">Get started <ArrowRight size={16} aria-hidden="true" /></Link>
+          </div>
+        </header>
+        <main className="mx-auto max-w-4xl px-4 space-y-5 py-8 sm:py-12">
+          {report ? (
+            <>
+              <header className="rf-dashboard-banner">
+                <p className="mb-3 text-sm font-semibold text-emerald-800">Shared research report</p>
+                <h1 className="break-words text-3xl font-bold leading-tight tracking-tight sm:text-5xl">{report.query}</h1>
+                <time dateTime={report.created_at} className="mt-4 block text-sm text-zinc-600">
+                  {new Date(report.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}
+                </time>
+              </header>
+              <StreamingReport content={report.content} isStreaming={false} qualityScore={report.quality_score} sessionId={sessionId} />
+            </>
+          ) : (
+            <section className="rf-panel mx-auto max-w-md text-center">
+              <span className="rf-icon-tile"><LockKeyhole size={20} aria-hidden="true" /></span>
+              <h1 className="mt-3 text-xl font-bold">Report unavailable</h1>
+              <p className="my-4 text-sm leading-relaxed text-slate-600">This report may have been removed or its sharing link disabled.</p>
+              <Link href="/" className="rf-button rf-button-outline">Back to ResearchFlow</Link>
+            </section>
+          )}
+        </main>
+      </div>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useAuth } from '../lib/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Navbar from './Navbar';
+import ObservatoryArt from './ObservatoryArt';
 import { Loader2 } from 'lucide-react';
 
 // Pages that don't need auth
@@ -67,5 +68,14 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  return <div className={PUBLIC_PATHS.includes(pathname) ? 'rf-auth' : undefined}>{children}</div>;
+  if (PUBLIC_PATHS.includes(pathname)) {
+    return (
+      <div className="rf-auth">
+        <ObservatoryArt sizes="(max-width: 800px) 100vw, 47vw" priority />
+        <div className="rf-auth-content">{children}</div>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
 }

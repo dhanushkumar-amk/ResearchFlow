@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, BookOpen, FileText, Globe2, History, MessageSquare, Share2 } from 'lucide-react';
 import Brand from './Brand';
+import ObservatoryArt from './ObservatoryArt';
 
 const features = [
   { title: 'Investigate a question', description: 'Search the web for relevant material and bring the findings together in a report.', icon: Globe2, tone: 'blue' },
@@ -28,9 +29,7 @@ export default function LandingPage() {
       <main className="rf-public-width rf-public-main">
         <section className="rf-public-hero" aria-labelledby="public-title">
           <div className="rf-public-hero-frame">
-            <div className="rf-public-pixels" aria-hidden="true">
-              <span /><span /><span /><span /><span /><span />
-            </div>
+            <ObservatoryArt className="rf-public-landscape" sizes="(max-width: 800px) 100vw, 44vw" priority />
             <div className="rf-public-hero-copy">
               <h1 id="public-title">Good research starts with a better question.</h1>
               <p>Search the web, bring your own sources, and turn what you find into a report you can keep working with.</p>

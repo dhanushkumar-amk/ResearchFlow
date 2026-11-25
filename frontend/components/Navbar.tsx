@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { BookOpen, Clock3, Compass, LayoutGrid, LogOut, Menu, Settings, UserRound, X } from 'lucide-react';
 import { useAuth } from '../lib/AuthContext';
 import Brand from './Brand';
+import ObservatoryArt from './ObservatoryArt';
 
 const navigation = [
   { href: '/', label: 'Overview', icon: LayoutGrid },
@@ -67,6 +68,7 @@ export default function Navbar() {
       </div>
       <nav id="workspace-navigation" className="rf-workspace-navigation" data-open={menuOpen} aria-label="Workspace">
         <div className="rf-nav-group">{renderLinks(navigation)}</div>
+        <ObservatoryArt className="rf-nav-landscape" sizes="(max-width: 767px) 100vw, 235px" />
         <div className="rf-nav-group rf-nav-account">
           {renderLinks(accountLinks)}
           <button type="button" className="rf-nav-link" onClick={() => {

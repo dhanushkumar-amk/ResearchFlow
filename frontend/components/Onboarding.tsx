@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import ObservatoryArt from './ObservatoryArt';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, BookOpen, Check, Clock3, Compass, LayoutGrid } from 'lucide-react';
@@ -24,7 +24,7 @@ export default function Onboarding() {
   return (
     <main className="rf-entry">
       <section className="rf-entry-art" aria-label="About ResearchFlow">
-        <Image src="/research-observatory-day.webp" alt="" fill sizes="(max-width: 800px) 100vw, 49vw" preload />
+        <ObservatoryArt className="rf-entry-landscape" sizes="(max-width: 800px) 100vw, 49vw" priority />
         <div className="rf-entry-note">
           <Brand />
           <h2>{selected ? selected.title : 'A place to follow a question.'}</h2>

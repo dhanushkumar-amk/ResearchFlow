@@ -454,7 +454,7 @@ export default function DocumentsPage() {
               <button
                 type="submit"
                 disabled={isIngestingUrl || !urlInput.trim()}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 rounded-lg cursor-pointer transition-all flex items-center justify-center gap-1.5 disabled:opacity-40  "
+                className="w-full bg-[var(--rf-accent)] hover:bg-[var(--rf-accent-hover)] text-white text-xs font-bold py-2.5 rounded-lg cursor-pointer transition-all flex items-center justify-center gap-1.5 disabled:opacity-40  "
               >
                 {isIngestingUrl ? (
                   <>
