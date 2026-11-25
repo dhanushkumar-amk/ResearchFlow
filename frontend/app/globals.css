@@ -527,3 +527,33 @@ body {
   .rf-library-add { grid-template-columns: minmax(0, 1fr); }
   .rf-source-actions { grid-column: 2 / -1; }
 }
+
+.rf-pdf-export {
+  position: absolute;
+  top: 0;
+  left: -10000px;
+  pointer-events: none;
+  background: white;
+}
+.rf-pdf-export .rf-report-text {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0 2px 2px;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  color: #151f3b;
+  font-size: 15px;
+  line-height: 1.55;
+}
+.rf-pdf-export .rf-report-text h1 { font-size: 32px; }
+.rf-pdf-export .rf-report-text h2 { font-size: 24px; }
+.rf-pdf-export .rf-report-text pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.rf-pdf-export .rf-report-table { overflow: visible; }
+.rf-pdf-export .rf-report-table table { width: 100%; min-width: 0; table-layout: fixed; }
+.rf-pdf-export .rf-report-table :is(th, td) { overflow-wrap: anywhere; }
+.rf-pdf-export .rf-diagram-content svg, .rf-pdf-export .rf-report-text img {
+  max-width: 100%;
+  max-height: 780px;
+  object-fit: contain;
+}

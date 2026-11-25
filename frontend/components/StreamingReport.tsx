@@ -36,6 +36,7 @@ export default function StreamingReport({
 }: StreamingReportProps) {
   const [copied, setCopied] = useState(false);
   const [actionError, setActionError] = useState('');
+  const [exporting, setExporting] = useState(false);
   const isReadingView = layout === 'medium';
 
   const handleCopy = async () => {
@@ -50,7 +51,9 @@ export default function StreamingReport({
   };
 
   const handleExport = async (type: (typeof formats)[number]['type'], details: HTMLDetailsElement | null) => {
+    if (exporting) return;
     if (details) details.open = false;
+    setExporting(true);
     setActionError('');
     const name = `Research_Report_${new Date().toISOString().slice(0, 10)}`;
     try {
@@ -66,7 +69,9 @@ export default function StreamingReport({
         setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
     } catch {
-      setActionError('Could not export the report.');
+      setActionError('Could not download the report. Try exporting again.');
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -106,10 +111,10 @@ export default function StreamingReport({
                 {copied ? <Check size={16} /> : <Copy size={16} />} <span>{copied ? 'Copied' : 'Copy'}</span>
               </button>
               <details className="relative">
-                <summary className="rf-report-control"><Download size={16} /> Export</summary>
+                <summary className="rf-report-control"><Download size={16} /> {exporting ? 'Exporting…' : 'Export'}</summary>
                 <div className="rf-export-menu">
                   {formats.map(({ type, label }) => (
-                    <button key={type} type="button" onClick={event => handleExport(type, event.currentTarget.closest('details'))}>{label}</button>
+                    <button key={type} type="button" disabled={exporting} onClick={event => handleExport(type, event.currentTarget.closest('details'))}>{label}</button>
                   ))}
                 </div>
               </details>
