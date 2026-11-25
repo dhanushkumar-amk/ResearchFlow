@@ -38,84 +38,84 @@ export default function AdminPage() {
   }, [token]);
 
   return (
-      <div className="min-h-screen bg-[#050510] text-gray-100">
+      <div className="min-h-screen bg-background text-foreground">
         
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Header & Stats */}
           <div className="mb-10">
-            <h1 className="text-4xl font-black bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent mb-2">
+            <h1 className="text-4xl font-bold tracking-tight text-foreground mb-2">
               System Control Center
             </h1>
-            <p className="text-gray-400 font-medium tracking-tight">
+            <p className="text-zinc-600 font-medium tracking-tight">
               Real-time intelligence monitoring & telemetry
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             {/* Health Card */}
-            <div className="bg-[#111122]/50 backdrop-blur-xl border border-white/5 p-6 rounded-3xl">
+            <div className="bg-white border border-emerald-950/10 p-6 rounded-3xl">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-                  <Heart className="w-6 h-6 text-emerald-400" />
+                  <Heart className="w-6 h-6 text-emerald-800" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-widest">System Health</h3>
+                  <h3 className="text-sm font-semibold text-zinc-600 uppercase tracking-widest">System Health</h3>
                   <div className="flex items-center gap-2">
                     <span className="text-2xl font-bold">{health?.status === 'ok' ? 'Nominal' : 'Checking...'}</span>
                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   </div>
                 </div>
               </div>
-              <div className="flex justify-between items-center text-sm text-gray-500 border-t border-white/5 pt-4">
+              <div className="flex justify-between items-center text-sm text-zinc-600 border-t border-emerald-950/10 pt-4">
                 <span>Uptime: {health?.uptime ? `${Math.floor(health.uptime / 3600)}h ${Math.floor((health.uptime % 3600) / 60)}m` : '...'}</span>
                 <span>v{health?.version || '1.0.0'}</span>
               </div>
             </div>
 
             {/* Performance Card */}
-            <div className="bg-[#111122]/50 backdrop-blur-xl border border-white/5 p-6 rounded-3xl">
+            <div className="bg-white border border-emerald-950/10 p-6 rounded-3xl">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                  <Cpu className="w-6 h-6 text-blue-400" />
+                  <Cpu className="w-6 h-6 text-blue-800" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-widest">Active Nodes</h3>
+                  <h3 className="text-sm font-semibold text-zinc-600 uppercase tracking-widest">Active Nodes</h3>
                   <span className="text-2xl font-bold">5 Specialized Agents</span>
                 </div>
               </div>
-              <div className="text-sm text-gray-500 border-t border-white/5 pt-4">
+              <div className="text-sm text-zinc-600 border-t border-emerald-950/10 pt-4">
                 Latency Optimized • Sub-second Planning
               </div>
             </div>
 
             {/* Security Card */}
-            <div className="bg-[#111122]/50 backdrop-blur-xl border border-white/5 p-6 rounded-3xl">
+            <div className="bg-white border border-emerald-950/10 p-6 rounded-3xl">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
-                  <Activity className="w-6 h-6 text-purple-400" />
+                  <Activity className="w-6 h-6 text-purple-800" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-widest">Total Tokens</h3>
+                  <h3 className="text-sm font-semibold text-zinc-600 uppercase tracking-widest">Total Tokens</h3>
                   <span className="text-2xl font-bold">
                     {logs.reduce((acc, log) => acc + (log.token_count || 0), 0).toLocaleString()}
                   </span>
                 </div>
               </div>
-              <div className="text-sm text-gray-500 border-t border-white/5 pt-4">
+              <div className="text-sm text-zinc-600 border-t border-emerald-950/10 pt-4">
                 Tracked via Agent Telemetry
               </div>
             </div>
           </div>
 
           {/* Logs Table */}
-          <div className="bg-[#0a0a1a] border border-white/5 rounded-[2rem] overflow-hidden shadow-2xl">
-            <div className="p-8 border-b border-white/5 flex justify-between items-center bg-gradient-to-r from-white/[0.02] to-transparent">
+          <div className="bg-emerald-50 border border-emerald-950/10 rounded-[2rem] overflow-hidden shadow-2xl">
+            <div className="p-8 border-b border-emerald-950/10 flex justify-between items-center bg-gradient-to-r from-white/[0.02] to-transparent">
               <div>
                 <h2 className="text-xl font-bold flex items-center gap-2">
                   <ShieldAlert className="w-5 h-5 text-indigo-400" /> 
                   Agent Activity Logs
                 </h2>
-                <p className="text-sm text-gray-500 mt-1">Live stream of cross-agent communication & telemetry</p>
+                <p className="text-sm text-zinc-600 mt-1">Live stream of cross-agent communication & telemetry</p>
               </div>
               <button 
                 onClick={() => window.location.reload()}
@@ -127,13 +127,13 @@ export default function AdminPage() {
 
             <div className="overflow-x-auto">
               {loading ? (
-                <div className="p-20 text-center animate-pulse text-gray-500">Retrieving system telemetry...</div>
+                <div className="p-20 text-center animate-pulse text-zinc-600">Retrieving system telemetry...</div>
               ) : error ? (
                 <div className="p-20 text-center text-red-400">Error: {error}</div>
               ) : (
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-white/[0.02] text-gray-400 text-xs uppercase tracking-widest font-bold">
+                    <tr className="bg-white/[0.02] text-zinc-600 text-xs uppercase tracking-widest font-bold">
                       <th className="px-8 py-5">Agent</th>
                       <th className="px-8 py-5">Session</th>
                       <th className="px-8 py-5">Duration</th>
@@ -148,21 +148,21 @@ export default function AdminPage() {
                         <td className="px-8 py-6">
                           <div className="flex items-center gap-3">
                             <span className={`w-2 h-2 rounded-full ${getAgentColor(log.agent_name)} group-hover:scale-150 transition-transform`} />
-                            <span className="font-bold text-gray-200 capitalize">{log.agent_name}</span>
+                            <span className="font-bold text-zinc-800 capitalize">{log.agent_name}</span>
                           </div>
                         </td>
                         <td className="px-8 py-6">
-                          <code className="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded-md">
+                          <code className="text-xs text-zinc-600 bg-white/5 px-2 py-1 rounded-md">
                             {log.session_id.substring(0, 8)}...
                           </code>
                         </td>
                         <td className="px-8 py-6">
                           <div className="flex items-center gap-1.5 text-sm">
-                            <Timer className="w-3.5 h-3.5 text-gray-500" />
+                            <Timer className="w-3.5 h-3.5 text-zinc-600" />
                             <span>{log.duration_ms}ms</span>
                           </div>
                         </td>
-                        <td className="px-8 py-6 font-mono text-sm text-blue-400">
+                        <td className="px-8 py-6 font-mono text-sm text-blue-800">
                           {log.token_count || 0}
                         </td>
                         <td className="px-8 py-6">
@@ -173,7 +173,7 @@ export default function AdminPage() {
                             {log.status === 'success' ? 'Nominal' : 'Failure'}
                           </Badge>
                         </td>
-                        <td className="px-8 py-6 text-sm text-gray-500">
+                        <td className="px-8 py-6 text-sm text-zinc-600">
                           {new Date(log.created_at).toLocaleString()}
                         </td>
                       </tr>
