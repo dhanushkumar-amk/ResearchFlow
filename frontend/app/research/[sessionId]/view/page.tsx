@@ -155,7 +155,7 @@ export default function FocusedReportView() {
         <div className="flex items-center gap-3">
           <Link
             href="/history"
-            className="p-2 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors group shadow-3xs"
+            className="p-2 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors group "
           >
             <ArrowLeft className="w-4 h-4 text-slate-500 group-hover:-translate-x-0.5 transition-transform" />
           </Link>
@@ -182,7 +182,7 @@ export default function FocusedReportView() {
 
         {/* Error panel */}
         {error && !loading && (
-          <div className="bg-white border border-rose-100 rounded-3xl p-10 text-center shadow-lg max-w-lg mx-auto">
+          <div className="bg-white border border-rose-100 rounded-xl p-10 text-center  max-w-lg mx-auto">
             <h3 className="text-lg font-black text-slate-900 mb-2">Failed to load report</h3>
             <p className="text-sm text-slate-500 mb-6">{error}</p>
             <Link
@@ -208,12 +208,12 @@ export default function FocusedReportView() {
               
               {/* Left Profile details */}
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center text-white text-sm font-black shadow-xs select-none">
+                <div className="w-10 h-10 rounded-full bg-indigo-700 flex items-center justify-center text-white text-sm font-black  select-none">
                   RF
                 </div>
                 <div>
                   <div className="font-bold text-slate-800 flex items-center gap-1.5">
-                    <span>ResearchFlow Intelligence</span>
+                    <span>ResearchFlow</span>
                     <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[9px] font-black uppercase tracking-wider">Analyst</span>
                   </div>
                   <div className="text-[10px] text-slate-400 font-medium mt-0.5 flex items-center gap-1.5">
@@ -238,7 +238,7 @@ export default function FocusedReportView() {
                 {/* Share Toggle */}
                 <button
                   onClick={() => handleTogglePublic(!isPublic)}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border cursor-pointer ${
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
                     isPublic 
                       ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
                       : 'bg-slate-100 text-slate-500 border-slate-200'
@@ -280,7 +280,7 @@ export default function FocusedReportView() {
                       initial={{ opacity: 0, y: 10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className="absolute right-0 top-full mt-2.5 w-48 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-10 animate-in fade-in slide-in-from-top-2 duration-150 text-left font-sans"
+                      className="absolute right-0 top-full mt-2.5 w-48 bg-white border border-slate-200 rounded-xl shadow-xl p-2 z-10 animate-in fade-in slide-in-from-top-2 duration-150 text-left font-sans"
                     >
                       <div className="px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-100 mb-1">
                         Export Document

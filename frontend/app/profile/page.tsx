@@ -186,18 +186,18 @@ export default function ProfilePage() {
         
         {/* Back Link */}
         <div className="flex items-center gap-3 mb-8">
-          <Link href="/" className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-xs">
+          <Link href="/" className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors ">
             <ArrowLeft className="w-4 h-4 text-slate-650" />
           </Link>
           <div>
-            <h1 className="text-xl font-black text-slate-900 tracking-tight">Account Profile</h1>
+            <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">Profile</h1>
             <p className="text-xs text-slate-500">Manage your profile, identity details, and account security</p>
           </div>
         </div>
 
         {/* Profile Alert Message */}
         {profileMessage && (
-          <div className={`mb-6 p-4 rounded-2xl flex items-start gap-3 border ${
+          <div className={`mb-6 p-4 rounded-xl flex items-start gap-3 border ${
             profileMessage.type === 'success' 
               ? 'bg-emerald-50/80 border-emerald-250 text-emerald-800' 
               : 'bg-rose-50/80 border-rose-250 text-rose-800'
@@ -215,10 +215,10 @@ export default function ProfilePage() {
           
           {/* Left Column: Profile Card & Avatar */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm flex flex-col items-center text-center">
+            <div className="bg-white border border-slate-200/80 rounded-xl p-6  flex flex-col items-center text-center">
               {/* Avatar Photo Frame with Upload Trigger */}
               <div className="relative group cursor-pointer mt-4 mb-6" onClick={handleAvatarClick}>
-                <div className="w-28 h-28 rounded-full border-4 border-slate-100 bg-slate-50 flex items-center justify-center overflow-hidden shadow-md transition-all duration-300 group-hover:scale-105 group-hover:border-emerald-200">
+                <div className="w-28 h-28 rounded-full border-4 border-slate-100 bg-slate-50 flex items-center justify-center overflow-hidden  transition-all duration-300 group-hover:scale-105 group-hover:border-emerald-200">
                   {uploadingAvatar ? (
                     <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
                   ) : avatarUrl ? (
@@ -228,7 +228,7 @@ export default function ProfilePage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-4xl font-black bg-gradient-to-tr from-indigo-500 to-violet-500 bg-clip-text text-transparent">
+                    <span className="text-4xl font-black text-indigo-700">
                       {user.name.charAt(0).toUpperCase()}
                     </span>
                   )}
@@ -267,12 +267,12 @@ export default function ProfilePage() {
             </div>
 
             {/* Account Settings Shortcut Card */}
-            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+            <div className="bg-white border border-slate-200/80 rounded-xl p-6 ">
               <h3 className="text-xs font-extrabold text-slate-800 mb-3">Quick Navigation</h3>
               <p className="text-[11px] text-slate-500 mb-4">Modify app settings, keys, and model selections.</p>
               <Link 
                 href="/settings"
-                className="w-full flex items-center justify-center py-2 px-4 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold transition-all shadow-xs"
+                className="w-full flex items-center justify-center py-2 px-4 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold transition-all "
               >
                 Go to App Settings
               </Link>
@@ -283,7 +283,7 @@ export default function ProfilePage() {
           <div className="lg:col-span-2 space-y-6">
             
             {/* Edit details form */}
-            <div className="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-sm">
+            <div className="bg-white border border-slate-200/80 rounded-xl p-8 ">
               <h2 className="text-sm font-black text-slate-900 mb-6 flex items-center gap-2 border-b border-slate-100 pb-3">
                 <User className="w-4 h-4 text-emerald-500" />
                 Profile Information
@@ -291,7 +291,7 @@ export default function ProfilePage() {
 
               <form onSubmit={handleProfileSave} className="space-y-6">
                 <div>
-                  <label htmlFor="name" className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2">
+                  <label htmlFor="name" className="block text-xs font-semibold text-slate-500 mb-2">
                     Full Name
                   </label>
                   <input
@@ -305,7 +305,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label htmlFor="details" className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2">
+                  <label htmlFor="details" className="block text-xs font-semibold text-slate-500 mb-2">
                     About / Bio / Professional Details
                   </label>
                   <textarea
@@ -322,7 +322,7 @@ export default function ProfilePage() {
                   <button
                     type="submit"
                     disabled={profileSaving}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-tr from-indigo-500 to-violet-500 hover:from-indigo-650 hover:to-violet-650 text-white rounded-xl text-xs font-extrabold transition-all shadow-[0_4px_12px_rgba(79,70,229,0.15)] disabled:opacity-50 cursor-pointer"
+                    className="flex items-center gap-2 px-6 py-2.5 bg-indigo-700 text-white rounded-xl text-xs font-extrabold transition-colors disabled:opacity-50 cursor-pointer"
                   >
                     {profileSaving ? (
                       <>
@@ -338,7 +338,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Account Security Card (Change password with OTP) */}
-            <div className="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-sm">
+            <div className="bg-white border border-slate-200/80 rounded-xl p-8 ">
               <h2 className="text-sm font-black text-slate-900 mb-2 flex items-center gap-2 pb-1">
                 <Lock className="w-4 h-4 text-emerald-500" />
                 Security & Authentication
@@ -365,7 +365,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => setShowPasswordChange(true)}
-                  className="flex items-center gap-2 px-5 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+                  className="flex items-center gap-2 px-5 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold transition-colors cursor-pointer"
                 >
                   <Key className="w-3.5 h-3.5 text-slate-400" />
                   Change Password
@@ -373,7 +373,7 @@ export default function ProfilePage() {
               ) : (
                 <div className="space-y-6">
                   {!otpSent ? (
-                    <div className="bg-slate-50/60 p-5 rounded-2xl border border-slate-200/60 space-y-4">
+                    <div className="bg-slate-50/60 p-5 rounded-xl border border-slate-200/60 space-y-4">
                       <p className="text-xs text-slate-650 leading-relaxed font-semibold">
                         To change your password, we must verify your identity. We will send a 6-digit verification code to <span className="font-extrabold text-slate-800">{user.email}</span>.
                       </p>
@@ -411,7 +411,7 @@ export default function ProfilePage() {
                       
                       {/* OTP Code input */}
                       <div>
-                        <label htmlFor="otpCode" className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1.5">
+                        <label htmlFor="otpCode" className="block text-xs font-semibold text-slate-500 mb-1.5">
                           Verification OTP Code (6-digit)
                         </label>
                         <input
@@ -430,7 +430,7 @@ export default function ProfilePage() {
                         
                         {/* Old password */}
                         <div className="relative">
-                          <label htmlFor="oldPassword" className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1.5">
+                          <label htmlFor="oldPassword" className="block text-xs font-semibold text-slate-500 mb-1.5">
                             Current Password
                           </label>
                           <input
@@ -452,7 +452,7 @@ export default function ProfilePage() {
 
                         {/* New password */}
                         <div className="relative">
-                          <label htmlFor="newPassword" className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1.5">
+                          <label htmlFor="newPassword" className="block text-xs font-semibold text-slate-500 mb-1.5">
                             New Password
                           </label>
                           <input
@@ -474,7 +474,7 @@ export default function ProfilePage() {
 
                         {/* Confirm new password */}
                         <div className="md:col-span-2">
-                          <label htmlFor="confirmPassword" className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1.5">
+                          <label htmlFor="confirmPassword" className="block text-xs font-semibold text-slate-500 mb-1.5">
                             Confirm New Password
                           </label>
                           <input
@@ -492,7 +492,7 @@ export default function ProfilePage() {
                         <button
                           type="submit"
                           disabled={changingPassword}
-                          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-tr from-indigo-500 to-violet-500 hover:from-indigo-650 hover:to-violet-650 text-white rounded-xl text-xs font-extrabold transition-all shadow-md disabled:opacity-50 cursor-pointer"
+                          className="flex items-center gap-2 px-5 py-2.5 bg-indigo-700 text-white rounded-xl text-xs font-extrabold transition-colors disabled:opacity-50 cursor-pointer"
                         >
                           {changingPassword ? (
                             <>

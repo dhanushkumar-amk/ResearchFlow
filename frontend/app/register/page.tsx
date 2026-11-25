@@ -81,7 +81,7 @@ const RegisterPage = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="bg-white border border-neutral-200 rounded-[16px] shadow-[0_12px_30px_rgba(0,0,0,0.03)] p-6 sm:p-8"
+          className="bg-white border border-neutral-200 rounded-[16px]  p-6 sm:p-8"
         >
           {error && (
             <motion.div
@@ -112,7 +112,7 @@ const RegisterPage = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="John Doe"
-                  className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
+                  className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
                 />
               </div>
             </div>
@@ -134,7 +134,7 @@ const RegisterPage = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
-                  className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
+                  className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
                 />
               </div>
             </div>
@@ -156,7 +156,7 @@ const RegisterPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="block w-full pl-10 pr-10 py-2 border border-neutral-200 rounded-md text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
+                  className="block w-full pl-10 pr-10 py-2 border border-neutral-200 rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
                 />
                 <button
                   type="button"
@@ -189,7 +189,7 @@ const RegisterPage = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
+                  className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm  transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
                 />
               </div>
             </div>
@@ -215,7 +215,7 @@ const RegisterPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-sm transition-all flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(79,70,229,0.2)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.3)] cursor-pointer relative"
+              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-sm transition-all flex items-center justify-center gap-2   cursor-pointer relative"
             >
               {isLoading ? (
                 <>

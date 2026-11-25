@@ -17,11 +17,26 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (loading) return;
     const isPublic = pathname === '/' || pathname.startsWith('/share/') || PUBLIC_PATHS.includes(pathname);
-    if (!user && !isPublic) {
-      router.push('/login');
-    }
-    if (user && PUBLIC_PATHS.includes(pathname)) {
-      router.push('/');
+    if (PUBLIC_PATHS.includes(pathname)) {
+      let destination = '/';
+      try {
+        const allowed = ['/', '/research', '/documents', '/history'];
+        const requested = new URLSearchParams(window.location.search).get('next');
+        if (requested && allowed.includes(requested)) {
+          destination = requested;
+          sessionStorage.setItem('rf_onboarding_next', requested);
+        } else {
+          const saved = sessionStorage.getItem('rf_onboarding_next');
+          if (saved && allowed.includes(saved)) destination = saved;
+        }
+      } catch {
+        // The account can still be used when browser storage is unavailable.
+      }
+      if (user) router.replace(destination);
+    } else if (user) {
+      try { sessionStorage.removeItem('rf_onboarding_next'); } catch {}
+    } else if (!isPublic) {
+      router.replace('/login');
     }
   }, [user, loading, pathname, router]);
 

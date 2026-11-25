@@ -105,7 +105,6 @@ const VerifyOtpPage = () => {
 
       await verifyEmail({ email, code: otpCode });
       setIsLoading(false);
-      navigate(ROUTES.RESEARCH);
     } catch (err) {
       setIsLoading(false);
       setError(err instanceof Error ? err.message : 'Unable to verify code.');
@@ -160,7 +159,7 @@ const VerifyOtpPage = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="bg-white border border-neutral-200 rounded-[16px] shadow-[0_12px_30px_rgba(0,0,0,0.03)] p-6 sm:p-8"
+          className="bg-white border border-neutral-200 rounded-[16px]  p-6 sm:p-8"
         >
           {error && (
             <motion.div
@@ -203,7 +202,7 @@ const VerifyOtpPage = () => {
                     onChange={(e) => handleChange(e.target, index)}
                     onKeyDown={(e) => handleKeyDown(e, index)}
                     onPaste={handlePaste}
-                    className="w-10 h-12 text-center text-lg font-bold border border-neutral-200 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 shadow-sm transition-colors"
+                    className="w-10 h-12 text-center text-lg font-bold border border-neutral-200 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900  transition-colors"
                   />
                 ))}
               </div>
@@ -213,7 +212,7 @@ const VerifyOtpPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-sm transition-all flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(79,70,229,0.2)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.3)] cursor-pointer relative"
+              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-sm transition-all flex items-center justify-center gap-2   cursor-pointer relative"
             >
               {isLoading ? (
                 <>
