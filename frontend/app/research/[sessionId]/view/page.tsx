@@ -144,7 +144,7 @@ export default function FocusedReportView() {
   };
 
   return (
-    <div className="min-h-screen bg-background pt-4 font-sans text-slate-800 relative overflow-hidden font-sans antialiased selection:bg-indigo-50 selection:text-indigo-700">
+    <div className="min-h-screen bg-background pt-4 font-sans text-slate-800 relative overflow-hidden font-sans antialiased selection:bg-indigo-50 selection:text-brand">
       {/* Background Decorative Soft Glows */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-emerald-500/[0.015] rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
@@ -208,7 +208,7 @@ export default function FocusedReportView() {
               
               {/* Left Profile details */}
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-indigo-700 flex items-center justify-center text-white text-sm font-black  select-none">
+                <div className="w-10 h-10 rounded-full bg-brand flex items-center justify-center text-white text-sm font-black  select-none">
                   RF
                 </div>
                 <div>

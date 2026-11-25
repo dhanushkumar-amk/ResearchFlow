@@ -177,23 +177,17 @@ export default function ProfilePage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-white pt-10 md:pt-14 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-indigo-50 selection:text-indigo-700">
-      {/* Background Decorative Soft Glows */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-emerald-500/[0.015] rounded-full blur-[120px] pointer-events-none z-0" />
-      <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
-
-      <main className="max-w-4xl mx-auto px-6 py-6 animate-in fade-in duration-300 relative z-10">
-        
-        {/* Back Link */}
-        <div className="flex items-center gap-3 mb-8">
-          <Link href="/" className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors ">
+    <div className="min-h-screen bg-background">
+      <main className="rf-account-page">
+        <header className="rf-account-heading">
+          <Link href="/" aria-label="Back to overview" className="rf-report-control">
             <ArrowLeft className="w-4 h-4 text-slate-650" />
           </Link>
           <div>
             <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">Profile</h1>
-            <p className="text-xs text-slate-500">Manage your profile, identity details, and account security</p>
+            <p className="text-xs text-slate-500">Manage your name, bio, and password.</p>
           </div>
-        </div>
+        </header>
 
         {/* Profile Alert Message */}
         {profileMessage && (
@@ -215,12 +209,12 @@ export default function ProfilePage() {
           
           {/* Left Column: Profile Card & Avatar */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white border border-slate-200/80 rounded-xl p-6  flex flex-col items-center text-center">
+            <div className="rf-panel flex flex-col items-center text-center">
               {/* Avatar Photo Frame with Upload Trigger */}
               <div className="relative group cursor-pointer mt-4 mb-6" onClick={handleAvatarClick}>
                 <div className="w-28 h-28 rounded-full border-4 border-slate-100 bg-slate-50 flex items-center justify-center overflow-hidden  transition-all duration-300 group-hover:scale-105 group-hover:border-emerald-200">
                   {uploadingAvatar ? (
-                    <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+                    <Loader2 className="w-8 h-8 text-brand animate-spin" />
                   ) : avatarUrl ? (
                     <img 
                       src={avatarUrl} 
@@ -228,7 +222,7 @@ export default function ProfilePage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-4xl font-black text-indigo-700">
+                    <span className="text-4xl font-black text-brand">
                       {user.name.charAt(0).toUpperCase()}
                     </span>
                   )}
@@ -249,7 +243,7 @@ export default function ProfilePage() {
               </div>
 
               <h2 className="text-base font-extrabold text-slate-800">{user.name}</h2>
-              <p className="text-[10px] text-emerald-600 bg-emerald-50 border border-emerald-100 font-extrabold uppercase px-3 py-0.5 rounded-full tracking-wider mt-1.5">
+              <p className="text-[10px] text-brand bg-brand-soft border border-ui-border font-extrabold uppercase px-3 py-0.5 rounded-full tracking-wider mt-1.5">
                 Researcher Profile
               </p>
 
@@ -267,9 +261,9 @@ export default function ProfilePage() {
             </div>
 
             {/* Account Settings Shortcut Card */}
-            <div className="bg-white border border-slate-200/80 rounded-xl p-6 ">
+            <div className="rf-panel ">
               <h3 className="text-xs font-extrabold text-slate-800 mb-3">Quick Navigation</h3>
-              <p className="text-[11px] text-slate-500 mb-4">Modify app settings, keys, and model selections.</p>
+              <p className="text-sm text-ui-muted mb-4">Modify app settings, keys, and model selections.</p>
               <Link 
                 href="/settings"
                 className="w-full flex items-center justify-center py-2 px-4 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold transition-all "
@@ -283,10 +277,10 @@ export default function ProfilePage() {
           <div className="lg:col-span-2 space-y-6">
             
             {/* Edit details form */}
-            <div className="bg-white border border-slate-200/80 rounded-xl p-8 ">
-              <h2 className="text-sm font-black text-slate-900 mb-6 flex items-center gap-2 border-b border-slate-100 pb-3">
-                <User className="w-4 h-4 text-emerald-500" />
-                Profile Information
+            <div className="rf-panel ">
+              <h2 className="text-base font-semibold text-foreground mb-6 flex items-center gap-2 border-b border-slate-100 pb-3">
+                <User className="w-4 h-4 text-brand" />
+                Profile information
               </h2>
 
               <form onSubmit={handleProfileSave} className="space-y-6">
@@ -322,7 +316,7 @@ export default function ProfilePage() {
                   <button
                     type="submit"
                     disabled={profileSaving}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-indigo-700 text-white rounded-xl text-xs font-extrabold transition-colors disabled:opacity-50 cursor-pointer"
+                    className="flex items-center gap-2 px-6 py-2.5 bg-brand hover:bg-brand-hover text-white rounded-xl text-xs font-extrabold transition-colors disabled:opacity-50 cursor-pointer"
                   >
                     {profileSaving ? (
                       <>
@@ -338,12 +332,12 @@ export default function ProfilePage() {
             </div>
 
             {/* Account Security Card (Change password with OTP) */}
-            <div className="bg-white border border-slate-200/80 rounded-xl p-8 ">
-              <h2 className="text-sm font-black text-slate-900 mb-2 flex items-center gap-2 pb-1">
-                <Lock className="w-4 h-4 text-emerald-500" />
-                Security & Authentication
+            <div className="rf-panel ">
+              <h2 className="text-base font-semibold text-foreground mb-2 flex items-center gap-2 pb-1">
+                <Lock className="w-4 h-4 text-brand" />
+                Account security
               </h2>
-              <p className="text-[11px] text-slate-500 mb-6 border-b border-slate-100 pb-3">
+              <p className="text-sm text-ui-muted mb-6 border-b border-slate-100 pb-3">
                 Secure your research workspace. Change your account password via high-security email OTP verification.
               </p>
 
@@ -492,7 +486,7 @@ export default function ProfilePage() {
                         <button
                           type="submit"
                           disabled={changingPassword}
-                          className="flex items-center gap-2 px-5 py-2.5 bg-indigo-700 text-white rounded-xl text-xs font-extrabold transition-colors disabled:opacity-50 cursor-pointer"
+                          className="flex items-center gap-2 px-5 py-2.5 bg-brand hover:bg-brand-hover text-white rounded-xl text-xs font-extrabold transition-colors disabled:opacity-50 cursor-pointer"
                         >
                           {changingPassword ? (
                             <>

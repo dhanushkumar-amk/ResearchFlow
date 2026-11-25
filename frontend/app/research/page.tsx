@@ -59,7 +59,7 @@ export default function GeneralResearchPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white text-[#0a0a0a] pt-10 md:pt-14 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-indigo-50 selection:text-indigo-700">
+    <div className="min-h-screen bg-white text-[#0a0a0a] pt-10 md:pt-14 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-indigo-50 selection:text-brand">
 
       {/* Background Decorative Glows matching Landing Page */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-emerald-500/[0.02] rounded-full blur-[120px] pointer-events-none z-0" />
@@ -91,7 +91,7 @@ export default function GeneralResearchPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="How has solid-state battery technology progressed toward commercial use?"
-                className="min-h-28 w-full resize-y rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-3 text-sm leading-relaxed text-slate-950 placeholder:text-slate-500 focus:border-indigo-500 focus:bg-white"
+                className="min-h-28 w-full resize-y rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-3 text-sm leading-relaxed text-slate-950 placeholder:text-slate-500 focus:border-brand focus:bg-white"
                 maxLength={1000}
                 disabled={isLoading}
               />
@@ -147,7 +147,7 @@ export default function GeneralResearchPage() {
                 <button
                   key={s}
                   onClick={() => setQuery(s)}
-                  className="w-full text-left p-3 bg-white border border-neutral-100 hover:border-indigo-300 hover:bg-indigo-50/60 rounded-xl text-xs text-neutral-600 font-medium transition-all cursor-pointer leading-relaxed hover:shadow-xs group flex items-start gap-2"
+                  className="w-full text-left p-3 bg-white border border-neutral-100 hover:border-brand/40 hover:bg-brand-soft/60 rounded-xl text-xs text-neutral-600 font-medium transition-all cursor-pointer leading-relaxed hover:shadow-xs group flex items-start gap-2"
                 >
                   <span className="flex-1 line-clamp-2">{s}</span>
                 </button>
@@ -174,7 +174,7 @@ export default function GeneralResearchPage() {
                     className="flex items-center justify-between p-3 bg-white border border-neutral-100 hover:border-neutral-250 rounded-xl text-xs text-neutral-600 font-semibold transition-all group"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <FileText className="w-3.5 h-3.5 text-neutral-400 shrink-0 group-hover:text-indigo-500" />
+                      <FileText className="w-3.5 h-3.5 text-neutral-400 shrink-0 group-hover:text-brand" />
                       <span className="truncate group-hover:text-[#0a0a0a]">{item.query}</span>
                     </div>
                     <ArrowRight className="w-3.5 h-3.5 text-neutral-300 group-hover:text-[#0a0a0a] group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />

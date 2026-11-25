@@ -52,7 +52,7 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-indigo-50 selection:text-indigo-700">
+    <div className="min-h-screen bg-white pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-indigo-50 selection:text-brand">
       {/* Background Decorative Soft Glows */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-emerald-500/[0.015] rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
@@ -81,14 +81,14 @@ export default function HistoryPage() {
                 placeholder="Search reports"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 pr-4 py-2 border border-zinc-200 rounded-xl text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition-all w-48 bg-white"
+                className="pl-9 pr-4 py-2 border border-zinc-200 rounded-xl text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all w-48 bg-white"
               />
             </div>
             <select
               aria-label="Sort research history"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'newest' | 'quality')}
-              className="px-3 py-2 border border-zinc-200 rounded-xl text-sm outline-none focus:border-indigo-500 bg-white cursor-pointer"
+              className="px-3 py-2 border border-zinc-200 rounded-xl text-sm outline-none focus:border-brand bg-white cursor-pointer"
             >
               <option value="newest">Newest First</option>
               <option value="quality">Highest Score</option>
@@ -114,7 +114,7 @@ export default function HistoryPage() {
               <div
                 key={item.session_id}
                 onClick={() => router.push(`/research/${item.session_id}/view`)}
-                className="group relative bg-white border border-zinc-200 rounded-xl p-5 hover:border-emerald-300 hover:shadow-lg transition-all cursor-pointer flex flex-col justify-between gap-4"
+                className="group relative bg-white border border-zinc-200 rounded-xl p-5 hover:border-brand/40 transition-all cursor-pointer flex flex-col justify-between gap-4"
               >
                 {/* Score + Delete */}
                 <div className="flex items-center justify-between">
@@ -131,7 +131,7 @@ export default function HistoryPage() {
                 </div>
 
                 {/* Query */}
-                <p className="text-sm font-medium text-zinc-800 line-clamp-3 leading-relaxed group-hover:text-indigo-600 transition-colors">
+                <p className="text-sm font-medium text-zinc-800 line-clamp-3 leading-relaxed group-hover:text-brand transition-colors">
                   {item.query}
                 </p>
 
@@ -141,7 +141,7 @@ export default function HistoryPage() {
                     <Calendar className="w-3.5 h-3.5" />
                     {new Date(item.created_at).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
-                  <span className="text-xs font-medium text-emerald-600 flex items-center gap-0.5 group-hover:gap-1.5 transition-all">
+                  <span className="text-xs font-medium text-brand flex items-center gap-0.5 group-hover:gap-1.5 transition-all">
                     View Report <ChevronRight className="w-3.5 h-3.5" />
                   </span>
                 </div>
@@ -160,7 +160,7 @@ export default function HistoryPage() {
             <p className="text-sm text-zinc-400 mb-6">Start researching from the home page.</p>
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 text-white text-sm font-semibold rounded-xl hover:bg-emerald-600 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand text-white text-sm font-semibold rounded-xl hover:bg-brand-hover transition-colors"
             >
               Start Research
             </Link>

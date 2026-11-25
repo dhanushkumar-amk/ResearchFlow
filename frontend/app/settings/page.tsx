@@ -88,23 +88,17 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white pt-10 md:pt-14 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-indigo-50 selection:text-indigo-700">
-      {/* Background Decorative Soft Glows */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-emerald-500/[0.015] rounded-full blur-[120px] pointer-events-none z-0" />
-      <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
-
-      <main className="max-w-4xl mx-auto px-6 py-6 animate-in fade-in duration-300 relative z-10">
-        
-        {/* Back Link */}
-        <div className="flex items-center gap-3 mb-8">
-          <Link href="/" className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors ">
+    <div className="min-h-screen bg-background">
+      <main className="rf-account-page">
+        <header className="rf-account-heading">
+          <Link href="/" aria-label="Back to overview" className="rf-report-control">
             <ArrowLeft className="w-4 h-4 text-slate-650" />
           </Link>
           <div>
             <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">Settings</h1>
-            <p className="text-xs text-slate-500">Configure search models, agent pipelines, and user interface options</p>
+            <p className="text-xs text-slate-500">Manage the model, search options, and workspace preferences.</p>
           </div>
-        </div>
+        </header>
 
         {/* Settings Status Banner */}
         {statusMessage && (
@@ -125,12 +119,12 @@ export default function SettingsPage() {
         <form onSubmit={handleSaveSettings} className="space-y-6">
           
           {/* Card 1: AI Model Settings */}
-          <div className="bg-white border border-slate-200/80 rounded-xl p-8 ">
-            <h2 className="text-sm font-black text-slate-900 mb-2 flex items-center gap-2 pb-1">
-              <Brain className="w-4.5 h-4.5 text-emerald-500" />
-              Inference & LLM Settings
+          <div className="rf-panel ">
+            <h2 className="text-base font-semibold text-foreground mb-2 flex items-center gap-2 pb-1">
+              <Brain className="w-4.5 h-4.5 text-brand" />
+              Research model
             </h2>
-            <p className="text-[11px] text-slate-500 mb-6 border-b border-slate-100 pb-4">
+            <p className="text-sm text-ui-muted mb-6 border-b border-slate-100 pb-4">
               Select the primary artificial intelligence model utilized by the research agents for plan generation and synthesis.
             </p>
 
@@ -157,7 +151,7 @@ export default function SettingsPage() {
                   <label htmlFor="temperature" className="block text-xs font-semibold text-slate-500">
                     Creativity / Temperature
                   </label>
-                  <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 rounded-md">
+                  <span className="text-[10px] font-black text-brand bg-brand-soft border border-ui-border px-2.5 py-0.5 rounded-md">
                     {temperature.toFixed(1)}
                   </span>
                 </div>
@@ -169,7 +163,7 @@ export default function SettingsPage() {
                   step="0.1"
                   value={temperature}
                   onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                  className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                  className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-brand"
                 />
                 <div className="flex justify-between text-[9px] text-slate-400 mt-1.5 font-bold">
                   <span>Focused & Exact (0.0)</span>
@@ -180,12 +174,12 @@ export default function SettingsPage() {
           </div>
 
           {/* Card 2: Research Engine Settings */}
-          <div className="bg-white border border-slate-200/80 rounded-xl p-8 ">
-            <h2 className="text-sm font-black text-slate-900 mb-2 flex items-center gap-2 pb-1">
-              <Search className="w-4.5 h-4.5 text-emerald-500" />
-              Intelligence Research Engine
+          <div className="rf-panel ">
+            <h2 className="text-base font-semibold text-foreground mb-2 flex items-center gap-2 pb-1">
+              <Search className="w-4.5 h-4.5 text-brand" />
+              Search preferences
             </h2>
-            <p className="text-[11px] text-slate-500 mb-6 border-b border-slate-100 pb-4">
+            <p className="text-sm text-ui-muted mb-6 border-b border-slate-100 pb-4">
               Tune your agentic research pipelines, query depths, and external sources configuration.
             </p>
 
@@ -247,12 +241,12 @@ export default function SettingsPage() {
           </div>
 
           {/* Card 3: App System Preferences */}
-          <div className="bg-white border border-slate-200/80 rounded-xl p-8 ">
-            <h2 className="text-sm font-black text-slate-900 mb-2 flex items-center gap-2 pb-1">
-              <Sliders className="w-4.5 h-4.5 text-emerald-500" />
-              Workspace & Interface Preferences
+          <div className="rf-panel ">
+            <h2 className="text-base font-semibold text-foreground mb-2 flex items-center gap-2 pb-1">
+              <Sliders className="w-4.5 h-4.5 text-brand" />
+              Workspace preferences
             </h2>
-            <p className="text-[11px] text-slate-500 mb-6 border-b border-slate-100 pb-4">
+            <p className="text-sm text-ui-muted mb-6 border-b border-slate-100 pb-4">
               Adjust accessibility styles, local cache choices, and live server updates behavior.
             </p>
 
@@ -262,15 +256,16 @@ export default function SettingsPage() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-50/50 border border-slate-200/60 rounded-xl gap-3">
                 <div>
                   <h3 className="text-xs font-extrabold text-slate-800">Visual Color Theme</h3>
-                  <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Toggle between standard light layout and relaxing dark viewports</p>
+                  <p className="text-xs text-ui-muted mt-0.5">Toggle between standard light layout and relaxing dark viewports</p>
                 </div>
                 <div className="flex gap-2">
                   <button
                     type="button"
+                    aria-pressed={theme === 'light'}
                     onClick={() => setTheme('light')}
                     className={`flex items-center gap-1.5 px-4 py-2 border rounded-xl text-xs font-bold transition-colors cursor-pointer ${
                       theme === 'light'
-                        ? 'bg-white border-emerald-450 text-emerald-600 font-extrabold'
+                        ? 'bg-brand-soft border-brand text-brand font-extrabold'
                         : 'bg-transparent border-slate-200 text-slate-600 hover:bg-slate-100'
                     }`}
                   >
@@ -279,6 +274,7 @@ export default function SettingsPage() {
                   </button>
                   <button
                     type="button"
+                    aria-pressed={theme === 'dark'}
                     onClick={() => setTheme('dark')}
                     className={`flex items-center gap-1.5 px-4 py-2 border rounded-xl text-xs font-bold transition-colors cursor-pointer ${
                       theme === 'dark'
@@ -299,13 +295,14 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-200/60 rounded-xl">
                   <div>
                     <h3 className="text-xs font-extrabold text-slate-800">Auto-Save Research Sessions</h3>
-                    <p className="text-[9px] text-slate-400 font-semibold mt-0.5">Automatically save session history into database queries</p>
+                    <p className="text-xs text-ui-muted mt-0.5">Automatically save session history into database queries</p>
                   </div>
                   <button
                     type="button"
+                    role="switch" aria-label="Auto-save research sessions" aria-checked={autoSave}
                     onClick={() => setAutoSave(!autoSave)}
                     className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                      autoSave ? 'bg-emerald-505 bg-emerald-500' : 'bg-slate-200'
+                      autoSave ? 'bg-brand' : 'bg-slate-200'
                     }`}
                   >
                     <span
@@ -320,13 +317,14 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-200/60 rounded-xl">
                   <div>
                     <h3 className="text-xs font-extrabold text-slate-800">Stream Updates (SSE)</h3>
-                    <p className="text-[9px] text-slate-400 font-semibold mt-0.5">Enable real-time agent output streaming during investigations</p>
+                    <p className="text-xs text-ui-muted mt-0.5">Enable real-time agent output streaming during investigations</p>
                   </div>
                   <button
                     type="button"
+                    role="switch" aria-label="Stream research updates" aria-checked={streamUpdates}
                     onClick={() => setStreamUpdates(!streamUpdates)}
                     className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                      streamUpdates ? 'bg-emerald-505 bg-emerald-500' : 'bg-slate-200'
+                      streamUpdates ? 'bg-brand' : 'bg-slate-200'
                     }`}
                   >
                     <span
@@ -354,7 +352,7 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-2 px-8 py-3 bg-indigo-700 text-white rounded-xl text-xs font-black transition-colors disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-2 px-8 py-3 bg-brand hover:bg-brand-hover text-white rounded-xl text-xs font-black transition-colors disabled:opacity-50 cursor-pointer"
             >
               {saving ? (
                 <>

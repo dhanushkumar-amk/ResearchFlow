@@ -200,7 +200,7 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
       )}
 
       <div className="px-5 py-4 border-b border-zinc-100 flex items-center gap-2 bg-zinc-50/50">
-        <MessageSquare className="w-4 h-4 text-violet-700" />
+        <MessageSquare className="w-4 h-4 text-brand" />
         <h2 className="font-bold text-zinc-800 text-sm">Ask about this report</h2>
       </div>
 
@@ -214,7 +214,7 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`flex gap-3 max-w-[85%] ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
-              <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${m.role === 'user' ? 'bg-zinc-100' : 'bg-indigo-700'}`}>
+              <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${m.role === 'user' ? 'bg-zinc-100' : 'bg-brand'}`}>
                 {m.role === 'user' ? <User className="w-4 h-4 text-zinc-500" /> : <Sparkles className="w-4 h-4 text-white" />}
               </div>
               <div className={`p-3 rounded-2xl text-sm ${m.role === 'user' ? 'bg-zinc-100 text-zinc-800 rounded-tr-none' : 'bg-white border border-zinc-100 shadow-xs text-zinc-700 rounded-tl-none'}`}>
@@ -230,13 +230,13 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
         {isTyping && (
           <div className="flex justify-start">
             <div className="flex gap-3">
-              <div className="w-7 h-7 rounded-lg bg-indigo-700 flex items-center justify-center animate-pulse">
+              <div className="w-7 h-7 rounded-lg bg-brand flex items-center justify-center animate-pulse">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <div className="p-3 bg-zinc-50 rounded-2xl flex gap-1">
-                <div className="w-1 h-1 bg-emerald-300 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                <div className="w-1 h-1 bg-emerald-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                <div className="w-1 h-1 bg-indigo-700 rounded-full animate-bounce" />
+                <div className="w-1 h-1 bg-brand/40 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                <div className="w-1 h-1 bg-brand/65 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                <div className="w-1 h-1 bg-brand rounded-full animate-bounce" />
               </div>
             </div>
           </div>
@@ -252,13 +252,13 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            className="min-w-0 w-full bg-zinc-50 border border-zinc-200 rounded-lg pl-3 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700"
+            className="min-w-0 w-full bg-zinc-50 border border-zinc-200 rounded-lg pl-3 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 text-zinc-700"
           />
           <button
             onClick={handleSend}
             aria-label="Send question"
             disabled={!input.trim() || isTyping}
-            className="absolute right-2 top-2 p-2 bg-indigo-700 text-white rounded-xl hover:bg-indigo-800 transition-colors disabled:opacity-30 flex items-center justify-center cursor-pointer"
+            className="absolute right-2 top-2 p-2 bg-brand text-white rounded-xl hover:bg-brand-hover transition-colors disabled:opacity-30 flex items-center justify-center cursor-pointer"
           >
             <Send className="w-4 h-4" />
           </button>
