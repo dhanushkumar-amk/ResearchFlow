@@ -7,6 +7,7 @@ export interface ResearchComplete {
   report: string;
   score?: number;
   duration_seconds?: number;
+  is_public?: boolean;
 }
 
 export interface ResearchError {

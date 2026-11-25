@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'researchflow_secret_key_change_in_prod';
+import { config } from '../config';
 
 export interface AuthRequest extends Request {
   userId?: string;
@@ -24,7 +24,7 @@ export function requireAuth(req: AuthRequest, res: Response, next: NextFunction)
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string; email: string };
+    const decoded = jwt.verify(token, config.jwtSecret) as { userId: string; email: string };
     req.userId = decoded.userId;
     req.userEmail = decoded.email;
     next();

@@ -48,11 +48,12 @@ export async function startResearch(query: string, sessionId: string, token: str
 export function getResearchStream(sessionId: string, token: string, onEvent: (event: ResearchEvent) => void) {
   const eventSource = new EventSource(`${API_URL}/api/research/${sessionId}/stream?token=${token}`);
 
-  const eventTypes: (ResearchEvent['type'] | 'connected' | 'report')[] = ['status', 'complete', 'error', 'connected', 'token', 'plan', 'sources', 'report'];
+  const eventTypes: (ResearchEvent['type'] | 'connected' | 'report')[] = ['status', 'complete', 'error', 'connected', 'token', 'plan', 'sources', 'report', 'report_reset'];
   
   eventTypes.forEach(type => {
     eventSource.addEventListener(type as string, (e: Event) => {
-      const messageEvent = e as MessageEvent;
+      if (!(e instanceof MessageEvent)) return;
+      const messageEvent = e;
       try {
         if (type === 'report' || type === 'token') {
           try {

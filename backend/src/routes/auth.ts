@@ -11,7 +11,7 @@ import { sendEmail } from '../utils/email';
 import { uploadFile } from '../utils/s3';
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'researchflow_secret_key_change_in_prod';
+import { config } from '../config';
 
 // POST /api/auth/register
 router.post('/register', async (req: Request, res: Response) => {
@@ -103,7 +103,7 @@ router.post('/verify-email', async (req: Request, res: Response) => {
     );
 
     const user = result.rows[0];
-    const token = jwt.sign({ userId: user.user_id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ userId: user.user_id, email: user.email }, config.jwtSecret, { expiresIn: '7d' });
 
     // Clean up Redis
     await deleteMemory(`otp:${normalizedEmail}`);
@@ -191,7 +191,7 @@ router.post('/login', async (req: Request, res: Response) => {
       return;
     }
 
-    const token = jwt.sign({ userId: user.user_id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ userId: user.user_id, email: user.email }, config.jwtSecret, { expiresIn: '7d' });
 
     res.json({
       message: 'Login successful!',

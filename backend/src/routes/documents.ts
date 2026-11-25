@@ -31,11 +31,11 @@ const upload = multer({
  * saves Postgres metadata, and vectorizes into Qdrant.
  */
 router.post('/ingest-url', async (req: Request, res: Response) => {
-  const { url, type, sessionId } = req.body;
+  const { url, type } = req.body;
   const userId = (req as AuthRequest).userId!;
 
-  if (!url || !type || !sessionId) {
-    return res.status(400).json({ error: 'url, type (youtube | website), and sessionId are required' });
+  if (typeof url !== 'string' || !url.trim() || !type) {
+    return res.status(400).json({ error: 'url and type (youtube | website) are required' });
   }
 
   try {
@@ -56,7 +56,7 @@ router.post('/ingest-url', async (req: Request, res: Response) => {
       text: scraped.text,
       fileName: scraped.title,
       fileType: type,
-      sessionId,
+      sessionId: userId,
     });
 
     // Save PostgreSQL metadata record (S3 url/key are null since it's a URL scrape)
@@ -88,10 +88,11 @@ router.post('/ingest-url', async (req: Request, res: Response) => {
  * Queries the active document knowledge base for Q&A inside the Vault page.
  */
 router.post('/query', async (req: Request, res: Response) => {
-  const { query: searchQuery, sessionId } = req.body;
+  const { query: searchQuery } = req.body;
+  const userId = (req as AuthRequest).userId!;
 
-  if (!searchQuery || !sessionId) {
-    return res.status(400).json({ error: 'query and sessionId are required for Knowledge Base search.' });
+  if (typeof searchQuery !== 'string' || !searchQuery.trim()) {
+    return res.status(400).json({ error: 'query is required for Knowledge Base search.' });
   }
 
   try {
@@ -101,7 +102,7 @@ router.post('/query', async (req: Request, res: Response) => {
       modelName: 'gemini-embedding-001',
     });
 
-    const collectionName = `session_docs_${sessionId.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    const collectionName = `session_docs_${userId.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
     console.log(`🔍 [Vault RAG Search] Searching collection: ${collectionName} for: "${searchQuery}"`);
 
@@ -195,29 +196,24 @@ router.post('/upload', uploadRateLimiter, (req: Request, res: Response) => {
       return res.status(400).json({ error: 'No file provided in field "file"' });
     }
 
-    const { sessionId } = req.body;
-    if (!sessionId) {
-      if (req.file) fs.unlinkSync(req.file.path);
-      return res.status(400).json({ error: 'sessionId is required for scoped storage' });
-    }
+    const userId = (req as AuthRequest).userId!;
 
     try {
       const { originalname, path: filePath, mimetype } = req.file;
 
       // 1. Upload to AWS S3 (falls back to local filesystem if S3 isn't configured)
       console.log(`☁️ [Ingestion] Processing object storage for: ${originalname}`);
-      const { url: s3Url, key: s3Key } = await uploadFile(filePath, originalname, mimetype, sessionId);
+      const { url: s3Url, key: s3Key } = await uploadFile(filePath, originalname, mimetype, userId);
 
       // 2. Trigger the ingestion pipeline (Parsing -> Chunking -> Embedding -> Vector Store)
       const { chunkCount, collectionName } = await ingestDocument({
         filePath,
         fileName: originalname,
         fileType: mimetype,
-        sessionId,
+        sessionId: userId,
       });
 
       // 3. Persist metadata in PostgreSQL
-      const userId = (req as AuthRequest).userId!;
       const docRecord = await saveDocument(
         userId,
         originalname,
@@ -293,7 +289,7 @@ router.delete('/:id', async (req: AuthRequest, res: Response) => {
       await qdrantClient.delete(doc.qdrant_collection_name, {
         filter: {
           must: [
-            { key: 'source', match: { value: doc.filename } },
+            { key: 'metadata.source', match: { value: doc.filename } },
           ],
         },
       });

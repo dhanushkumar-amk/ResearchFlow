@@ -156,18 +156,23 @@ export async function deleteSession(sessionId: string, userId: string) {
 /**
  * Retrieves the full report for a specific session with performance metadata
  */
-export async function getSessionReport(sessionId: string, userId: string) {
+export async function getOwnedResearchSession(sessionId: string, userId: string) {
   const text = `
     SELECT 
       s.query, r.content, r.quality_score, r.sources, r.web_context, r.rag_context, 
-      s.created_at, s.completed_at, s.is_public,
+      s.created_at, s.completed_at, s.is_public, s.status,
       EXTRACT(EPOCH FROM (s.completed_at - s.created_at)) as duration_seconds
     FROM sessions s
-    JOIN reports r ON s.session_id = r.session_id
+    LEFT JOIN reports r ON s.session_id = r.session_id
     WHERE s.session_id = $1 AND s.user_id = $2
   `;
   const res = await query(text, [sessionId, userId]);
   return res.rows[0];
+}
+
+export async function getSessionReport(sessionId: string, userId: string) {
+  const session = await getOwnedResearchSession(sessionId, userId);
+  return session?.content != null ? session : undefined;
 }
 
 /**
@@ -215,17 +220,17 @@ export async function getAllResearchHistory(userId: string) {
 /**
  * Retrieves a completed report for the same query within the last 24 hours. (Cache)
  */
-export async function getCachedReport(userQuery: string) {
+export async function getCachedReport(userQuery: string, userId: string) {
   const text = `
     SELECT s.session_id, s.query, r.content, r.quality_score, r.sources, r.web_context, r.rag_context
     FROM sessions s
     JOIN reports r ON s.session_id = r.session_id
-    WHERE s.query = $1 
+    WHERE s.query = $1 AND s.user_id = $2
       AND s.status = 'complete' 
       AND s.created_at >= NOW() - INTERVAL '24 hours'
     ORDER BY s.created_at DESC
     LIMIT 1
   `;
-  const res = await query(text, [userQuery]);
+  const res = await query(text, [userQuery, userId]);
   return res.rows[0];
 }

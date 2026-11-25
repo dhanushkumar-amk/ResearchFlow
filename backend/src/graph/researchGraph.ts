@@ -144,8 +144,8 @@ async function finalizeNode(state: ResearchStateType) {
 
   } catch (err: any) {
     console.error(`❌ [Finalize Error] ${state.sessionId}:`, err.message);
-    emitResearchEvent(state.sessionId, 'error', `Finalization failed: ${err.message}`);
     await updateSessionStatus(state.sessionId, 'failed');
+    emitResearchEvent(state.sessionId, 'error', 'Research finalization failed.');
   }
 
   return { status: 'done' };

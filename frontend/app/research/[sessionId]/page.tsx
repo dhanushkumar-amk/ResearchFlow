@@ -10,7 +10,7 @@ import Link from 'next/link';
 import AgentTimeline from '../../../components/AgentTimeline';
 import StreamingReport from '../../../components/StreamingReport';
 import ResearchChat from '../../../components/ResearchChat';
-import { getResearchStream, getSessionDetails } from '../../../lib/api';
+import { getResearchStream } from '../../../lib/api';
 import { ResearchEvent, ResearchStatus, ResearchComplete, ResearchToken, ResearchPlan, ResearchSources } from '../../../types/research';
 import { useAuth } from '../../../lib/AuthContext';
 
@@ -71,27 +71,6 @@ export default function ResearchPage() {
 
   const eventSourceRef = useRef<EventSource | null>(null);
 
-  const fetchSavedReport = useCallback(async (authToken: string) => {
-    try {
-      const data = await getSessionDetails(sessionId, authToken);
-      // Map 'report' from database to 'reportText' state
-      const existingReport = data.report || data.content;
-      if (existingReport) {
-        setReportText(existingReport);
-        setQualityScore(data.quality_score ?? null);
-        setDurationSeconds(data.duration_seconds ?? null);
-        setIsPublic(!!data.is_public);
-        setIsComplete(true);
-        setStatusMessage('Report loaded from history.');
-        setIsLoading(false);
-        return true;
-      }
-    } catch {
-      // not in DB yet, will stream live
-    }
-    return false;
-  }, [sessionId]);
-
   const handleTogglePublic = async (val: boolean) => {
     if (!token) return;
     try {
@@ -111,13 +90,8 @@ export default function ResearchPage() {
     }
   };
 
-  const connectToStream = useCallback(async () => {
+  const connectToStream = useCallback(() => {
     if (!sessionId || !token) return;
-    setIsError(false);
-    setIsComplete(false);
-    setIsLoading(true);
-    setReportText('');
-
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
     }
@@ -125,6 +99,10 @@ export default function ResearchPage() {
     const es = getResearchStream(sessionId, token, (event: ResearchEvent) => {
       switch (event.type) {
         case 'connected':
+          setIsError(false);
+          setIsComplete(false);
+          setIsStreaming(false);
+          setReportText('');
           setStatusMessage('Connected! Waiting for agents...');
           setIsLoading(false);
           break;
@@ -148,7 +126,7 @@ export default function ResearchPage() {
         case 'token': {
           const text = typeof event.data === 'string' ? event.data : (event.data as ResearchToken).text;
           setReportText((prev) => prev + text);
-          if (!isStreaming) setIsStreaming(true);
+          setIsStreaming(true);
           break;
         }
         case 'complete': {
@@ -157,6 +135,7 @@ export default function ResearchPage() {
           setIsComplete(true);
           setQualityScore(d.score ?? null);
           setDurationSeconds(d.duration_seconds ?? null);
+          setIsPublic(d.is_public ?? false);
           setStatusMessage('Research complete!');
           if (d.report) setReportText(d.report);
           es.close();
@@ -168,8 +147,8 @@ export default function ResearchPage() {
 
           if (typeof rawData === 'string') {
             message = rawData;
-          } else if (rawData && typeof rawData === 'object') {
-            message = (rawData as any).message || (rawData as any).error || message;
+          } else if (rawData && typeof rawData === 'object' && 'message' in rawData) {
+            message = rawData.message;
           }
 
           setIsError(true);
@@ -181,28 +160,22 @@ export default function ResearchPage() {
       }
     });
 
-    es.onerror = () => {
-      // Don't show error if we finished 
-      setIsError((prevError) => {
-        // We use a functional update to avoid stale closure or dependency on isComplete
-        return !es.readyState ? prevError : true;
-      });
-      es.close();
+    es.onerror = (event) => {
+      if (event instanceof MessageEvent) return;
+      setIsError(true);
+      setErrorMessage('Could not connect to the research stream.');
+      setIsStreaming(false);
       setIsLoading(false);
+      es.close();
     };
 
     eventSourceRef.current = es;
-    setIsLoading(false);
-  }, [sessionId, token, fetchSavedReport]); // Removed isComplete
+  }, [sessionId, token]);
 
   useEffect(() => {
-    if (token && sessionId) {
-      connectToStream();
-    }
-    return () => {
-      eventSourceRef.current?.close();
-    };
-  }, [sessionId, token]); // Removed connectToStream to prevent looping on state changes inside it
+    connectToStream();
+    return () => eventSourceRef.current?.close();
+  }, [connectToStream]);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-16 font-sans">
