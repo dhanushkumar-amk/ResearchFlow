@@ -8,7 +8,7 @@ import {
   Upload, Globe, Search, BookOpen,
   Trash2, RefreshCw, FileText, CheckCircle2,
   Clock, Database, Info, HardDrive, 
-  AlertCircle, ArrowLeft, Send, Sparkles, 
+  AlertCircle, Send, Sparkles,
   Link2, Loader2, FileCheck, HelpCircle
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -312,37 +312,13 @@ export default function DocumentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-4 md:p-8 pt-32 font-sans antialiased text-slate-800">
+    <div className="min-h-screen bg-background p-4 md:p-8 font-sans antialiased text-slate-800">
       <div className="max-w-[1400px] mx-auto space-y-8">
         
-        {/* Banner Welcome Header Card */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-emerald-500/15 via-teal-500/5 to-indigo-500/15 border border-emerald-500/15 rounded-3xl p-6 md:p-8 shadow-sm">
-          <div className="relative z-10 space-y-2">
-            <div className="flex items-center gap-3">
-              <Link 
-                href="/" 
-                className="p-2 bg-white/80 border border-slate-200 rounded-xl hover:bg-slate-100 transition-all duration-200 group shadow-xs hover:scale-105"
-              >
-                <ArrowLeft className="w-4 h-4 text-slate-500 group-hover:-translate-x-0.5 transition-transform" />
-              </Link>
-              <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 text-[10px] font-black uppercase tracking-widest rounded-full">
-                Knowledge Space
-              </span>
-              <span className="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-700 text-[10px] font-black uppercase tracking-widest rounded-full">
-                Active Indexing
-              </span>
-            </div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight mt-2">
-              Vector Knowledge Vault
-            </h1>
-            <p className="text-xs md:text-sm text-slate-500 font-medium max-w-2xl leading-relaxed">
-              Supercharge your research assistant by connecting local documents, website articles, and video transcripts into a single semantic Q&A space.
-            </p>
-          </div>
-          {/* Abstract background shapes */}
-          <div className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl" />
-          <div className="absolute left-1/3 bottom-0 translate-y-1/2 w-64 h-64 bg-indigo-400/5 rounded-full blur-3xl" />
-        </div>
+        <header className="rf-dashboard-banner">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Source library</h1>
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-indigo-100">Add documents, web pages, and video transcripts. Ask questions about the sources you have added.</p>
+        </header>
 
         {/* Error / Success Alerts */}
         <AnimatePresence>
@@ -378,7 +354,7 @@ export default function DocumentsPage() {
         </AnimatePresence>
 
         {/* Inputs Layout: 3 Columns Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
           {/* Column 1: File Upload Box */}
           <div
@@ -465,7 +441,7 @@ export default function DocumentsPage() {
                     placeholder={urlType === 'website' ? 'https://example.com/research-paper' : 'https://youtube.com/watch?v=...'}
                     value={urlInput}
                     onChange={(e) => setUrlInput(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 border border-zinc-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white transition-all text-zinc-800 placeholder-zinc-400"
+                    className="w-full pl-9 pr-3 py-2 border border-zinc-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white transition-all text-zinc-800 placeholder-zinc-400"
                   />
                 </div>
                 <p className="text-[10px] text-zinc-400 leading-normal font-medium">
@@ -478,7 +454,7 @@ export default function DocumentsPage() {
               <button
                 type="submit"
                 disabled={isIngestingUrl || !urlInput.trim()}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold py-2.5 rounded-lg cursor-pointer transition-all flex items-center justify-center gap-1.5 disabled:opacity-40 shadow-[0_4px_12px_rgba(16,185,129,0.15)] hover:shadow-[0_6px_18px_rgba(16,185,129,0.25)]"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 rounded-lg cursor-pointer transition-all flex items-center justify-center gap-1.5 disabled:opacity-40 shadow-[0_4px_12px_rgba(79,70,229,0.15)] hover:shadow-[0_6px_18px_rgba(79,70,229,0.25)]"
               >
                 {isIngestingUrl ? (
                   <>
@@ -542,7 +518,7 @@ export default function DocumentsPage() {
                   placeholder="Search library documents..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-zinc-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white transition-all text-zinc-800 placeholder-zinc-400"
+                  className="w-full pl-10 pr-4 py-2 border border-zinc-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white transition-all text-zinc-800 placeholder-zinc-400"
                 />
               </div>
 
@@ -550,7 +526,7 @@ export default function DocumentsPage() {
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value as any)}
-                  className="px-3 py-1.5 border border-zinc-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white text-zinc-700 cursor-pointer"
+                  className="px-3 py-1.5 border border-zinc-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white text-zinc-700 cursor-pointer"
                 >
                   <option value="all">All Types</option>
                   <option value="PDF">PDFs</option>
@@ -587,7 +563,7 @@ export default function DocumentsPage() {
                         <td
                           onClick={() => handleDocumentClick(doc)}
                           className={`p-4 font-bold text-zinc-800 max-w-[280px] truncate transition-colors ${
-                            doc.s3Url ? 'hover:text-emerald-600 hover:underline cursor-pointer' : ''
+                            doc.s3Url ? 'hover:text-indigo-600 hover:underline cursor-pointer' : ''
                           }`}
                           title={doc.name}
                         >
@@ -711,7 +687,7 @@ export default function DocumentsPage() {
                     placeholder={documents.length === 0 ? "Upload documents to ask questions..." : "Ask your vector vault..."}
                     value={chatQuery}
                     onChange={(e) => setChatQuery(e.target.value)}
-                    className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-4 pr-12 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 text-zinc-800 placeholder-zinc-400 disabled:opacity-50"
+                    className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-4 pr-12 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 text-zinc-800 placeholder-zinc-400 disabled:opacity-50"
                   />
                   <button
                     type="submit"

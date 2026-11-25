@@ -177,7 +177,7 @@ export default function ProfilePage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-white pt-24 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-emerald-50 selection:text-emerald-700">
+    <div className="min-h-screen bg-white pt-10 md:pt-14 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-indigo-50 selection:text-indigo-700">
       {/* Background Decorative Soft Glows */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-emerald-500/[0.015] rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
@@ -228,7 +228,7 @@ export default function ProfilePage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-4xl font-black bg-gradient-to-tr from-emerald-500 to-teal-500 bg-clip-text text-transparent">
+                    <span className="text-4xl font-black bg-gradient-to-tr from-indigo-500 to-violet-500 bg-clip-text text-transparent">
                       {user.name.charAt(0).toUpperCase()}
                     </span>
                   )}
@@ -299,7 +299,7 @@ export default function ProfilePage() {
                     id="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800 transition-all bg-slate-50/20"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs font-medium text-slate-800 transition-all bg-slate-50/20"
                     placeholder="Enter your full name"
                   />
                 </div>
@@ -313,7 +313,7 @@ export default function ProfilePage() {
                     value={details}
                     onChange={(e) => setDetails(e.target.value)}
                     rows={4}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800 transition-all bg-slate-50/20 resize-none"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs font-medium text-slate-800 transition-all bg-slate-50/20 resize-none"
                     placeholder="Tell us about yourself (e.g. Research field, job title, company name)..."
                   />
                 </div>
@@ -322,7 +322,7 @@ export default function ProfilePage() {
                   <button
                     type="submit"
                     disabled={profileSaving}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-tr from-emerald-500 to-teal-500 hover:from-emerald-650 hover:to-teal-650 text-white rounded-xl text-xs font-extrabold transition-all shadow-[0_4px_12px_rgba(16,185,129,0.15)] disabled:opacity-50 cursor-pointer"
+                    className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-tr from-indigo-500 to-violet-500 hover:from-indigo-650 hover:to-violet-650 text-white rounded-xl text-xs font-extrabold transition-all shadow-[0_4px_12px_rgba(79,70,229,0.15)] disabled:opacity-50 cursor-pointer"
                   >
                     {profileSaving ? (
                       <>
@@ -420,7 +420,7 @@ export default function ProfilePage() {
                           maxLength={6}
                           value={otpCode}
                           onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                          className="w-full max-w-[200px] px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-center tracking-[8px] text-base font-extrabold text-slate-800 bg-slate-50/20"
+                          className="w-full max-w-[200px] px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-center tracking-[8px] text-base font-extrabold text-slate-800 bg-slate-50/20"
                           placeholder="000000"
                         />
                         <p className="text-[10px] text-slate-400 mt-1.5 font-semibold">We sent this code to {user.email}. Check your spam folder if it doesn't arrive.</p>
@@ -438,7 +438,7 @@ export default function ProfilePage() {
                             id="oldPassword"
                             value={oldPassword}
                             onChange={(e) => setOldPassword(e.target.value)}
-                            className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800 bg-slate-50/20"
+                            className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs font-medium text-slate-800 bg-slate-50/20"
                             placeholder="••••••••"
                           />
                           <button
@@ -460,7 +460,7 @@ export default function ProfilePage() {
                             id="newPassword"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
-                            className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800 bg-slate-50/20"
+                            className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs font-medium text-slate-800 bg-slate-50/20"
                             placeholder="Minimum 6 characters"
                           />
                           <button
@@ -482,7 +482,7 @@ export default function ProfilePage() {
                             id="confirmPassword"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800 bg-slate-50/20"
+                            className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs font-medium text-slate-800 bg-slate-50/20"
                             placeholder="••••••••"
                           />
                         </div>
@@ -492,7 +492,7 @@ export default function ProfilePage() {
                         <button
                           type="submit"
                           disabled={changingPassword}
-                          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-tr from-emerald-500 to-teal-500 hover:from-emerald-650 hover:to-teal-650 text-white rounded-xl text-xs font-extrabold transition-all shadow-md disabled:opacity-50 cursor-pointer"
+                          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-tr from-indigo-500 to-violet-500 hover:from-indigo-650 hover:to-violet-650 text-white rounded-xl text-xs font-extrabold transition-all shadow-md disabled:opacity-50 cursor-pointer"
                         >
                           {changingPassword ? (
                             <>

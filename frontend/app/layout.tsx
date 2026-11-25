@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NextTopLoader from 'nextjs-toploader';
-import Navbar from "../components/Navbar";
 import { AuthProvider } from "../lib/AuthContext";
 import AuthGuard from "../components/AuthGuard";
 import ErrorSuppressor from "../components/ErrorSuppressor";
@@ -53,12 +52,11 @@ export default function RootLayout({
           })();
         ` }} />
       </head>
-      <body className="min-h-full flex flex-col bg-white text-zinc-900 selection:bg-emerald-100">
+      <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-indigo-100">
         <ErrorSuppressor />
         <AuthProvider>
           <AuthGuard>
-            <NextTopLoader color="#10b981" showSpinner={false} height={3} />
-            <Navbar />
+            <NextTopLoader color="#5546d8" showSpinner={false} height={3} />
             {children}
           </AuthGuard>
         </AuthProvider>

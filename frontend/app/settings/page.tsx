@@ -88,7 +88,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white pt-24 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-emerald-50 selection:text-emerald-700">
+    <div className="min-h-screen bg-white pt-10 md:pt-14 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-indigo-50 selection:text-indigo-700">
       {/* Background Decorative Soft Glows */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-emerald-500/[0.015] rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
@@ -143,7 +143,7 @@ export default function SettingsPage() {
                   id="model"
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-bold text-slate-700 bg-slate-50/20 cursor-pointer"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs font-bold text-slate-700 bg-slate-50/20 cursor-pointer"
                 >
                   <option value="gemini-2.5-flash">Google Gemini 2.5 Flash (Recommended - Ultra Fast)</option>
                   <option value="gemini-2.5-pro">Google Gemini 2.5 Pro (Deep Complex Reasoning)</option>
@@ -200,7 +200,7 @@ export default function SettingsPage() {
                   id="searchDepth"
                   value={searchDepth}
                   onChange={(e) => setSearchDepth(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-bold text-slate-700 bg-slate-50/20 cursor-pointer"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs font-bold text-slate-700 bg-slate-50/20 cursor-pointer"
                 >
                   <option value="basic">Basic (Fast search, 1 iteration)</option>
                   <option value="detailed">Detailed (Iterative web-crawl, 2-3 cycles)</option>
@@ -217,7 +217,7 @@ export default function SettingsPage() {
                   id="maxSources"
                   value={maxSources}
                   onChange={(e) => setMaxSources(Number(e.target.value))}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-bold text-slate-700 bg-slate-50/20 cursor-pointer"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs font-bold text-slate-700 bg-slate-50/20 cursor-pointer"
                 >
                   <option value="5">Top 5 primary sources</option>
                   <option value="10">Top 10 primary sources</option>
@@ -235,7 +235,7 @@ export default function SettingsPage() {
                   id="searchSource"
                   value={searchSource}
                   onChange={(e) => setSearchSource(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-bold text-slate-700 bg-slate-50/20 cursor-pointer"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs font-bold text-slate-700 bg-slate-50/20 cursor-pointer"
                 >
                   <option value="all">Entire Web Index</option>
                   <option value="academic">Academic Journals & Research</option>
@@ -354,7 +354,7 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-2 px-8 py-3 bg-gradient-to-tr from-emerald-500 to-teal-500 hover:from-emerald-650 hover:to-teal-650 text-white rounded-2xl text-xs font-black transition-all shadow-[0_4px_14px_rgba(16,185,129,0.2)] disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-2 px-8 py-3 bg-gradient-to-tr from-indigo-500 to-violet-500 hover:from-indigo-650 hover:to-violet-650 text-white rounded-2xl text-xs font-black transition-all shadow-[0_4px_14px_rgba(79,70,229,0.2)] disabled:opacity-50 cursor-pointer"
             >
               {saving ? (
                 <>

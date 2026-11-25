@@ -3,11 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Sparkles,
   ArrowRight,
-  Search,
   AlertCircle,
-  HelpCircle,
   Clock,
   Compass,
   FileText
@@ -60,50 +57,19 @@ export default function GeneralResearchPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white text-[#0a0a0a] pt-24 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-emerald-50 selection:text-emerald-700">
+    <div className="min-h-screen bg-white text-[#0a0a0a] pt-10 md:pt-14 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-indigo-50 selection:text-indigo-700">
 
       {/* Background Decorative Glows matching Landing Page */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-emerald-500/[0.02] rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute bottom-10 right-1/4 w-[400px] h-[400px] bg-teal-500/[0.015] rounded-full blur-[100px] pointer-events-none z-0" />
       <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
 
-      <div className="max-w-[720px] mx-auto space-y-12 relative z-10">
+      <div className="max-w-[850px] mx-auto space-y-8 relative z-10">
 
-        {/* Header Title */}
-        <div className="text-center space-y-4">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="flex justify-center"
-          >
-            <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3.5 py-1.2 rounded-full text-[10px] font-mono border border-emerald-100/70 font-semibold shadow-xs select-none">
-              <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
-              <span>Multi-Agent Research Launchpad</span>
-            </span>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.05 }}
-            className="text-[36px] sm:text-[44px] font-black tracking-tight leading-[1.1] text-[#0a0a0a]"
-          >
-            What are we investigating{' '}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500">
-              today?
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="text-[14px] text-neutral-500 max-w-xl mx-auto leading-relaxed"
-          >
-            Submit your research prompt. Our AI team will compile search parameters, cross-examine database vectors, and deliver a grounded report.
-          </motion.p>
-        </div>
+        <header className="space-y-3">
+          <h1 className="text-4xl font-bold leading-tight tracking-tight text-slate-950 sm:text-5xl">Start a new investigation</h1>
+          <p className="max-w-xl text-base leading-relaxed text-slate-600">Ask a specific question. ResearchFlow will search the web and your library, then write a report based on the sources it finds.</p>
+        </header>
 
         {/* Query Input Box */}
         <motion.div
@@ -113,30 +79,27 @@ export default function GeneralResearchPage() {
           className="bg-white border border-neutral-200/80 rounded-2xl p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.05)] transition-all duration-300 relative overflow-hidden"
         >
           <form onSubmit={handleSearch} className="space-y-4">
-            <div className="relative group">
-              <div className="absolute left-4.5 top-1/2 -translate-y-1/2 text-neutral-400 group-focus-within:text-emerald-500 transition-colors">
-                <Search className="w-5 h-5" />
-              </div>
-              <input
-                type="text"
+            <div>
+              <label htmlFor="research-question" className="mb-2 block text-sm font-semibold text-slate-800">Research question</label>
+              <textarea
+                id="research-question"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="EV solid-state batteries maturity 2026..."
-                className="w-full pl-12 pr-4 py-4 text-[15px] border border-neutral-200 rounded-xl outline-none focus:border-emerald-500/80 focus:ring-4 focus:ring-emerald-500/[0.04] bg-neutral-50/20 focus:bg-white transition-all placeholder-neutral-400 text-[#0a0a0a]"
+                placeholder="How has solid-state battery technology progressed toward commercial use?"
+                className="min-h-28 w-full resize-y rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-3 text-sm leading-relaxed text-slate-950 placeholder:text-slate-500 focus:border-indigo-500 focus:bg-white"
+                maxLength={1000}
                 disabled={isLoading}
               />
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between pt-2">
-              <div className="flex items-center gap-1.5 text-[11px] text-neutral-450">
-                <HelpCircle className="w-3.5 h-3.5 text-neutral-400" />
-                <span>Supports complex multi-sentence questions</span>
-              </div>
-
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <small className="text-slate-600">{query.length}/1000 characters</small>
               <button
                 type="submit"
+                aria-busy={isLoading}
+                aria-label={isLoading ? 'Starting research' : undefined}
                 disabled={!query.trim() || isLoading}
-                className="bg-emerald-500 hover:bg-emerald-600 disabled:bg-neutral-100 disabled:text-neutral-400 text-white text-xs font-bold px-6 py-3 rounded-[8px] transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_14px_rgba(16,185,129,0.2)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.3)]"
+                className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-neutral-100 disabled:text-neutral-400 text-white text-xs font-bold px-6 py-3 rounded-[8px] transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_14px_rgba(79,70,229,0.2)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.3)]"
               >
                 {isLoading ? (
                   <svg className="w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
@@ -145,7 +108,7 @@ export default function GeneralResearchPage() {
                   </svg>
                 ) : (
                   <>
-                    Initialize Research
+                    Start research
                     <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}
@@ -154,7 +117,7 @@ export default function GeneralResearchPage() {
           </form>
 
           {error && (
-            <div className="mt-4 bg-red-50 border border-red-100 text-red-700 px-4 py-3 rounded-xl text-xs flex items-start gap-2.5">
+            <div role="alert" className="mt-4 bg-red-50 border border-red-100 text-red-700 px-4 py-3 rounded-xl text-xs flex items-start gap-2.5">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
@@ -172,16 +135,15 @@ export default function GeneralResearchPage() {
             className="space-y-3"
           >
             <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400 font-mono flex items-center gap-1.5">
-              <Compass className="w-3.5 h-3.5" /> Suggested Inquiries
+              <Compass className="w-3.5 h-3.5" /> Suggested questions
             </h3>
             <div className="space-y-2">
-              {suggestions.map((s, idx) => (
+              {suggestions.map(s => (
                 <button
-                  key={idx}
+                  key={s}
                   onClick={() => setQuery(s)}
-                  className="w-full text-left p-3 bg-white border border-neutral-100 hover:border-emerald-500/20 hover:bg-emerald-50/[0.05] rounded-xl text-xs text-neutral-600 font-medium transition-all cursor-pointer leading-relaxed hover:shadow-xs group flex items-start gap-2"
+                  className="w-full text-left p-3 bg-white border border-neutral-100 hover:border-indigo-300 hover:bg-indigo-50/60 rounded-xl text-xs text-neutral-600 font-medium transition-all cursor-pointer leading-relaxed hover:shadow-xs group flex items-start gap-2"
                 >
-                  <span className="text-[10px] font-mono text-neutral-400 mt-0.5 group-hover:text-emerald-500">0{idx + 1}</span>
                   <span className="flex-1 line-clamp-2">{s}</span>
                 </button>
               ))}
@@ -196,7 +158,7 @@ export default function GeneralResearchPage() {
             className="space-y-3"
           >
             <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400 font-mono flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5" /> Recent Sessions
+              <Clock className="w-3.5 h-3.5" /> Recent research
             </h3>
             <div className="space-y-2">
               {history.length > 0 ? (
@@ -207,7 +169,7 @@ export default function GeneralResearchPage() {
                     className="flex items-center justify-between p-3 bg-white border border-neutral-100 hover:border-neutral-250 rounded-xl text-xs text-neutral-600 font-semibold transition-all group"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <FileText className="w-3.5 h-3.5 text-neutral-400 shrink-0 group-hover:text-emerald-500" />
+                      <FileText className="w-3.5 h-3.5 text-neutral-400 shrink-0 group-hover:text-indigo-500" />
                       <span className="truncate group-hover:text-[#0a0a0a]">{item.query}</span>
                     </div>
                     <ArrowRight className="w-3.5 h-3.5 text-neutral-300 group-hover:text-[#0a0a0a] group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
@@ -220,10 +182,10 @@ export default function GeneralResearchPage() {
               )}
 
               <Link
-                href="/"
+                href="/history"
                 className="block text-center p-2.5 bg-neutral-50 hover:bg-neutral-100 border border-neutral-250 rounded-xl text-[11px] font-bold text-neutral-600 transition-all"
               >
-                Back to Dashboard Stats
+                View history
               </Link>
             </div>
           </motion.div>

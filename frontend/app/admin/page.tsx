@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import { getAdminLogs, getHealth } from '@/lib/api';
-import Navbar from '@/components/Navbar';
-import AuthGuard from '@/components/AuthGuard';
 import Badge from '@/components/Badge';
 import { Activity, ShieldAlert, Cpu, Timer, Heart } from 'lucide-react';
 
@@ -40,9 +38,7 @@ export default function AdminPage() {
   }, [token]);
 
   return (
-    <AuthGuard>
       <div className="min-h-screen bg-[#050510] text-gray-100">
-        <Navbar />
         
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Header & Stats */}
@@ -189,7 +185,6 @@ export default function AdminPage() {
           </div>
         </main>
       </div>
-    </AuthGuard>
   );
 }
 

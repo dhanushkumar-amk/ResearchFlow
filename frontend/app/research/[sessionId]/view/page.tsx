@@ -144,7 +144,7 @@ export default function FocusedReportView() {
   };
 
   return (
-    <div className="min-h-screen bg-white pt-24 font-sans text-slate-800 relative overflow-hidden font-sans antialiased selection:bg-emerald-50 selection:text-emerald-700">
+    <div className="min-h-screen bg-background pt-4 font-sans text-slate-800 relative overflow-hidden font-sans antialiased selection:bg-indigo-50 selection:text-indigo-700">
       {/* Background Decorative Soft Glows */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-emerald-500/[0.015] rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
@@ -160,7 +160,7 @@ export default function FocusedReportView() {
             <ArrowLeft className="w-4 h-4 text-slate-500 group-hover:-translate-x-0.5 transition-transform" />
           </Link>
           <div className="text-xs text-slate-400 flex items-center gap-1.5 uppercase font-bold tracking-wider">
-            <Link href="/history" className="hover:text-emerald-600 transition-colors font-medium">History</Link>
+            <Link href="/history" className="hover:text-indigo-600 transition-colors font-medium">History</Link>
             <span className="text-slate-300">/</span>
             <span className="text-slate-500">Report</span>
           </div>
@@ -208,12 +208,12 @@ export default function FocusedReportView() {
               
               {/* Left Profile details */}
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-white text-sm font-black shadow-xs select-none">
-                  RM
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center text-white text-sm font-black shadow-xs select-none">
+                  RF
                 </div>
                 <div>
                   <div className="font-bold text-slate-800 flex items-center gap-1.5">
-                    <span>ResearchMind Intelligence</span>
+                    <span>ResearchFlow Intelligence</span>
                     <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[9px] font-black uppercase tracking-wider">Analyst</span>
                   </div>
                   <div className="text-[10px] text-slate-400 font-medium mt-0.5 flex items-center gap-1.5">
