@@ -12,8 +12,6 @@ import {
   AlertCircle,
   Loader2, 
   Save, 
-  Moon, 
-  Sun,
   ShieldAlert,
   Database
 } from 'lucide-react';
@@ -28,7 +26,6 @@ export default function SettingsPage() {
   const [searchDepth, setSearchDepth] = useState('detailed');
   const [maxSources, setMaxSources] = useState(10);
   const [searchSource, setSearchSource] = useState('all');
-  const [theme, setTheme] = useState('light');
   const [autoSave, setAutoSave] = useState(true);
   const [streamUpdates, setStreamUpdates] = useState(true);
 
@@ -45,7 +42,6 @@ export default function SettingsPage() {
       if (s.searchDepth) setSearchDepth(s.searchDepth);
       if (s.maxSources !== undefined) setMaxSources(Number(s.maxSources));
       if (s.searchSource) setSearchSource(s.searchSource);
-      if (s.theme) setTheme(s.theme);
       if (s.autoSave !== undefined) setAutoSave(!!s.autoSave);
       if (s.streamUpdates !== undefined) setStreamUpdates(!!s.streamUpdates);
     }
@@ -64,7 +60,6 @@ export default function SettingsPage() {
       searchDepth,
       maxSources,
       searchSource,
-      theme,
       autoSave,
       streamUpdates
     };
@@ -74,12 +69,6 @@ export default function SettingsPage() {
       await updateProfile(user.name, user.details, newSettings);
       setStatusMessage({ type: 'success', text: 'Application settings saved successfully!' });
       
-      // Update HTML theme body class
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
     } catch (err: any) {
       setStatusMessage({ type: 'error', text: err.message || 'Failed to save settings. Please try again.' });
     } finally {
@@ -247,47 +236,11 @@ export default function SettingsPage() {
               Workspace preferences
             </h2>
             <p className="text-sm text-ui-muted mb-6 border-b border-slate-100 pb-4">
-              Adjust accessibility styles, local cache choices, and live server updates behavior.
+              Choose how research sessions are saved and how live updates are shown.
             </p>
 
             <div className="space-y-4">
               
-              {/* Theme Settings Selector */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-50/50 border border-slate-200/60 rounded-xl gap-3">
-                <div>
-                  <h3 className="text-xs font-extrabold text-slate-800">Visual Color Theme</h3>
-                  <p className="text-xs text-ui-muted mt-0.5">Toggle between standard light layout and relaxing dark viewports</p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    aria-pressed={theme === 'light'}
-                    onClick={() => setTheme('light')}
-                    className={`flex items-center gap-1.5 px-4 py-2 border rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                      theme === 'light'
-                        ? 'bg-brand-soft border-brand text-brand font-extrabold'
-                        : 'bg-transparent border-slate-200 text-slate-600 hover:bg-slate-100'
-                    }`}
-                  >
-                    <Sun className="w-3.5 h-3.5" />
-                    Light Theme
-                  </button>
-                  <button
-                    type="button"
-                    aria-pressed={theme === 'dark'}
-                    onClick={() => setTheme('dark')}
-                    className={`flex items-center gap-1.5 px-4 py-2 border rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                      theme === 'dark'
-                        ? 'bg-slate-900 border-slate-950 text-white font-extrabold shadow-sm'
-                        : 'bg-transparent border-slate-200 text-slate-600 hover:bg-slate-100'
-                    }`}
-                  >
-                    <Moon className="w-3.5 h-3.5" />
-                    Dark Theme
-                  </button>
-                </div>
-              </div>
-
               {/* Toggles */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 

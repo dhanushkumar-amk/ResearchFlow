@@ -138,7 +138,9 @@ export default function LandingPage() {
         </section>
 
         <section className="rf-public-width rf-public-invitation" aria-labelledby="invitation-title">
-          <ObservatoryArt className="rf-public-landscape" sizes="(max-width: 760px) 100vw, 560px" />
+          <div className="rf-observatory rf-public-landscape" aria-hidden="true">
+            <Image src="/landing/research-desk.webp" alt="" fill sizes="(max-width: 760px) 100vw, 450px" />
+          </div>
           <div>
             <h2 id="invitation-title">Start with one question.</h2>
             <p>Add a document or a link if you have one. You can also start with a question alone.</p>

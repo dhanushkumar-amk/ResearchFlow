@@ -1,712 +1,333 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Upload, Globe, Search, BookOpen,
-  Trash2, RefreshCw, FileText, CheckCircle2,
-  Clock, Database, Info, HardDrive, 
-  AlertCircle, Send, Sparkles,
-  Link2, Loader2, FileCheck, HelpCircle
-} from 'lucide-react';
+import { useCallback, useEffect, useRef, useState, type FormEvent, type DragEvent } from 'react';
+import { ArrowUpRight, BookOpen, FileText, Globe2, Link2, Loader2, MessageSquare, Plus, Search, Trash2, Upload } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-
-import { uploadDocument, getHistory, deleteDocument, ingestUrl, queryKnowledgeBase } from '../../lib/api';
-import { Document } from '../../types/research';
+import { deleteDocument, getHistory, ingestUrl, queryKnowledgeBase, uploadDocument } from '../../lib/api';
 import { useAuth } from '../../lib/AuthContext';
+import type { Document } from '../../types/research';
 
-// Custom SVG Youtube icon to bypass lucide-react export discrepancy
-const YoutubeIcon = ({ className, ...props }: React.SVGProps<SVGSVGElement> & { className?: string }) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    className={className}
-    {...props}
-  >
-    <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.507a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.507 9.388.507 9.388.507s7.517 0 9.388-.507a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-  </svg>
-);
+type Source = Document & { s3_url?: string | null; file_type?: string; created_at?: string };
+type View = 'sources' | 'add' | 'ask';
+type SourceType = 'PDF' | 'Text' | 'Word' | 'Website' | 'YouTube' | 'File';
+type Notice = { kind: 'error' | 'success'; message: string };
 
-interface DocumentItem {
-  id: string;
-  name: string;
-  type: 'PDF' | 'URL' | 'YouTube' | 'Word';
-  status: 'indexed' | 'processing' | 'failed';
-  dateAdded: string;
-  size: string;
-  chunks: number;
-  s3Url?: string;
+const views = [
+  { id: 'sources', label: 'Sources', icon: BookOpen },
+  { id: 'add', label: 'Add source', icon: Plus },
+  { id: 'ask', label: 'Ask the library', icon: MessageSquare },
+] as const;
+
+const sourceTypes: SourceType[] = ['PDF', 'Text', 'Word', 'Website', 'YouTube', 'File'];
+const dateFormatter = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+
+function sourceType(source: Source): SourceType {
+  const type = (source.mimetype || source.file_type || '').toLowerCase();
+  if (type === 'website' || type === 'url') return 'Website';
+  if (type === 'youtube') return 'YouTube';
+  if (/pdf/.test(type) || /\.pdf$/i.test(source.filename)) return 'PDF';
+  if (/text\/plain|^txt$/.test(type) || /\.txt$/i.test(source.filename)) return 'Text';
+  if (/word|docx?/.test(type) || /\.docx?$/i.test(source.filename)) return 'Word';
+  return 'File';
+}
+
+function sourceHref(value?: string | null) {
+  if (!value) return undefined;
+  try {
+    const url = new URL(value, window.location.origin);
+    return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 export default function DocumentsPage() {
-  const router = useRouter();
   const { token, user } = useAuth();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Core Data States
-  const [documents, setDocuments] = useState<Document[]>([]);
+  const [sources, setSources] = useState<Source[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Search & Filters State
-  const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState<'all' | 'PDF' | 'URL' | 'YouTube' | 'Word'>('all');
-
-  // Input states
-  const [urlInput, setUrlInput] = useState('');
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [view, setView] = useState<View>('sources');
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('all');
+  const [notice, setNotice] = useState<Notice | null>(null);
+  const [url, setUrl] = useState('');
   const [urlType, setUrlType] = useState<'website' | 'youtube'>('website');
-  const [isIngestingUrl, setIsIngestingUrl] = useState(false);
+  const [pendingImport, setPendingImport] = useState<'file' | 'link' | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const [pendingRemoval, setPendingRemoval] = useState<string | null>(null);
+  const [removing, setRemoving] = useState(false);
+  const [question, setQuestion] = useState('');
+  const [answer, setAnswer] = useState<{ question: string; text: string; sources: string[] } | null>(null);
+  const [asking, setAsking] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
 
-  // Drag & Drop / File Upload State
-  const [isDragging, setIsDragging] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-
-  // Q&A Chat State
-  const [chatQuery, setChatQuery] = useState('');
-  const [chatAnswer, setChatAnswer] = useState<string | null>(null);
-  const [chatSources, setChatSources] = useState<string[]>([]);
-  const [isQuerying, setIsQuerying] = useState(false);
-
-  // Feedback Notification Alerts
-  const [localError, setLocalError] = useState<string | null>(null);
-  const [localSuccess, setLocalSuccess] = useState<string | null>(null);
-
-  const fetchDocuments = useCallback(async (authToken: string) => {
+  const refreshSources = useCallback(async (authToken: string) => {
+    setIsLoading(true);
+    setLoadFailed(false);
     try {
-      setIsLoading(true);
-      const docs = await getHistory(authToken);
-      setDocuments(docs || []);
-    } catch (err) {
-      console.error('Failed to load documents', err);
-      setLocalError('Could not retrieve your documents. Please refresh the page.');
+      setSources(await getHistory(authToken));
+    } catch {
+      setLoadFailed(true);
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    if (token) {
-      fetchDocuments(token);
+    if (token) void refreshSources(token);
+  }, [token, refreshSources]);
+
+  function showError(error: unknown, fallback: string) {
+    setNotice({ kind: 'error', message: error instanceof Error ? error.message : fallback });
+  }
+
+  function addSource(source: Source) {
+    setSources(current => [source, ...current]);
+    setSearch('');
+    setFilter('all');
+    setView('sources');
+    setNotice({ kind: 'success', message: `Added “${source.filename}” to the library.` });
+  }
+
+  async function uploadFile(file: File) {
+    if (!token || !user || isLoading || pendingImport) return;
+    setNotice(null);
+    if (!['application/pdf', 'text/plain'].includes(file.type) && !/\.docx?$/i.test(file.name)) {
+      showError(null, 'Choose a PDF, TXT, DOC, or DOCX file.');
+      return;
     }
-  }, [token, fetchDocuments]);
-
-  // Handle Drag Events
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleDrop = async (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    setLocalError(null);
-    setLocalSuccess(null);
-
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const file = e.dataTransfer.files[0];
-      await handleFileUpload(file);
-    }
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalError(null);
-    setLocalSuccess(null);
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      await handleFileUpload(file);
-    }
-  };
-
-  // Upload File Logic
-  const handleFileUpload = async (file: File) => {
-    if (!token || !user) {
-      setLocalError('Authentication session not active.');
+    if (file.size > 10 * 1024 * 1024) {
+      showError(null, 'Choose a file under 10 MB.');
       return;
     }
 
-    const allowedTypes = ['application/pdf', 'text/plain'];
-    const MAX_SIZE = 10 * 1024 * 1024; // 10MB limit
-
-    if (!allowedTypes.includes(file.type) && !file.name.endsWith('.docx') && !file.name.endsWith('.doc')) {
-      setLocalError('Unsupported format. Please upload PDF, TXT or DOCX files.');
-      return;
-    }
-
-    if (file.size > MAX_SIZE) {
-      setLocalError('File size exceeds the 10MB limit.');
-      return;
-    }
-
-    setIsUploading(true);
-    setUploadProgress(15);
-
+    setPendingImport('file');
     try {
-      const progInterval = setInterval(() => {
-        setUploadProgress(prev => (prev < 85 ? prev + 15 : prev));
-      }, 350);
-
-      const uploadSessionId = user.id;
-      const newDoc = await uploadDocument(file, uploadSessionId, token);
-      
-      clearInterval(progInterval);
-      setUploadProgress(100);
-      
-      setTimeout(() => {
-        setDocuments(prev => [newDoc, ...prev]);
-        setIsUploading(false);
-        setUploadProgress(0);
-        setLocalSuccess(`"${file.name}" successfully parsed and stored.`);
-        setTimeout(() => setLocalSuccess(null), 5000);
-      }, 500);
-
-    } catch (err: any) {
-      console.error(err);
-      setLocalError(err.message || 'Failed to complete document ingestion.');
-      setIsUploading(false);
-      setUploadProgress(0);
-    }
-  };
-
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
-  };
-
-  // Handle URL Scrape & Vectorize Submission
-  const handleUrlSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!urlInput.trim() || !token || !user) return;
-
-    setLocalError(null);
-    setLocalSuccess(null);
-    setIsIngestingUrl(true);
-
-    try {
-      const uploadSessionId = user.id;
-      const response = await ingestUrl(urlInput.trim(), urlType, uploadSessionId, token);
-      
-      setDocuments(prev => [response.document, ...prev]);
-      setUrlInput('');
-      setLocalSuccess(`"${response.document.filename}" indexed into vector space.`);
-      setTimeout(() => setLocalSuccess(null), 5000);
-    } catch (err: any) {
-      console.error('URL ingestion failed:', err);
-      setLocalError(err.message || 'Failed to scrape webpage. Ensure URL is public.');
+      addSource(await uploadDocument(file, user.id, token));
+    } catch (error) {
+      showError(error, 'The file could not be added.');
     } finally {
-      setIsIngestingUrl(false);
+      setPendingImport(null);
     }
-  };
+  }
 
-  // Handle Ask about your library Query
-  const handleQuery = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!chatQuery.trim() || !token || !user) return;
+  function onDrop(event: DragEvent) {
+    event.preventDefault();
+    setDragging(false);
+    const file = event.dataTransfer.files[0];
+    if (file) void uploadFile(file);
+  }
 
-    setLocalError(null);
-    setIsQuerying(true);
-    setChatAnswer(null);
-    setChatSources([]);
-
+  async function importLink(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!token || !user || isLoading || pendingImport || !url.trim()) return;
+    setNotice(null);
+    setPendingImport('link');
     try {
-      const uploadSessionId = user.id;
-      const response = await queryKnowledgeBase(chatQuery, uploadSessionId, token);
-      setChatAnswer(response.answer);
-      setChatSources(response.sources || []);
-    } catch (err: any) {
-      console.error('Q&A search failed:', err);
-      setLocalError(err.message || 'Similarity search query failed.');
+      const { document } = await ingestUrl(url.trim(), urlType, user.id, token);
+      setUrl('');
+      addSource(document);
+    } catch (error) {
+      showError(error, 'The link could not be added.');
     } finally {
-      setIsQuerying(false);
+      setPendingImport(null);
     }
-  };
+  }
 
-  // Delete Document Record
-  const deleteDoc = async (id: string) => {
-    if (!token) return;
-    setLocalError(null);
-    setLocalSuccess(null);
-
-    const deletedDoc = documents.find(d => d.document_id === id);
-    // Optimistic Update
-    setDocuments(prev => prev.filter(d => d.document_id !== id));
-
+  async function removeSource(id: string) {
+    if (!token || removing) return;
+    setNotice(null);
+    setRemoving(true);
     try {
       await deleteDocument(id, token);
-      setLocalSuccess('Document deleted successfully.');
-      setTimeout(() => setLocalSuccess(null), 3000);
-    } catch (err: any) {
-      if (deletedDoc) {
-        setDocuments(prev => [...prev, deletedDoc]);
-      }
-      setLocalError('Failed to remove document.');
+      setSources(current => current.filter(source => source.document_id !== id));
+      setPendingRemoval(null);
+      setNotice({ kind: 'success', message: 'Source removed.' });
+    } catch (error) {
+      showError(error, 'The source could not be removed.');
+    } finally {
+      setRemoving(false);
     }
-  };
+  }
 
-  // Map backend documents to Table items
-  const mappedDocuments: DocumentItem[] = documents.map((doc) => {
-    let mappedType: 'PDF' | 'URL' | 'YouTube' | 'Word' = 'PDF';
-    const ext = (doc.mimetype || (doc as any).file_type || '').toLowerCase();
-    if (ext === 'url' || ext === 'website') {
-      mappedType = 'URL';
-    } else if (ext === 'youtube') {
-      mappedType = 'YouTube';
-    } else if (ext === 'docx' || ext === 'doc' || ext === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-      mappedType = 'Word';
-    } else {
-      mappedType = 'PDF';
-    }
-
-    let dateAdded = 'Unknown';
+  async function askLibrary(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const query = question.trim();
+    if (!token || !user || !query || asking) return;
+    setNotice(null);
+    setAsking(true);
     try {
-      const date = new Date(doc.uploaded_at || (doc as any).created_at);
-      dateAdded = date.toLocaleDateString(undefined, {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      });
-    } catch {
-      // fallback
+      const result = await queryKnowledgeBase(query, user.id, token);
+      setAnswer({ question: query, text: result.answer, sources: result.sources || [] });
+    } catch (error) {
+      showError(error, 'The library could not answer this question.');
+    } finally {
+      setAsking(false);
     }
+  }
 
-    let size = 'Web Link';
-    if (mappedType === 'PDF') {
-      size = 'PDF Document';
-    } else if (mappedType === 'Word') {
-      size = 'Word Document';
-    } else if (mappedType === 'YouTube') {
-      size = 'Video Script';
-    }
-
-    return {
-      id: doc.document_id,
-      name: doc.filename,
-      type: mappedType,
-      status: 'indexed',
-      dateAdded,
-      size,
-      chunks: doc.chunk_count || 0,
-      s3Url: (doc as any).s3_url,
-    };
-  });
-
-  // Filter Table Items
-  const filteredDocs = mappedDocuments.filter(doc => {
-    const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = typeFilter === 'all' || doc.type === typeFilter;
-    return matchesSearch && matchesType;
-  });
-
-  // Calculate simulated capacity (0.35 MB per document)
-  const totalStorageMB = parseFloat((documents.length * 0.35).toFixed(2));
-  const storagePct = Math.min((totalStorageMB / 100) * 100, 100);
-
-  const handleDocumentClick = (doc: DocumentItem) => {
-    if (doc.s3Url) {
-      window.open(doc.s3Url, '_blank');
-    }
-  };
+  const filteredSources = sources.filter(source =>
+    source.filename.toLowerCase().includes(search.trim().toLowerCase()) &&
+    (filter === 'all' || sourceType(source) === filter)
+  );
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8 font-sans antialiased text-slate-800">
-      <div className="max-w-[1400px] mx-auto space-y-8">
-        
-        <header className="rf-dashboard-banner rf-workspace-hero rf-workspace-library">
-          <div className="rf-workspace-hero-content">
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Source library</h1>
-            <p className="max-w-xl text-sm leading-relaxed text-zinc-600">Add documents, web pages, and video transcripts. Ask questions about the sources you have added.</p>
+    <main className="rf-library">
+      <header className="rf-library-heading">
+        <div>
+          <h1>Source library</h1>
+          <p>Keep your research material together and ask questions about it.</p>
+        </div>
+        <button type="button" className="rf-button rf-button-primary" onClick={() => setView('add')}>
+          <Plus size={18} aria-hidden="true" /> Add source
+        </button>
+      </header>
+
+      <nav className="rf-library-nav" aria-label="Library views">
+        {views.map(({ id, label, icon: Icon }) => (
+          <button type="button" key={id} aria-pressed={view === id} onClick={() => setView(id)}>
+            <Icon size={17} aria-hidden="true" /> {label}
+          </button>
+        ))}
+      </nav>
+
+      {notice && (
+        <div className={`rf-library-notice ${notice.kind === 'error' ? 'text-rose-800' : 'text-emerald-800'}`} role={notice.kind === 'error' ? 'alert' : 'status'}>
+          <span>{notice.message}</span>
+          <button type="button" className="rf-report-control" onClick={() => setNotice(null)}>Dismiss</button>
+        </div>
+      )}
+
+      {view === 'sources' && (
+        <section className="rf-library-panel" aria-labelledby="sources-heading">
+          <div className="rf-library-tools">
+            <div>
+              <h2 id="sources-heading">Saved sources</h2>
+              {!isLoading && !loadFailed && <p>{filteredSources.length === sources.length ? `${sources.length} ${sources.length === 1 ? 'source' : 'sources'}` : `${filteredSources.length} of ${sources.length} sources`}</p>}
+            </div>
+            <div className="rf-library-filters">
+              <label className="rf-library-search">
+                <Search size={17} aria-hidden="true" />
+                <input type="search" aria-label="Search sources" placeholder="Search by title" value={search} onChange={event => setSearch(event.target.value)} />
+              </label>
+              <select aria-label="Source type" value={filter} onChange={event => setFilter(event.target.value)}>
+                <option value="all">All types</option>
+                {sourceTypes.map(type => <option key={type}>{type}</option>)}
+              </select>
+            </div>
           </div>
-        </header>
 
-        {/* Error / Success Alerts */}
-        <AnimatePresence>
-          {localError && (
-            <motion.div 
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="p-4 rounded-xl bg-red-50 border border-red-100 text-xs font-semibold text-red-700 flex items-center justify-between gap-2"
-            >
-              <div className="flex items-center gap-2">
-                <AlertCircle className="h-4.5 w-4.5 text-red-500 flex-shrink-0" />
-                <span>{localError}</span>
-              </div>
-              <button onClick={() => setLocalError(null)} className="text-red-400 hover:text-red-650 font-bold px-2 py-1">×</button>
-            </motion.div>
-          )}
-
-          {localSuccess && (
-            <motion.div 
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="p-4 rounded-xl bg-green-50 border border-green-100 text-xs font-semibold text-green-755 flex items-center justify-between gap-2"
-            >
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4.5 w-4.5 text-green-500 flex-shrink-0" />
-                <span>{localSuccess}</span>
-              </div>
-              <button onClick={() => setLocalSuccess(null)} className="text-green-400 hover:text-green-600 font-bold px-2 py-1">×</button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Inputs Layout: 3 Columns Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
-          {/* Column 1: File Upload Box */}
-          <div
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            onClick={triggerFileInput}
-            className={`border-2 border-dashed rounded-xl p-6 text-center flex flex-col items-center justify-center cursor-pointer transition-all h-[210px] ${
-              isDragging
-                ? 'border-brand bg-brand-soft/40'
-                : 'border-zinc-200 bg-white hover:border-zinc-350 hover:bg-zinc-50/30'
-            }`}
-          >
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              className="hidden"
-              accept=".pdf,.docx,.doc,.txt"
-              disabled={isUploading}
-            />
-            <div className="p-3 bg-zinc-50 border border-zinc-100 rounded-xl mb-3 text-zinc-650">
-              {isUploading ? (
-                <Loader2 className="h-6 w-6 animate-spin text-brand" />
+          {isLoading ? <p className="rf-library-empty" role="status">Loading sources…</p> : loadFailed ? (
+            <div className="rf-library-empty">
+              <p>Could not load your sources.</p>
+              <button type="button" className="rf-report-control" onClick={() => token && refreshSources(token)}>Try again</button>
+            </div>
+          ) : filteredSources.length ? (
+            <ul className="rf-source-list">
+              {filteredSources.map(source => {
+                const type = sourceType(source);
+                const Icon = type === 'Website' || type === 'YouTube' ? Globe2 : FileText;
+                const href = sourceHref(source.s3_url);
+                const date = new Date(source.uploaded_at || source.created_at || '');
+                return (
+                  <li key={source.document_id}>
+                    <span className="rf-source-icon"><Icon size={19} aria-hidden="true" /></span>
+                    <div className="rf-source-details">
+                      {href ? (
+                        <a href={href} target="_blank" rel="noopener noreferrer">{source.filename} <ArrowUpRight size={15} aria-hidden="true" /></a>
+                      ) : <strong>{source.filename}</strong>}
+                      <p>{type}{Number.isFinite(date.getTime()) && <> · <time dateTime={date.toISOString()}>{dateFormatter.format(date)}</time></>}</p>
+                    </div>
+                    {pendingRemoval === source.document_id ? (
+                      <div className="rf-source-actions">
+                        <span className="text-sm text-ui-muted">Remove this source?</span>
+                        <button type="button" className="rf-report-control" disabled={removing} onClick={() => setPendingRemoval(null)}>Cancel</button>
+                        <button type="button" className="rf-report-control text-rose-800" disabled={removing} onClick={() => removeSource(source.document_id)}>{removing ? 'Removing…' : 'Remove'}</button>
+                      </div>
+                    ) : (
+                      <button type="button" className="rf-report-control" aria-label={`Remove ${source.filename}`} disabled={removing} onClick={() => setPendingRemoval(source.document_id)}><Trash2 size={16} aria-hidden="true" /></button>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <div className="rf-library-empty">
+              <BookOpen size={27} aria-hidden="true" />
+              <h3>{sources.length ? 'No matching sources' : 'Your library is empty'}</h3>
+              <p>{sources.length ? 'Try a different title or source type.' : 'Add a document or a link to start your collection.'}</p>
+              {sources.length ? (
+                <button type="button" className="rf-report-control" onClick={() => { setSearch(''); setFilter('all'); }}>Clear filters</button>
               ) : (
-                <Upload className="h-6 w-6 text-zinc-500" />
+                <button type="button" className="rf-button rf-button-primary" onClick={() => setView('add')}>Add your first source</button>
               )}
             </div>
-            <p className="text-sm font-bold text-zinc-800">
-              {isUploading ? `Ingesting File (${uploadProgress}%)` : 'Drag & Drop files here'}
-            </p>
-            <p className="text-xs text-zinc-450 mt-1 font-semibold">
-              {isUploading ? 'Chunking and generating embeddings...' : 'or click to browse. Supports PDF, DOCX, TXT (Max 10MB)'}
-            </p>
+          )}
+        </section>
+      )}
 
-            {isUploading && (
-              <div className="w-full max-w-[200px] mt-3 h-1 bg-zinc-100 rounded-full overflow-hidden">
-                <div className="h-full bg-brand rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
-              </div>
-            )}
-          </div>
-
-          {/* Column 2: Web & YouTube URL Scraper */}
-          <div className="bg-white border border-zinc-200 rounded-xl p-5  flex flex-col justify-between gap-4 h-[210px]">
-            <div className="flex items-center justify-between pb-1 border-b border-zinc-50">
-              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
-                <Link2 className="h-4 w-4 text-zinc-400" /> Scrape & Vectorize URL
-              </span>
-              <div className="flex bg-zinc-50 p-0.5 rounded-lg border border-zinc-150">
-                <button
-                  onClick={() => setUrlType('website')}
-                  className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider transition-all ${
-                    urlType === 'website'
-                      ? 'bg-white text-zinc-800  font-bold'
-                      : 'text-zinc-400 hover:text-zinc-600'
-                  }`}
-                >
-                  Website
-                </button>
-                <button
-                  onClick={() => setUrlType('youtube')}
-                  className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider transition-all ${
-                    urlType === 'youtube'
-                      ? 'bg-white text-red-650  font-bold'
-                      : 'text-zinc-400 hover:text-zinc-600'
-                  }`}
-                >
-                  YouTube
-                </button>
-              </div>
-            </div>
-
-            <form onSubmit={handleUrlSubmit} className="space-y-3 flex-1 flex flex-col justify-between">
-              <div className="space-y-1.5">
-                <div className="relative">
-                  {urlType === 'website' ? (
-                    <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
-                  ) : (
-                    <YoutubeIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-red-500" />
-                  )}
-                  <input
-                    type="url"
-                    required
-                    placeholder={urlType === 'website' ? 'https://example.com/research-paper' : 'https://youtube.com/watch?v=...'}
-                    value={urlInput}
-                    onChange={(e) => setUrlInput(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 border border-zinc-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-brand bg-white transition-all text-zinc-800 placeholder-zinc-400"
-                  />
-                </div>
-                <p className="text-[10px] text-zinc-400 leading-normal font-medium">
-                  {urlType === 'website'
-                    ? 'The webpage will be scraped, stripped of script boilerplates, and vectorized.'
-                    : 'The video captions transcript will be reconstructed and vectorized as context.'}
-                </p>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isIngestingUrl || !urlInput.trim()}
-                className="w-full bg-[var(--rf-accent)] hover:bg-[var(--rf-accent-hover)] text-white text-xs font-bold py-2.5 rounded-lg cursor-pointer transition-all flex items-center justify-center gap-1.5 disabled:opacity-40  "
-              >
-                {isIngestingUrl ? (
-                  <>
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    Ingesting Context...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
-                    Scrape & Index Context
-                  </>
-                )}
+      {view === 'add' && (
+        <section className="rf-library-add" aria-label="Add a source">
+          <div className="rf-library-panel rf-library-form">
+            <span className="rf-source-icon"><Upload size={19} aria-hidden="true" /></span>
+            <h2>Upload a document</h2>
+            <p>PDF, TXT, DOC, or DOCX. Up to 10 MB per file.</p>
+            <div className="rf-library-drop" data-dragging={dragging} onDragOver={event => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={onDrop}>
+              <input type="file" ref={fileInput} className="sr-only" tabIndex={-1} aria-label="Upload a document" accept=".pdf,.txt,.doc,.docx" onChange={event => {
+                const file = event.target.files?.[0];
+                event.target.value = '';
+                if (file) void uploadFile(file);
+              }} />
+              <p>Drag a file here or choose one to upload.</p>
+              <button type="button" className="rf-button rf-button-primary" disabled={isLoading || pendingImport !== null} onClick={() => fileInput.current?.click()}>
+                {pendingImport === 'file' && <Loader2 className="motion-safe:animate-spin" size={16} aria-hidden="true" />}
+                {pendingImport === 'file' ? 'Adding document…' : 'Choose file'}
               </button>
-            </form>
-          </div>
-
-          {/* Column 3: Storage usage & metrics */}
-          <div className="bg-white border border-zinc-200 rounded-xl p-5  flex flex-col justify-between h-[210px]">
-            <div className="space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Storage Capacity (AWS S3)</span>
-                <HardDrive className="h-4 w-4 text-brand" />
-              </div>
-              <p className="text-2xl font-black text-neutral-900 tracking-tight mt-1">
-                {totalStorageMB} MB <span className="text-xs font-bold text-neutral-400">of 100 MB Limit</span>
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <div className="w-full h-2 bg-zinc-100 rounded-full overflow-hidden">
-                <div className="h-full bg-brand rounded-full transition-all duration-300" style={{ width: `${storagePct}%` }} />
-              </div>
-              <div className="flex justify-between items-center text-[9px] text-zinc-400 font-bold uppercase">
-                <span>{storagePct}% USED</span>
-                <span>{(100 - totalStorageMB).toFixed(2)} MB AVAILABLE</span>
-              </div>
-            </div>
-
-            <div className="bg-brand-soft/45 border border-ui-border rounded-xl p-2.5 flex items-start gap-2">
-              <Info className="h-4 w-4 text-brand flex-shrink-0 mt-0.5" />
-              <p className="text-[10px] text-brand-hover leading-normal font-semibold">
-                Uploaded document archives are saved securely in AWS S3 and split into vector indexes for semantic workspace search.
-              </p>
             </div>
           </div>
+          <form className="rf-library-panel rf-library-form" onSubmit={importLink}>
+            <span className="rf-source-icon"><Link2 size={19} aria-hidden="true" /></span>
+            <h2>Add a link</h2>
+            <p>Save a public webpage or a YouTube transcript.</p>
+            <label>Link type<select value={urlType} onChange={event => setUrlType(event.target.value === 'youtube' ? 'youtube' : 'website')}>
+              <option value="website">Website</option>
+              <option value="youtube">YouTube</option>
+            </select></label>
+            <label>{urlType === 'youtube' ? 'Video URL' : 'Website URL'}
+              <input type="url" value={url} onChange={event => setUrl(event.target.value)} placeholder={urlType === 'youtube' ? 'https://www.youtube.com/watch?v=…' : 'https://example.com/article'} required />
+            </label>
+            <button type="submit" className="rf-button rf-button-primary self-start" disabled={isLoading || pendingImport !== null || !url.trim()}>
+              {pendingImport === 'link' ? 'Adding link…' : 'Add link'}
+            </button>
+          </form>
+        </section>
+      )}
 
-        </div>
-
-        {/* 2 Columns: Table View on Left | Chat Assistant on Right */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* LEFT: TABLE VIEW OF DOCUMENTS */}
-          <div className="lg:col-span-8 space-y-6">
-            
-            {/* Search & Filter Controls */}
-            <div className="bg-white border border-zinc-200 rounded-xl p-4 flex flex-col sm:flex-row items-center gap-3.5 ">
-              <div className="relative flex-1 w-full">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                <input
-                  type="text"
-                  placeholder="Search library documents..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-zinc-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-brand bg-white transition-all text-zinc-800 placeholder-zinc-400"
-                />
-              </div>
-
-              <div className="flex gap-2 w-full sm:w-auto">
-                <select
-                  value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value as any)}
-                  className="px-3 py-1.5 border border-zinc-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-brand bg-white text-zinc-700 cursor-pointer"
-                >
-                  <option value="all">All Types</option>
-                  <option value="PDF">PDFs</option>
-                  <option value="URL">Web Links</option>
-                  <option value="YouTube">YouTube</option>
-                  <option value="Word">Word Docs</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Document Table */}
-            <div className="bg-white border border-zinc-200 rounded-xl overflow-hidden ">
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-left text-xs">
-                  <thead>
-                    <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 uppercase font-bold text-[9px] tracking-wider">
-                      <th className="p-4">Name / Title</th>
-                      <th className="p-4">Type</th>
-                      <th className="p-4">Date Added</th>
-                      <th className="p-4">Chunks</th>
-                      <th className="p-4">Storage Location</th>
-                      <th className="p-4 text-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-zinc-100">
-                    {isLoading ? (
-                      Array.from({ length: 3 }).map((_, i) => (
-                        <tr key={i} className="animate-pulse">
-                          <td colSpan={6} className="p-4 h-12 bg-zinc-50/20" />
-                        </tr>
-                      ))
-                    ) : filteredDocs.map((doc) => (
-                      <tr key={doc.id} className="hover:bg-zinc-550/5 transition-colors">
-                        <td
-                          onClick={() => handleDocumentClick(doc)}
-                          className={`p-4 font-bold text-zinc-800 max-w-[280px] truncate transition-colors ${
-                            doc.s3Url ? 'hover:text-brand hover:underline cursor-pointer' : ''
-                          }`}
-                          title={doc.name}
-                        >
-                          {doc.name}
-                        </td>
-                        <td className="p-4">
-                          <span className="inline-flex items-center gap-1.5 font-bold text-[9px] uppercase tracking-wider text-zinc-500">
-                            {doc.type === 'PDF' && <FileText className="h-3.5 w-3.5 text-rose-500" />}
-                            {doc.type === 'URL' && <Globe className="h-3.5 w-3.5 text-blue-500" />}
-                            {doc.type === 'YouTube' && <YoutubeIcon className="h-3.5 w-3.5 text-red-500" />}
-                            {doc.type === 'Word' && <FileText className="h-3.5 w-3.5 text-indigo-500" />}
-                            {doc.type}
-                          </span>
-                        </td>
-                        <td className="p-4 text-zinc-500 font-semibold">{doc.dateAdded}</td>
-                        <td className="p-4 text-zinc-650 font-mono font-bold">{doc.chunks}</td>
-                        <td className="p-4 text-zinc-450 font-semibold truncate max-w-[140px]">
-                          {doc.s3Url ? 'AWS S3 Cloud' : 'Qdrant DB Link'}
-                        </td>
-                        <td className="p-4 text-right">
-                          <button
-                            onClick={() => deleteDoc(doc.id)}
-                            className="p-1.5 text-zinc-400 hover:text-red-650 hover:bg-red-50 rounded transition-colors"
-                            title="Delete Vectors & Archive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                    {filteredDocs.length === 0 && !isLoading && (
-                      <tr>
-                        <td colSpan={6} className="text-center py-12 text-zinc-450 font-semibold uppercase tracking-wider text-[10px]">
-                          No vector indexes found in your vault.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-          </div>
-
-          {/* RIGHT: SEMANTIC RAG Q&A CHAT */}
-          <div className="lg:col-span-4">
-            <div className="bg-white border border-zinc-200 rounded-xl p-6  flex flex-col h-[480px] justify-between">
-              
-              <div>
-                <div className="pb-3 border-b border-zinc-100 flex items-center justify-between mb-4">
-                  <h2 className="text-xs font-black text-zinc-800 uppercase tracking-widest flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-brand" /> Ask about your library
-                  </h2>
-                  <span className="text-[8px] font-black uppercase bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-100">
-                    Grounded
-                  </span>
+      {view === 'ask' && (
+        <section className="rf-library-panel rf-library-form rf-library-ask" aria-labelledby="ask-heading">
+          <span className="rf-source-icon"><MessageSquare size={19} aria-hidden="true" /></span>
+          <h2 id="ask-heading">Ask the library</h2>
+          <p>Ask a question across your saved files, webpages, and transcripts.</p>
+          <form className="rf-library-form" onSubmit={askLibrary}>
+            <label>Your question
+              <textarea rows={3} value={question} onChange={event => setQuestion(event.target.value)} placeholder="What do these sources agree on?" required />
+            </label>
+            <button type="submit" className="rf-button rf-button-primary self-start" disabled={asking || !question.trim()}>{asking ? 'Looking through your sources…' : 'Ask question'}</button>
+          </form>
+          {answer && (
+            <article className="rf-library-answer" aria-live="polite">
+              <h3>{answer.question}</h3>
+              <div className="prose prose-sm max-w-none"><ReactMarkdown>{answer.text}</ReactMarkdown></div>
+              {answer.sources.length > 0 && (
+                <div className="mt-4">
+                  <h4 className="text-sm font-semibold">Sources used</h4>
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-ui-muted">{Array.from(new Set(answer.sources)).map(source => <li key={source}>{source}</li>)}</ul>
                 </div>
-
-                {/* Chat Display Area */}
-                <div className="h-[300px] overflow-y-auto pr-1 py-1 space-y-4 no-scrollbar">
-                  {!chatAnswer && !isQuerying && (
-                    <div className="h-full flex flex-col items-center justify-center text-center space-y-3 opacity-50 my-10">
-                      <div className="w-12 h-12 bg-brand-soft rounded-xl flex items-center justify-center ">
-                        <BookOpen className="w-5 h-5 text-brand" />
-                      </div>
-                      <div>
-                        <h4 className="text-[10px] font-black text-zinc-700 uppercase tracking-widest">Ask about your sources</h4>
-                        <p className="text-[9px] text-zinc-500 max-w-[240px] mx-auto mt-1 leading-relaxed font-semibold uppercase tracking-wider">
-                          Enter any question to search matching vector chunks and get cited answers.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {isQuerying && (
-                    <div className="h-full flex flex-col items-center justify-center text-center space-y-3 my-10">
-                      <Loader2 className="w-6 h-6 animate-spin text-brand" />
-                      <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest animate-pulse">
-                        Retrieving relevant chunks...
-                      </span>
-                    </div>
-                  )}
-
-                  {chatAnswer && !isQuerying && (
-                    <div className="space-y-4 animate-in fade-in duration-200">
-                      <div className="p-4 bg-zinc-50 border border-zinc-150 rounded-xl text-zinc-700 font-sans text-xs leading-relaxed">
-                        <div className="prose prose-xs max-w-none text-zinc-700">
-                          <ReactMarkdown>{chatAnswer}</ReactMarkdown>
-                        </div>
-                      </div>
-
-                      {/* Source Citations */}
-                      {chatSources.length > 0 && (
-                        <div className="space-y-1.5">
-                          <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest block">Retrieved sources:</span>
-                          <div className="flex flex-wrap gap-1.5">
-                            {chatSources.map((source, idx) => (
-                              <span 
-                                key={idx}
-                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white border border-zinc-200 text-[10px] font-bold text-zinc-650"
-                              >
-                                <FileCheck className="w-3 h-3 text-brand" />
-                                {source}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Chat Input Bar */}
-              <form onSubmit={handleQuery} className="pt-3 border-t border-zinc-100">
-                <div className="flex gap-2 relative">
-                  <input
-                    type="text"
-                    required
-                    disabled={isQuerying || documents.length === 0}
-                    placeholder={documents.length === 0 ? "Upload documents to ask questions..." : "Ask your vector vault..."}
-                    value={chatQuery}
-                    onChange={(e) => setChatQuery(e.target.value)}
-                    className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-4 pr-12 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-brand text-zinc-800 placeholder-zinc-400 disabled:opacity-50"
-                  />
-                  <button
-                    type="submit"
-                    disabled={!chatQuery.trim() || isQuerying || documents.length === 0}
-                    className="absolute right-1.5 top-1.5 p-1.5 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors disabled:opacity-30 cursor-pointer"
-                  >
-                    <Send className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </form>
-
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </div>
+              )}
+            </article>
+          )}
+        </section>
+      )}
+    </main>
   );
 }

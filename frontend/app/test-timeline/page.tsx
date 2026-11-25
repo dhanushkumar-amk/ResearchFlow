@@ -10,14 +10,14 @@ export default function TestTimeline() {
   const nodes = ['planner', 'researcher', 'rag', 'synthesizer', 'critic'];
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black p-12">
-      <div className="max-w-2xl mx-auto space-y-12 bg-white dark:bg-zinc-900 p-12 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-xl animate-in zoom-in-95 duration-500">
+    <div className="min-h-screen bg-zinc-50 p-12">
+      <div className="max-w-2xl mx-auto space-y-12 bg-white p-12 rounded-3xl border border-zinc-200 shadow-xl animate-in zoom-in-95 duration-500">
         <header className="text-center space-y-4">
-          <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">Timeline Test Bench</h1>
+          <h1 className="text-3xl font-bold text-zinc-900">Timeline Test Bench</h1>
           <p className="text-zinc-500">Test different agent states to ensure smooth transitions</p>
         </header>
 
-        <div className="flex flex-wrap items-center justify-center gap-4 border-y border-zinc-100 dark:border-zinc-800 py-8">
+        <div className="flex flex-wrap items-center justify-center gap-4 border-y border-zinc-100 py-8">
           {nodes.map(node => (
             <button
               key={node}
@@ -28,7 +28,7 @@ export default function TestTimeline() {
               className={`px-6 py-2 rounded-xl font-bold transition-all active:scale-95 ${
                 activeNode === node 
                   ? 'bg-emerald-500 text-white shadow-lg ring-4 ring-emerald-600/20' 
-                  : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200'
+                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
               }`}
             >
               {node}
@@ -42,7 +42,7 @@ export default function TestTimeline() {
             className={`px-6 py-2 rounded-xl font-bold transition-all active:scale-95 ${
               isComplete 
                 ? 'bg-green-600 text-white shadow-lg ring-4 ring-green-600/20' 
-                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200'
+                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
             }`}
           >
             Complete
@@ -52,7 +52,7 @@ export default function TestTimeline() {
               setActiveNode(null);
               setIsComplete(false);
             }}
-            className="px-6 py-2 rounded-xl font-bold bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:opacity-80 transition-all active:scale-95"
+            className="px-6 py-2 rounded-xl font-bold bg-zinc-900 text-white hover:opacity-80 transition-all active:scale-95"
           >
             Reset
           </button>
