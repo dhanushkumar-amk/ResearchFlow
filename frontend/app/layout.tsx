@@ -56,7 +56,7 @@ export default function RootLayout({
         <ErrorSuppressor />
         <AuthProvider>
           <AuthGuard>
-            <NextTopLoader color="#5546d8" showSpinner={false} height={3} />
+            <NextTopLoader color="#2449bf" showSpinner={false} height={3} />
             {children}
           </AuthGuard>
         </AuthProvider>
