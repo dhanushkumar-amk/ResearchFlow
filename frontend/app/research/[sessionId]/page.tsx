@@ -178,7 +178,7 @@ export default function ResearchPage() {
   }, [connectToStream]);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-16 font-sans">
+    <div className="min-h-screen bg-background pt-6 font-sans">
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
 
         {/* Breadcrumb + Header */}
@@ -190,7 +190,7 @@ export default function ResearchPage() {
             <ArrowLeft className="w-4 h-4 text-zinc-500 group-hover:-translate-x-0.5 transition-transform animate-in slide-in-from-right-1" />
           </Link>
           <div className="text-sm text-zinc-400 flex items-center gap-1">
-            <Link href="/" className="hover:text-emerald-600 transition-colors">Home</Link>
+            <Link href="/" className="hover:text-indigo-600 transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <span className="text-zinc-600 font-medium font-sans">Research</span>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -309,7 +309,7 @@ export default function ResearchPage() {
 
             {/* Deep Dive Suggestions Block */}
             {isComplete && (
-              <div className="mt-8 bg-gradient-to-r from-emerald-50 via-teal-50/50 to-blue-50/10 border border-emerald-100/70 rounded-3xl p-6 md:p-8 shadow-sm space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <div className="mt-8 bg-gradient-to-r from-indigo-50 via-teal-50/50 to-blue-50/10 border border-emerald-100/70 rounded-3xl p-6 md:p-8 shadow-sm space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div>
                   <h3 className="text-xs font-black text-emerald-800 uppercase tracking-widest flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-emerald-600 fill-emerald-500/20" /> Deep Dive Intelligence Suggestions
@@ -349,7 +349,7 @@ export default function ResearchPage() {
                       }}
                       className="group p-4 bg-white/75 hover:bg-white border border-emerald-100/50 hover:border-emerald-200 rounded-2xl text-left transition-all duration-300 hover:shadow-md active:scale-[0.99] cursor-pointer"
                     >
-                      <h4 className="text-xs font-bold text-zinc-800 group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                      <h4 className="text-xs font-bold text-zinc-800 group-hover:text-indigo-700 transition-colors flex items-center gap-1.5">
                         <ChevronRight className="w-3.5 h-3.5 text-emerald-500 group-hover:translate-x-0.5 transition-transform" />
                         {item.title}
                       </h4>

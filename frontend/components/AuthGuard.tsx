@@ -3,6 +3,7 @@
 import { useAuth } from '../lib/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
+import Navbar from './Navbar';
 import { Loader2 } from 'lucide-react';
 
 // Pages that don't need auth
@@ -27,8 +28,8 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   // Show spinner while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-700" role="status" aria-label="Loading ResearchFlow" />
       </div>
     );
   }
@@ -40,5 +41,15 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   // If not logged in and on a protected page — show nothing (will redirect)
   if (!user && !isPublic) return null;
 
-  return <>{children}</>;
+  if (user && !pathname.startsWith('/share/')) {
+    return (
+      <div className="rf-workspace">
+        <a className="rf-skip-link" href="#workspace-content">Skip to content</a>
+        <Navbar />
+        <div className="rf-workspace-content" id="workspace-content" tabIndex={-1}>{children}</div>
+      </div>
+    );
+  }
+
+  return <div className={PUBLIC_PATHS.includes(pathname) ? 'rf-auth' : undefined}>{children}</div>;
 }

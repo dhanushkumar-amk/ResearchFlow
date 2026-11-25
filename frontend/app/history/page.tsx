@@ -52,12 +52,12 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white pt-24 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-emerald-50 selection:text-emerald-700">
+    <div className="min-h-screen bg-white pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans antialiased selection:bg-indigo-50 selection:text-indigo-700">
       {/* Background Decorative Soft Glows */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-emerald-500/[0.015] rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
 
-      <main className="max-w-5xl mx-auto px-4 py-10 relative z-10">
+      <main className="max-w-5xl mx-auto py-8 relative z-10">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-3">
@@ -71,21 +71,23 @@ export default function HistoryPage() {
           </div>
 
           {/* Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
               <input
                 type="text"
-                placeholder="Search..."
+                aria-label="Search research history"
+                placeholder="Search reports"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 pr-4 py-2 border border-zinc-200 rounded-xl text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 transition-all w-48 bg-white"
+                className="pl-9 pr-4 py-2 border border-zinc-200 rounded-xl text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition-all w-48 bg-white"
               />
             </div>
             <select
+              aria-label="Sort research history"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'newest' | 'quality')}
-              className="px-3 py-2 border border-zinc-200 rounded-xl text-sm outline-none focus:border-emerald-500 bg-white cursor-pointer"
+              className="px-3 py-2 border border-zinc-200 rounded-xl text-sm outline-none focus:border-indigo-500 bg-white cursor-pointer"
             >
               <option value="newest">Newest First</option>
               <option value="quality">Highest Score</option>
@@ -128,7 +130,7 @@ export default function HistoryPage() {
                 </div>
 
                 {/* Query */}
-                <p className="text-sm font-medium text-zinc-800 line-clamp-3 leading-relaxed group-hover:text-emerald-600 transition-colors">
+                <p className="text-sm font-medium text-zinc-800 line-clamp-3 leading-relaxed group-hover:text-indigo-600 transition-colors">
                   {item.query}
                 </p>
 

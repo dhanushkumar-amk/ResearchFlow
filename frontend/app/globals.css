@@ -2,8 +2,14 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  --background: #ffffff;
-  --foreground: #18181b;
+  --background: #f5f6fc;
+  --foreground: #181b32;
+  --rf-accent: #5040cf;
+  --rf-accent-hover: #4131b5;
+  --rf-accent-soft: #eeebff;
+  --rf-muted: #555d77;
+  --rf-border: #e1e4f0;
+  --rf-rail: 15rem;
 }
 
 @theme inline {
@@ -28,8 +34,250 @@ body {
   display: inline-block;
   width: 2px;
   height: 1.2em;
-  background-color: #2563eb;
+  background-color: var(--rf-accent);
   margin-left: 2px;
   vertical-align: text-bottom;
   animation: blink 1s step-end infinite;
+}
+
+:where(a, button, input, textarea, select, summary):focus-visible {
+  outline: 2px solid #6151df;
+  outline-offset: 3px;
+}
+
+.rf-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  color: var(--foreground);
+  font-size: 1.05rem;
+  font-weight: 750;
+  letter-spacing: -.04em;
+  white-space: nowrap;
+}
+
+.rf-brand-mark, .rf-icon-tile, .rf-account-initial {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: .75rem;
+}
+
+.rf-brand-mark {
+  background: var(--rf-accent);
+  color: white;
+}
+
+.rf-icon-tile, .rf-account-initial {
+  color: var(--rf-accent-hover);
+  background: var(--rf-accent-soft);
+}
+
+.rf-button {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  padding: .65rem 1rem;
+  border: 1px solid transparent;
+  border-radius: .65rem;
+  font-size: .875rem;
+  font-weight: 650;
+  transition: background-color 150ms, color 150ms, border-color 150ms;
+}
+
+.rf-button-primary {
+  color: white;
+  background: var(--rf-accent);
+}
+
+.rf-button-primary:hover { background: var(--rf-accent-hover); }
+.rf-button-quiet { color: var(--foreground); }
+.rf-button-quiet:hover, .rf-button-outline:hover { background: var(--rf-accent-soft); }
+.rf-button-outline { color: var(--foreground); border-color: var(--rf-border); background: white; }
+
+.rf-landing { background: #fbfbff; }
+.rf-landing-width { width: min(100% - 2rem, 76rem); margin-inline: auto; }
+.rf-landing-header { border-bottom: 1px solid var(--rf-border); }
+.rf-hero {
+  display: grid;
+  grid-template-columns: .96fr 1fr;
+  gap: clamp(2rem, 6vw, 5.25rem);
+  align-items: center;
+  padding-block: clamp(3rem, 7vw, 6.5rem);
+}
+
+.rf-eyebrow {
+  color: var(--rf-accent-hover);
+  font-size: .75rem;
+  font-weight: 750;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.rf-hero h1 {
+  max-width: 9ch;
+  margin-top: .75rem;
+  font-size: clamp(3.1rem, 7vw, 6.75rem);
+  font-weight: 760;
+  line-height: .98;
+  letter-spacing: -.075em;
+}
+
+.rf-hero-summary {
+  max-width: 36rem;
+  margin-block: 1.45rem 1.65rem;
+  color: var(--rf-muted);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.65;
+}
+
+.rf-hero-visual {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  aspect-ratio: 1.23;
+  border: 1px solid #2c315c;
+  border-radius: 1.4rem;
+  background: radial-gradient(ellipse at 70% 30%, #514395, #161735 72%);
+  box-shadow: 0 24px 56px -32px #29246180;
+}
+
+.rf-hero-visual img { object-fit: cover; }
+.rf-features { padding-bottom: clamp(2.75rem, 6vw, 5rem); scroll-margin-top: 1rem; }
+.rf-features h2 { margin-bottom: 1.1rem; font-size: clamp(1.55rem, 3.1vw, 2.2rem); font-weight: 720; letter-spacing: -.045em; }
+.rf-feature, .rf-panel {
+  min-width: 0;
+  border: 1px solid var(--rf-border);
+  border-radius: 1rem;
+  background: white;
+  box-shadow: 0 3px 10px #25234c06;
+}
+
+.rf-feature { padding: clamp(1rem, 2vw, 1.5rem); }
+.rf-feature h3 { margin-block: .8rem .3rem; font-size: 1.05rem; font-weight: 700; }
+.rf-feature p { color: var(--rf-muted); line-height: 1.6; font-size: .9rem; }
+.rf-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--rf-border); min-height: 5.25rem; }
+
+.rf-workspace { min-height: 100dvh; }
+.rf-skip-link {
+  position: fixed;
+  top: .5rem;
+  left: .5rem;
+  z-index: 60;
+  transform: translateY(-150%);
+  border-radius: .5rem;
+  padding: .6rem .85rem;
+  color: white;
+  background: var(--rf-accent);
+}
+
+.rf-skip-link:focus { transform: none; }
+.rf-workspace-header {
+  position: fixed;
+  inset: 0 auto 0 0;
+  display: flex;
+  width: var(--rf-rail);
+  flex-direction: column;
+  z-index: 50;
+  padding: 1.2rem 1rem;
+  background: #fff;
+  border-right: 1px solid var(--rf-border);
+}
+
+.rf-workspace-brand { padding: .3rem .35rem 1.7rem; }
+.rf-workspace-navigation { display: flex; flex-direction: column; justify-content: space-between; flex: 1; overflow-y: auto; }
+.rf-nav-group { display: grid; gap: .25rem; }
+.rf-nav-link {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: .75rem;
+  padding: .6rem .75rem;
+  border-radius: .65rem;
+  color: var(--rf-muted);
+  font-size: .875rem;
+  font-weight: 620;
+  cursor: pointer;
+}
+
+.rf-nav-link:hover { background: var(--background); color: var(--foreground); }
+.rf-nav-link[aria-current=page] { color: var(--rf-accent-hover); background: var(--rf-accent-soft); }
+.rf-nav-account { padding-top: .75rem; border-top: 1px solid var(--rf-border); }
+.rf-account-summary { display: flex; gap: .6rem; align-items: center; margin-top: .35rem; padding: .65rem .4rem .15rem; font-size: .85rem; }
+.rf-account-initial { width: 2.2rem; height: 2.2rem; font-weight: 750; overflow: hidden; }
+.rf-mobile-toggle { display: none; }
+.rf-workspace-content { margin-left: var(--rf-rail); min-width: 0; }
+.rf-workspace-content > div:where(.bg-white, .bg-gray-50, .bg-slate-50, .bg-zinc-50) { background: var(--background); }
+
+.rf-auth > div {
+  min-height: 100dvh;
+  background: radial-gradient(ellipse at 48% 10%, #eae6ff, transparent 58%), var(--background);
+}
+
+.rf-auth > div > .absolute, .rf-workspace-content > div > .absolute.pointer-events-none { display: none; }
+.rf-panel { padding: clamp(1rem, 2.4vw, 1.55rem); }
+.rf-dashboard { width: min(100% - 2rem, 76rem); margin-inline: auto; padding-block: clamp(1.75rem, 4.5vw, 3.75rem); }
+.rf-dashboard h1 { font-size: clamp(1.9rem, 4vw, 3rem); font-weight: 750; letter-spacing: -.055em; line-height: 1.1; }
+.rf-dashboard h2 { font-size: 1.05rem; font-weight: 720; letter-spacing: -.025em; }
+.rf-dashboard-banner {
+  border: 1px solid #3c3677;
+  border-radius: 1rem;
+  padding: clamp(1.25rem, 3.6vw, 2.4rem);
+  color: #fff;
+  background: radial-gradient(ellipse at top right, #5242a7, transparent 67%), #24204c;
+}
+
+@media (max-width: 900px) {
+  .rf-hero { grid-template-columns: 1fr; }
+  .rf-hero h1 { max-width: 12ch; }
+  .rf-hero-visual { aspect-ratio: 1.65; }
+}
+
+@media (max-width: 767px) {
+  .rf-workspace-header {
+    position: sticky;
+    inset: 0 0 auto;
+    width: auto;
+    height: 4rem;
+    padding: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--rf-border);
+  }
+  .rf-workspace-brand { display: flex; align-items: center; justify-content: space-between; min-height: 4rem; padding: 0 1rem; }
+  .rf-mobile-toggle { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: .65rem; color: var(--foreground); }
+  .rf-mobile-toggle:hover { background: var(--rf-accent-soft); }
+  .rf-workspace-navigation { display: none; position: absolute; inset: 4rem 0 auto; max-height: calc(100dvh - 4rem); padding: .75rem 1rem; border-bottom: 1px solid var(--rf-border); background: white; }
+  .rf-workspace-navigation[data-open=true] { display: flex; }
+  .rf-workspace-content { margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rf-button, .rf-nav-link { transition: none; }
+  .streaming-cursor { animation: none; }
+}
+
+@media (min-width: 900px) {
+  .rf-auth {
+    display: grid;
+    grid-template-columns: minmax(20rem, .9fr) minmax(28rem, 1fr);
+    min-height: 100dvh;
+    padding: .8rem;
+    gap: .8rem;
+  }
+
+  .rf-auth::before {
+    content: "";
+    border-radius: 1.25rem;
+    background: #211f45 url('/research-still-life.webp') center / cover;
+  }
+
+  .rf-auth > div {
+    min-height: calc(100dvh - 1.6rem);
+    border: 1px solid var(--rf-border);
+    border-radius: 1.25rem;
+  }
 }

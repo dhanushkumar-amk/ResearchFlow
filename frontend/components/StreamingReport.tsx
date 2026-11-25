@@ -248,7 +248,7 @@ export default function StreamingReport({
               onClick={handleCopy}
               disabled={!content}
               title={isPublic ? "Copy Public Link" : "Copy Report Content"}
-              className={`p-2 rounded-lg transition-all disabled:opacity-30 tooltip ${copied ? 'text-green-600 bg-green-50' : 'text-zinc-650 hover:text-emerald-600 hover:bg-emerald-50'}`}
+              className={`p-2 rounded-lg transition-all disabled:opacity-30 tooltip ${copied ? 'text-green-600 bg-green-50' : 'text-zinc-650 hover:text-indigo-600 hover:bg-emerald-50'}`}
             >
               {copied ? <CheckCircle2 className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
             </button>
@@ -256,7 +256,7 @@ export default function StreamingReport({
             <button
               onClick={() => setIsExportOpen(!isExportOpen)}
               disabled={!content}
-              className={`p-2 rounded-lg transition-all disabled:opacity-30 ${isExportOpen ? 'text-emerald-600 bg-emerald-50' : 'text-zinc-650 hover:text-emerald-600 hover:bg-emerald-50'}`}
+              className={`p-2 rounded-lg transition-all disabled:opacity-30 ${isExportOpen ? 'text-emerald-600 bg-emerald-50' : 'text-zinc-650 hover:text-indigo-600 hover:bg-emerald-50'}`}
             >
               <Download className="w-4 h-4" />
             </button>
@@ -272,16 +272,16 @@ export default function StreamingReport({
                   <div className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-50 mb-1">
                     Export Intelligence
                   </div>
-                  <button onClick={() => handleExport('pdf')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-emerald-700 rounded-xl text-xs font-bold transition-colors text-left cursor-pointer">
+                  <button onClick={() => handleExport('pdf')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-indigo-700 rounded-xl text-xs font-bold transition-colors text-left cursor-pointer">
                     <FileText className="w-4 h-4 text-red-500" /> Professional PDF
                   </button>
-                  <button onClick={() => handleExport('docx')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-emerald-700 rounded-xl text-xs font-bold transition-colors text-left cursor-pointer">
+                  <button onClick={() => handleExport('docx')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-indigo-700 rounded-xl text-xs font-bold transition-colors text-left cursor-pointer">
                     <FileCode className="w-4 h-4 text-emerald-500" /> Microsoft Word
                   </button>
-                  <button onClick={() => handleExport('md')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-emerald-700 rounded-xl text-xs font-bold transition-colors text-left cursor-pointer">
+                  <button onClick={() => handleExport('md')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-indigo-700 rounded-xl text-xs font-bold transition-colors text-left cursor-pointer">
                     <Download className="w-4 h-4 text-zinc-600" /> Markdown (Raw)
                   </button>
-                  <button onClick={() => handleExport('json')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-emerald-700 rounded-xl text-xs font-bold transition-colors border-t border-zinc-50 mt-1 text-left cursor-pointer">
+                  <button onClick={() => handleExport('json')} className="w-full flex items-center gap-3 px-3 py-2 hover:bg-emerald-50 text-zinc-700 hover:text-indigo-700 rounded-xl text-xs font-bold transition-colors border-t border-zinc-50 mt-1 text-left cursor-pointer">
                     <Sparkles className="w-4 h-4 text-amber-500" /> Research JSON
                   </button>
                 </motion.div>

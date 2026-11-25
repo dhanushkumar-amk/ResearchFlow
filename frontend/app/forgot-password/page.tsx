@@ -1,5 +1,7 @@
 'use client';
 
+import Brand from '@/components/Brand';
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants';
@@ -37,25 +39,18 @@ const ForgotPasswordPage = () => {
   return (
     <div className="min-h-screen bg-white text-[#0a0a0a] font-sans antialiased relative flex flex-col justify-center py-12 sm:px-6 lg:px-8 overflow-hidden">
       {/* Background Decorative Glows */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/[0.03] rounded-full blur-[100px] pointer-events-none z-0" />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-emerald-500/[0.02] rounded-full blur-[130px] pointer-events-none z-0" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/[0.03] rounded-full blur-[100px] pointer-events-none z-0" />
+      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-indigo-500/[0.02] rounded-full blur-[130px] pointer-events-none z-0" />
       {/* Dot Grid Background */}
       <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px] opacity-40 pointer-events-none z-0" />
 
       {/* Brand Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center mb-6">
-        <div className="flex justify-center items-center gap-2.5 mb-4">
-          <div className="bg-emerald-500 text-white p-2 rounded-[6px] shadow-[0_4px_12px_rgba(16,185,129,0.15)] cursor-pointer" onClick={() => navigate(ROUTES.HOME)}>
-            <Lucide.Brain className="h-6 w-6 text-white" />
-          </div>
-          <span className="font-bold text-xl tracking-tight text-[#0a0a0a] cursor-pointer" onClick={() => navigate(ROUTES.HOME)}>
-            ResearchMind
-          </span>
-        </div>
-        <h2 className="text-[28px] font-extrabold text-[#0a0a0a] tracking-tight">
+        <div className="mb-6 flex justify-center"><Brand /></div>
+        <h1 className="text-3xl font-bold tracking-tight text-slate-950">
           Forgot password?
-        </h2>
-        <p className="mt-2 text-xs text-neutral-450">
+        </h1>
+        <p className="mt-2 text-xs text-slate-600">
           Enter your email to receive a 6-digit verification code
         </p>
       </div>
@@ -97,7 +92,7 @@ const ForgotPasswordPage = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
-                  className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-neutral-900 placeholder-neutral-400"
+                  className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-md text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-neutral-900 placeholder-neutral-400"
                 />
               </div>
             </div>
@@ -106,7 +101,7 @@ const ForgotPasswordPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-lg text-sm transition-all flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(16,185,129,0.2)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.3)] cursor-pointer relative"
+              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-sm transition-all flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(79,70,229,0.2)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.3)] cursor-pointer relative"
             >
               {isLoading ? (
                 <>
@@ -126,7 +121,7 @@ const ForgotPasswordPage = () => {
           <div className="mt-6 flex justify-center border-t border-neutral-100 pt-4">
             <span
               onClick={() => navigate(ROUTES.LOGIN)}
-              className="flex items-center gap-1.5 text-xs font-bold text-neutral-500 hover:text-emerald-600 cursor-pointer transition-colors"
+              className="flex items-center gap-1.5 text-xs font-bold text-neutral-500 hover:text-indigo-600 cursor-pointer transition-colors"
             >
               <Lucide.ArrowLeft className="h-4 w-4" />
               Back to Sign In

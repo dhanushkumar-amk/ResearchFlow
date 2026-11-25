@@ -252,7 +252,7 @@ export default function ResearchChat({ sessionId, externalTrigger }: ResearchCha
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            className="flex-1 bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-zinc-700"
+            className="flex-1 bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700"
           />
           <button
             onClick={handleSend}
