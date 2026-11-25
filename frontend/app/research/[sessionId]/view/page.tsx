@@ -39,6 +39,8 @@ export default function FocusedReportView() {
   // Sharing & Export States
   const [copied, setCopied] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState('');
 
   const fetchReport = async (authToken: string) => {
     try {
@@ -119,27 +121,36 @@ export default function FocusedReportView() {
   };
 
   const handleExport = async (type: 'pdf' | 'docx' | 'json' | 'md') => {
-    if (!reportData) return;
+    if (!reportData || exporting) return;
+    setExporting(true);
+    setExportError('');
     const filename = `Research_Report_${new Date().toISOString().split('T')[0]}`;
     setIsExportOpen(false);
 
-    switch (type) {
-      case 'pdf':
-        await exportToPDF('report-content-body', `${filename}.pdf`);
-        break;
-      case 'docx':
-        await exportToDOCX(reportData.content, "Intelligence Portfolio", `${filename}.docx`);
-        break;
-      case 'json':
-        exportToJSON({ content: reportData.content, qualityScore: reportData.quality_score, timestamp: new Date() }, `${filename}.json`);
-        break;
-      case 'md':
-        const element = document.createElement('a');
-        const file = new Blob([reportData.content], { type: 'text/markdown' });
-        element.href = URL.createObjectURL(file);
-        element.download = `${filename}.md`;
-        element.click();
-        break;
+    try {
+      switch (type) {
+        case 'pdf':
+          await exportToPDF('report-content-body', `${filename}.pdf`, reportData.query);
+          break;
+        case 'docx':
+          await exportToDOCX(reportData.content, "Intelligence Portfolio", `${filename}.docx`);
+          break;
+        case 'json':
+          exportToJSON({ content: reportData.content, qualityScore: reportData.quality_score, timestamp: new Date() }, `${filename}.json`);
+          break;
+        case 'md':
+          const element = document.createElement('a');
+          const file = new Blob([reportData.content], { type: 'text/markdown' });
+          element.href = URL.createObjectURL(file);
+          element.download = `${filename}.md`;
+          element.click();
+          setTimeout(() => URL.revokeObjectURL(element.href), 1000);
+          break;
+      }
+    } catch {
+      setExportError('Could not download the report. Try exporting again.');
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -150,6 +161,8 @@ export default function FocusedReportView() {
       <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.25] pointer-events-none z-0" />
 
       <main className="max-w-[760px] mx-auto px-6 py-10 space-y-6 relative z-10">
+        {exportError && <p className="text-sm text-rose-800" role="alert">{exportError}</p>}
+        {exporting && <p className="text-sm text-ui-muted" role="status">Preparing the download…</p>}
         
         {/* Back navigation & breadcrumbs */}
         <div className="flex items-center gap-3">
@@ -265,7 +278,9 @@ export default function FocusedReportView() {
                 {/* Download dropdown toggle */}
                 <button
                   onClick={() => setIsExportOpen(!isExportOpen)}
-                  title="Export Intelligence"
+                  title="Export report"
+                  aria-label="Export report"
+                  disabled={exporting}
                   className={`p-1.5 rounded-lg border transition-all cursor-pointer bg-white text-slate-500 border-slate-200 hover:bg-slate-50 ${
                     isExportOpen ? 'border-emerald-500 text-emerald-600' : ''
                   }`}
