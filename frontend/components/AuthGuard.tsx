@@ -14,9 +14,11 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
+  const isOnboarding = pathname === '/get-started';
+  const isPublic = pathname === '/' || isOnboarding || pathname.startsWith('/share/') || PUBLIC_PATHS.includes(pathname);
+
   useEffect(() => {
     if (loading) return;
-    const isPublic = pathname === '/' || pathname.startsWith('/share/') || PUBLIC_PATHS.includes(pathname);
     if (PUBLIC_PATHS.includes(pathname)) {
       let destination = '/';
       try {
@@ -35,10 +37,11 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
       if (user) router.replace(destination);
     } else if (user) {
       try { sessionStorage.removeItem('rf_onboarding_next'); } catch {}
+      if (isOnboarding) router.replace('/');
     } else if (!isPublic) {
       router.replace('/login');
     }
-  }, [user, loading, pathname, router]);
+  }, [user, loading, pathname, isPublic, isOnboarding, router]);
 
   // Show spinner while checking auth
   if (loading) {
@@ -49,10 +52,8 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const isPublic = pathname === '/' || pathname.startsWith('/share/') || PUBLIC_PATHS.includes(pathname);
-
   // If logged in and on a public-only auth page (like login/register) — show nothing (will redirect)
-  if (user && PUBLIC_PATHS.includes(pathname)) return null;
+  if (user && (isOnboarding || PUBLIC_PATHS.includes(pathname))) return null;
   // If not logged in and on a protected page — show nothing (will redirect)
   if (!user && !isPublic) return null;
 
