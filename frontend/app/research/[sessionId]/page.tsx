@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import {
   ArrowLeft, RotateCcw, CheckCircle2, AlertCircle
 } from 'lucide-react';
@@ -10,13 +10,16 @@ import Link from 'next/link';
 import AgentTimeline from '../../../components/AgentTimeline';
 import StreamingReport from '../../../components/StreamingReport';
 import ResearchChat from '../../../components/ResearchChat';
-import { API_URL, getResearchProgress, getResearchStream } from '../../../lib/api';
+import { API_URL, getAllResearchHistory, getResearchProgress, getResearchStream, startResearch } from '../../../lib/api';
 import { ResearchEvent, ResearchStatus, ResearchComplete, ResearchToken, ResearchPlan, ResearchSources } from '../../../types/research';
 import { useAuth } from '../../../lib/AuthContext';
 
 export default function ResearchPage() {
   const { sessionId } = useParams() as { sessionId: string };
   const { token } = useAuth();
+  const router = useRouter();
+  const [retryQuery, setRetryQuery] = useState<string | null>(null);
+  const [retrying, setRetrying] = useState(false);
 
   const [activeNode, setActiveNode] = useState<string | null>(null);
   const [reportText, setReportText] = useState('');
@@ -98,6 +101,8 @@ export default function ResearchPage() {
     let fallback = false;
     let failures = 0;
     let checking = false;
+    let oldSession: { query: string; created_at: string; status?: string } | undefined;
+    let streamFailure: string | undefined;
 
     const stop = () => {
       controller.abort();
@@ -107,7 +112,8 @@ export default function ResearchPage() {
     };
     stopConnection.current = stop;
 
-    const showError = (message: string) => {
+    const showError = (message: string, query?: string) => {
+      setRetryQuery(query ?? null);
       stop();
       setIsError(true);
       setErrorMessage(message);
@@ -143,9 +149,28 @@ export default function ResearchPage() {
           });
           return;
         }
-        if (result.status === 'failed' || result.status === 'missing' || result.status === 'unauthorized') {
-          showError(result.status === 'failed' ? 'Research failed. Start a new investigation to try again.'
-            : result.status === 'missing' ? 'This research session could not be found.'
+        if (result.status === 'legacy-pending') {
+          oldSession ??= (await getAllResearchHistory(token, signal)).find(item => item.session_id === sessionId);
+          if (controller.signal.aborted) return;
+          if (!oldSession) {
+            showError('This research session could not be found.');
+            return;
+          }
+          if (oldSession.status === 'failed' || streamFailure) {
+            showError(streamFailure ?? 'Research failed.', oldSession.query);
+            return;
+          }
+          if (Date.now() - new Date(oldSession.created_at).getTime() >= 8 * 60 * 1000) {
+            showError('This run was interrupted before it saved a report.', oldSession.query);
+            return;
+          }
+        }
+        if (result.status === 'failed' || result.status === 'interrupted') {
+          showError(result.status === 'interrupted' ? 'This run was interrupted before it saved a report.' : streamFailure ?? 'Research failed.', result.query);
+          return;
+        }
+        if (result.status === 'missing' || result.status === 'unauthorized') {
+          showError(result.status === 'missing' ? 'This research session could not be found.'
             : 'Your session has expired. Sign in again to view this report.');
           return;
         }
@@ -225,8 +250,8 @@ export default function ResearchPage() {
             message = rawData.message;
           }
 
-          if (message === 'Could not load research progress.') recover();
-          else showError(message);
+          if (message !== 'Could not load research progress.') streamFailure = message;
+          recover();
           break;
         }
       }
@@ -238,7 +263,7 @@ export default function ResearchPage() {
         if (!(event instanceof MessageEvent)) recover();
       };
       connectionTimer = setTimeout(recover, 10000);
-      timer = setTimeout(checkProgress, 12000);
+      timer = setTimeout(checkProgress, 0);
     } catch {
       timer = setTimeout(recover, 0);
     }
@@ -248,6 +273,19 @@ export default function ResearchPage() {
     connectToStream();
     return () => stopConnection.current?.();
   }, [connectToStream]);
+
+  async function retryResearch() {
+    if (!token || !retryQuery || retrying) return;
+    setRetrying(true);
+    try {
+      const result = await startResearch(retryQuery, crypto.randomUUID(), token);
+      router.push(`/research/${result.sessionId}`);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Could not restart research.');
+    } finally {
+      setRetrying(false);
+    }
+  }
 
   const askAbout = (text: string) => {
     setChatTrigger({ text, timestamp: Date.now() });
@@ -266,7 +304,11 @@ export default function ResearchPage() {
         <div className="flex flex-wrap items-center gap-2 text-sm text-zinc-700" role="status">
           {isError ? <AlertCircle size={16} className="text-red-700" /> : isComplete ? <CheckCircle2 size={16} className="text-green-700" /> : <span className="size-2 rounded-full bg-indigo-600" />}
           {isError ? errorMessage : statusMessage}
-          {isError && <button type="button" className="rf-report-control" onClick={connectToStream}><RotateCcw size={14} /> Reconnect</button>}
+          {isError && (
+            <button type="button" className="rf-report-control" disabled={retrying} onClick={retryQuery ? retryResearch : connectToStream}>
+              <RotateCcw size={14} /> {retrying ? 'Starting…' : retryQuery ? 'Retry research' : 'Reconnect'}
+            </button>
+          )}
         </div>
       </header>
 

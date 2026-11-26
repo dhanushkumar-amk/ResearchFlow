@@ -20,6 +20,17 @@ import { runChatAgent } from '../agents/chat';
 
 const router = Router();
 
+// The same limit applies to new graph executions and unfinished sessions left by older workers.
+const RESEARCH_DEADLINE_MS = 8 * 60 * 1000;
+
+function sessionStatus(session: { status: string; content?: string | null; created_at: string | Date }) {
+  if (session.content != null) return 'complete';
+  if (session.status === 'failed') return 'failed';
+  if (Date.now() - new Date(session.created_at).getTime() >= RESEARCH_DEADLINE_MS) return 'interrupted';
+  return session.status;
+}
+
+
 /**
  * Helper to format and send SSE events.
  */
@@ -58,11 +69,13 @@ router.post('/', requireAuth, validateResearchQuery, researchRateLimiter, async 
     res.json({ sessionId, message: 'Research started' });
 
     // Trigger background process - USING .invoke() for LangGraph
-    researchGraph.invoke({ sessionId, query, userId }).catch((err: any) => {
+    const signal = AbortSignal.timeout(RESEARCH_DEADLINE_MS);
+    researchGraph.invoke({ sessionId, query, userId }, { signal }).catch((err: any) => {
       console.error(`❌ [Research Error] ${sessionId}:`, err);
       updateSessionStatus(sessionId, 'failed')
         .catch(statusError => console.error('Failed to persist research status:', statusError))
-        .finally(() => emitResearchEvent(sessionId, 'error', 'Research failed.'));
+        .finally(() => emitResearchEvent(sessionId, 'error', signal.aborted
+          ? 'Research timed out.' : 'Research failed.'));
     });
 
   } catch (error: any) {
@@ -122,9 +135,10 @@ router.get('/:sessionId/stream', requireAuth, async (req: AuthRequest, res: Resp
   try {
     // Recheck after subscribing in case the job finished during authorization.
     const current = await getOwnedResearchSession(sessionId, userId);
-    if (!current || current.status === 'failed') {
+    const status = current && sessionStatus(current);
+    if (!current || status === 'failed' || status === 'interrupted') {
       finish('error', 'Research failed.');
-    } else if (current.status === 'complete') {
+    } else if (status === 'complete') {
       finish('complete', {
         report: current.content,
         score: current.quality_score,
@@ -178,8 +192,8 @@ router.get('/:sessionId', requireAuth, async (req: AuthRequest, res: Response) =
       res.set('Cache-Control', 'no-store');
       const session = await getOwnedResearchSession(sessionId as string, userId);
       if (!session) return res.status(404).json({ error: 'Session not found' });
-      const { status, content, quality_score, duration_seconds, is_public } = session;
-      return res.json({ status, content, quality_score, duration_seconds, is_public });
+      const { query, content, quality_score, duration_seconds, is_public } = session;
+      return res.json({ status: sessionStatus(session), query, content, quality_score, duration_seconds, is_public });
     }
 
     const report = await getSessionReport(sessionId as string, userId);

@@ -1,4 +1,4 @@
-import { StateGraph, END } from '@langchain/langgraph';
+import { StateGraph, END, type LangGraphRunnableConfig } from '@langchain/langgraph';
 import { ResearchState, ResearchStateType } from './state';
 
 // Import our Core Agents
@@ -121,9 +121,10 @@ async function criticNode(state: ResearchStateType) {
 /**
  * Node 6: Finalize & Persist
  */
-async function finalizeNode(state: ResearchStateType) {
+async function finalizeNode(state: ResearchStateType, config?: LangGraphRunnableConfig) {
   if (!state.sessionId) return;
-  
+  config?.signal?.throwIfAborted();
+
   try {
     await saveReport(
       state.sessionId, 

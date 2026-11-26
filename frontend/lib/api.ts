@@ -133,9 +133,10 @@ export async function getHistory(token: string): Promise<Document[]> {
 /**
  * Retrieves all research history for a user
  */
-export async function getAllResearchHistory(token: string): Promise<ResearchHistoryItem[]> {
+export async function getAllResearchHistory(token: string, signal?: AbortSignal): Promise<ResearchHistoryItem[]> {
   const response = await fetch(`${API_URL}/api/research/history`, {
     headers: getHeaders(token),
+    signal,
   });
 
   if (!response.ok) {
@@ -179,6 +180,7 @@ export async function getSessionDetails(sessionId: string, token: string) {
 
 type ResearchProgress = {
   status?: string;
+  query?: string;
   content?: string | null;
   quality_score?: number | null;
   duration_seconds?: number | string | null;
@@ -197,7 +199,7 @@ export async function getResearchProgress(sessionId: string, token: string, sign
   if (response.status === 404) {
     const body = await response.json().catch(() => null);
     // Older backends only return a report after it has been saved.
-    return { status: body?.error === 'Session not found' ? 'missing' : 'pending' };
+    return { status: body?.error === 'Session not found' ? 'missing' : 'legacy-pending' };
   }
   throw new Error('Could not check research progress.');
 }
