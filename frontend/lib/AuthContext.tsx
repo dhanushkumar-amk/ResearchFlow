@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3001';
+const AUTH_PATH = '/api/auth';
 
 interface User {
   id: string;
@@ -52,38 +52,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
       return;
     }
-    // Verify token is still valid by calling /me
-    fetch(`${API_URL}/api/auth/me`, {
+    const controller = new AbortController();
+    fetch(`${AUTH_PATH}/me`, {
       headers: { Authorization: `Bearer ${stored}` },
+      signal: controller.signal,
+      cache: 'no-store',
     })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data && data.id) {
+      .then(async response => {
+        if (response.status === 401 || response.status === 403) {
+          if (localStorage.getItem('rf_token') === stored) localStorage.removeItem('rf_token');
+          return;
+        }
+        if (!response.ok || controller.signal.aborted) return;
+        const data = await response.json();
+        if (!controller.signal.aborted && data?.id && localStorage.getItem('rf_token') === stored) {
           setUser(data);
           setToken(stored);
-        } else {
-          localStorage.removeItem('rf_token');
         }
       })
-      .catch(() => localStorage.removeItem('rf_token'))
-      .finally(() => setLoading(false));
+      .catch(() => {
+        // Keep the existing token when the service is temporarily unavailable.
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+
+    return () => controller.abort();
   }, []);
 
   const login = async (email: string, password: string) => {
-    const res = await fetch(`${API_URL}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Login failed');
+    let response: Response;
+    try {
+      response = await fetch(`${AUTH_PATH}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), password }),
+      });
+    } catch {
+      throw new Error('Could not connect to ResearchFlow. Try signing in again.');
+    }
+
+    const data = await response.json().catch(() => null);
+    if (response.status >= 500 || !data) {
+      throw new Error('Sign-in is temporarily unavailable. Try again in a moment.');
+    }
+    if (!response.ok) throw new Error(data.error || 'Could not sign in.');
+    if (typeof data.token !== 'string' || !data.user?.id) {
+      throw new Error('Sign-in returned an unexpected response. Try again in a moment.');
+    }
     localStorage.setItem('rf_token', data.token);
     setToken(data.token);
     setUser(data.user);
   };
 
   const register = async ({ name, email, password }: RegisterParams) => {
-    const res = await fetch(`${API_URL}/api/auth/register`, {
+    const res = await fetch(`${AUTH_PATH}/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password }),
@@ -93,7 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const verifyEmail = async ({ email, code }: { email: string; code: string }) => {
-    const res = await fetch(`${API_URL}/api/auth/verify-email`, {
+    const res = await fetch(`${AUTH_PATH}/verify-email`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, code }),
@@ -106,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const resendVerification = async (email: string) => {
-    const res = await fetch(`${API_URL}/api/auth/resend-verification`, {
+    const res = await fetch(`${AUTH_PATH}/resend-verification`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
@@ -116,7 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const forgotPassword = async (email: string) => {
-    const res = await fetch(`${API_URL}/api/auth/forgot-password`, {
+    const res = await fetch(`${AUTH_PATH}/forgot-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
@@ -126,7 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const verifyResetCode = async ({ email, code }: { email: string; code: string }) => {
-    const res = await fetch(`${API_URL}/api/auth/verify-reset-code`, {
+    const res = await fetch(`${AUTH_PATH}/verify-reset-code`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, code }),
@@ -137,7 +160,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const resetPassword = async ({ email, password, resetToken }: { email: string; password: string; resetToken: string }) => {
-    const res = await fetch(`${API_URL}/api/auth/reset-password`, {
+    const res = await fetch(`${AUTH_PATH}/reset-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password, resetToken }),
@@ -154,7 +177,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const updateProfile = async (name: string, details?: string, settings?: any) => {
     if (!token) throw new Error('Not authenticated');
-    const res = await fetch(`${API_URL}/api/auth/profile`, {
+    const res = await fetch(`${AUTH_PATH}/profile`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -172,7 +195,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const formData = new FormData();
     formData.append('avatar', file);
 
-    const res = await fetch(`${API_URL}/api/auth/profile/avatar`, {
+    const res = await fetch(`${AUTH_PATH}/profile/avatar`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -187,7 +210,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const requestPasswordChangeOtp = async () => {
     if (!token) throw new Error('Not authenticated');
-    const res = await fetch(`${API_URL}/api/auth/change-password/request`, {
+    const res = await fetch(`${AUTH_PATH}/change-password/request`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -199,7 +222,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const verifyPasswordChange = async ({ oldPassword, newPassword, code }: { oldPassword: string; newPassword: string; code: string }) => {
     if (!token) throw new Error('Not authenticated');
-    const res = await fetch(`${API_URL}/api/auth/change-password/verify`, {
+    const res = await fetch(`${AUTH_PATH}/change-password/verify`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
