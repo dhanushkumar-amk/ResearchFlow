@@ -134,7 +134,7 @@ router.get('/:sessionId/stream', requireAuth, async (req: AuthRequest, res: Resp
     }
   } catch (error) {
     console.error('Failed to load research stream state:', error);
-    finish('error', 'Could not load research progress.');
+    res.end();
   }
 });
 
@@ -174,6 +174,14 @@ router.get('/:sessionId', requireAuth, async (req: AuthRequest, res: Response) =
   const userId = req.userId!;
 
   try {
+    if (req.query.progress === '1') {
+      res.set('Cache-Control', 'no-store');
+      const session = await getOwnedResearchSession(sessionId as string, userId);
+      if (!session) return res.status(404).json({ error: 'Session not found' });
+      const { status, content, quality_score, duration_seconds, is_public } = session;
+      return res.json({ status, content, quality_score, duration_seconds, is_public });
+    }
+
     const report = await getSessionReport(sessionId as string, userId);
     if (!report) return res.status(404).json({ error: 'Report not found' });
     res.json(report);

@@ -46,7 +46,7 @@ export async function startResearch(query: string, sessionId: string, token: str
  * We pass the token as a query parameter.
  */
 export function getResearchStream(sessionId: string, token: string, onEvent: (event: ResearchEvent) => void) {
-  const eventSource = new EventSource(`${API_URL}/api/research/${sessionId}/stream?token=${token}`);
+  const eventSource = new EventSource(`${API_URL}/api/research/${sessionId}/stream?token=${encodeURIComponent(token)}`);
 
   const eventTypes: (ResearchEvent['type'] | 'connected' | 'report')[] = ['status', 'complete', 'error', 'connected', 'token', 'plan', 'sources', 'report', 'report_reset'];
   
@@ -175,6 +175,31 @@ export async function getSessionDetails(sessionId: string, token: string) {
   }
 
   return response.json();
+}
+
+type ResearchProgress = {
+  status?: string;
+  content?: string | null;
+  quality_score?: number | null;
+  duration_seconds?: number | string | null;
+  is_public?: boolean;
+};
+
+export async function getResearchProgress(sessionId: string, token: string, signal: AbortSignal): Promise<ResearchProgress> {
+  const response = await fetch(`${API_URL}/api/research/${encodeURIComponent(sessionId)}?progress=1`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store',
+    signal,
+  });
+
+  if (response.ok) return response.json();
+  if (response.status === 401 || response.status === 403) return { status: 'unauthorized' };
+  if (response.status === 404) {
+    const body = await response.json().catch(() => null);
+    // Older backends only return a report after it has been saved.
+    return { status: body?.error === 'Session not found' ? 'missing' : 'pending' };
+  }
+  throw new Error('Could not check research progress.');
 }
 
 /**

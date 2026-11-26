@@ -10,7 +10,7 @@ import Link from 'next/link';
 import AgentTimeline from '../../../components/AgentTimeline';
 import StreamingReport from '../../../components/StreamingReport';
 import ResearchChat from '../../../components/ResearchChat';
-import { API_URL, getResearchStream } from '../../../lib/api';
+import { API_URL, getResearchProgress, getResearchStream } from '../../../lib/api';
 import { ResearchEvent, ResearchStatus, ResearchComplete, ResearchToken, ResearchPlan, ResearchSources } from '../../../types/research';
 import { useAuth } from '../../../lib/AuthContext';
 
@@ -67,7 +67,7 @@ export default function ResearchPage() {
     };
   }, [handleSelection]);
 
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const stopConnection = useRef<(() => void) | null>(null);
 
   const handleTogglePublic = async (val: boolean) => {
     if (!token) return;
@@ -90,13 +90,95 @@ export default function ResearchPage() {
 
   const connectToStream = useCallback(() => {
     if (!sessionId || !token) return;
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-    }
+    stopConnection.current?.();
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let connectionTimer: ReturnType<typeof setTimeout> | undefined;
+    let stream: EventSource | undefined;
+    let fallback = false;
+    let failures = 0;
+    let checking = false;
 
-    const es = getResearchStream(sessionId, token, (event: ResearchEvent) => {
+    const stop = () => {
+      controller.abort();
+      clearTimeout(timer);
+      clearTimeout(connectionTimer);
+      stream?.close();
+    };
+    stopConnection.current = stop;
+
+    const showError = (message: string) => {
+      stop();
+      setIsError(true);
+      setErrorMessage(message);
+      setIsStreaming(false);
+    };
+
+    const complete = (report: ResearchComplete) => {
+      stop();
+      setIsError(false);
+      setIsStreaming(false);
+      setIsComplete(true);
+      setQualityScore(report.score ?? null);
+      setDurationSeconds(report.duration_seconds ?? null);
+      setIsPublic(report.is_public ?? false);
+      setStatusMessage('Research complete');
+      if (report.report != null) setReportText(report.report);
+    };
+
+    const checkProgress = async () => {
+      if (controller.signal.aborted || checking) return;
+      checking = true;
+      try {
+        const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(10000)]);
+        const result = await getResearchProgress(sessionId, token, signal);
+        if (controller.signal.aborted) return;
+        failures = 0;
+        if (result.content != null && (result.status === 'complete' || !result.status)) {
+          complete({
+            report: result.content,
+            score: result.quality_score ?? undefined,
+            duration_seconds: result.duration_seconds == null ? undefined : Number(result.duration_seconds),
+            is_public: result.is_public,
+          });
+          return;
+        }
+        if (result.status === 'failed' || result.status === 'missing' || result.status === 'unauthorized') {
+          showError(result.status === 'failed' ? 'Research failed. Start a new investigation to try again.'
+            : result.status === 'missing' ? 'This research session could not be found.'
+            : 'Your session has expired. Sign in again to view this report.');
+          return;
+        }
+      } catch {
+        if (controller.signal.aborted) return;
+        failures++;
+        if (fallback && failures >= 4) {
+          showError('Could not reach the research server. Reconnect to check again.');
+          return;
+        }
+      } finally {
+        checking = false;
+      }
+      timer = setTimeout(checkProgress, fallback ? 4000 : 12000);
+    };
+
+    const recover = () => {
+      if (controller.signal.aborted || fallback) return;
+      fallback = true;
+      failures = 0;
+      clearTimeout(connectionTimer);
+      stream?.close();
+      setIsError(false);
+      setStatusMessage('Live updates paused. Checking for the saved report…');
+      clearTimeout(timer);
+      timer = setTimeout(checkProgress, 0);
+    };
+
+    const handleEvent = (event: ResearchEvent) => {
+      if (controller.signal.aborted || fallback) return;
       switch (event.type) {
         case 'connected':
+          clearTimeout(connectionTimer);
           setIsError(false);
           setIsComplete(false);
           setIsStreaming(false);
@@ -130,15 +212,7 @@ export default function ResearchPage() {
           break;
         }
         case 'complete': {
-          const d = event.data as ResearchComplete;
-          setIsStreaming(false);
-          setIsComplete(true);
-          setQualityScore(d.score ?? null);
-          setDurationSeconds(d.duration_seconds ?? null);
-          setIsPublic(d.is_public ?? false);
-          setStatusMessage('Research complete');
-          if (d.report) setReportText(d.report);
-          es.close();
+          complete(event.data as ResearchComplete);
           break;
         }
         case 'error': {
@@ -151,29 +225,28 @@ export default function ResearchPage() {
             message = rawData.message;
           }
 
-          setIsError(true);
-          setErrorMessage(message);
-          setIsStreaming(false);
-          es.close();
+          if (message === 'Could not load research progress.') recover();
+          else showError(message);
           break;
         }
       }
-    });
-
-    es.onerror = (event) => {
-      if (event instanceof MessageEvent) return;
-      setIsError(true);
-      setErrorMessage('Could not connect to the research stream.');
-      setIsStreaming(false);
-      es.close();
     };
 
-    eventSourceRef.current = es;
+    try {
+      stream = getResearchStream(sessionId, token, handleEvent);
+      stream.onerror = (event) => {
+        if (!(event instanceof MessageEvent)) recover();
+      };
+      connectionTimer = setTimeout(recover, 10000);
+      timer = setTimeout(checkProgress, 12000);
+    } catch {
+      timer = setTimeout(recover, 0);
+    }
   }, [sessionId, token]);
 
   useEffect(() => {
     connectToStream();
-    return () => eventSourceRef.current?.close();
+    return () => stopConnection.current?.();
   }, [connectToStream]);
 
   const askAbout = (text: string) => {
