@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     query TEXT NOT NULL,
     status TEXT DEFAULT 'pending', -- pending, planning, searching, synthesizing, reviewing, complete, failed
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    is_public BOOLEAN DEFAULT false,
     completed_at TIMESTAMP WITH TIME ZONE
 );
 
@@ -33,6 +34,8 @@ CREATE TABLE IF NOT EXISTS reports (
     quality_score INTEGER,
     retry_count INTEGER DEFAULT 0,
     sources JSONB DEFAULT '[]'::jsonb,
+    web_context TEXT,
+    rag_context TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 

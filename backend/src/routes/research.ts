@@ -4,7 +4,7 @@ import {
   updateSessionStatus,
   saveReport,
   getSessionReport,
-  getOwnedResearchSession,
+  getOwnedResearchProgress,
   deleteSession,
   getAllResearchHistory,
   toggleSessionPublic,
@@ -90,7 +90,13 @@ router.post('/', requireAuth, validateResearchQuery, researchRateLimiter, async 
 router.get('/:sessionId/stream', requireAuth, async (req: AuthRequest, res: Response) => {
   const sessionId = req.params.sessionId as string;
   const userId = req.userId!;
-  const session = await getOwnedResearchSession(sessionId, userId);
+  let session;
+  try {
+    session = await getOwnedResearchProgress(sessionId, userId);
+  } catch (error) {
+    console.error('Failed to open research stream:', error);
+    return res.status(503).json({ error: 'Research progress is temporarily unavailable.' });
+  }
   if (!session) return res.status(404).json({ error: 'Session not found' });
   if (res.destroyed) return;
 
@@ -134,7 +140,7 @@ router.get('/:sessionId/stream', requireAuth, async (req: AuthRequest, res: Resp
 
   try {
     // Recheck after subscribing in case the job finished during authorization.
-    const current = await getOwnedResearchSession(sessionId, userId);
+    const current = await getOwnedResearchProgress(sessionId, userId);
     const status = current && sessionStatus(current);
     if (!current || status === 'failed' || status === 'interrupted') {
       finish('error', 'Research failed.');
@@ -187,15 +193,20 @@ router.get('/:sessionId', requireAuth, async (req: AuthRequest, res: Response) =
   const { sessionId } = req.params;
   const userId = req.userId!;
 
-  try {
-    if (req.query.progress === '1') {
-      res.set('Cache-Control', 'no-store');
-      const session = await getOwnedResearchSession(sessionId as string, userId);
+  if (req.query.progress === '1') {
+    res.set('Cache-Control', 'no-store');
+    try {
+      const session = await getOwnedResearchProgress(sessionId as string, userId);
       if (!session) return res.status(404).json({ error: 'Session not found' });
       const { query, content, quality_score, duration_seconds, is_public } = session;
       return res.json({ status: sessionStatus(session), query, content, quality_score, duration_seconds, is_public });
+    } catch (error) {
+      console.error('Failed to read saved research progress:', error);
+      return res.status(503).json({ error: 'Research progress is temporarily unavailable.' });
     }
+  }
 
+  try {
     const report = await getSessionReport(sessionId as string, userId);
     if (!report) return res.status(404).json({ error: 'Report not found' });
     res.json(report);

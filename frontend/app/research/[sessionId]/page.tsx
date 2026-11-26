@@ -135,8 +135,9 @@ export default function ResearchPage() {
     const checkProgress = async () => {
       if (controller.signal.aborted || checking) return;
       checking = true;
+      const timeout = AbortSignal.timeout(25000);
       try {
-        const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(10000)]);
+        const signal = AbortSignal.any([controller.signal, timeout]);
         const result = await getResearchProgress(sessionId, token, signal);
         if (controller.signal.aborted) return;
         failures = 0;
@@ -174,17 +175,22 @@ export default function ResearchPage() {
             : 'Your session has expired. Sign in again to view this report.');
           return;
         }
-      } catch {
+      } catch (error) {
         if (controller.signal.aborted) return;
         failures++;
         if (fallback && failures >= 4) {
-          showError('Could not reach the research server. Reconnect to check again.');
+          const message = timeout.aborted
+            ? 'The research server took too long to respond.'
+            : error instanceof TypeError
+              ? 'The browser could not connect to the research server.'
+              : error instanceof Error ? error.message : 'Research status is temporarily unavailable.';
+          showError(message);
           return;
         }
       } finally {
         checking = false;
       }
-      timer = setTimeout(checkProgress, fallback ? 4000 : 12000);
+      timer = setTimeout(checkProgress, fallback ? Math.min(4000 * 2 ** failures, 15000) : 12000);
     };
 
     const recover = () => {

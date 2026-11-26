@@ -194,14 +194,19 @@ export async function getResearchProgress(sessionId: string, token: string, sign
     signal,
   });
 
-  if (response.ok) return response.json();
+  if (response.ok) {
+    if (!response.headers.get('content-type')?.includes('application/json')) {
+      throw new Error('The research server returned an unexpected response.');
+    }
+    return response.json();
+  }
   if (response.status === 401 || response.status === 403) return { status: 'unauthorized' };
   if (response.status === 404) {
     const body = await response.json().catch(() => null);
     // Older backends only return a report after it has been saved.
     return { status: body?.error === 'Session not found' ? 'missing' : 'legacy-pending' };
   }
-  throw new Error('Could not check research progress.');
+  throw new Error(`Research status request failed (HTTP ${response.status}).`);
 }
 
 /**

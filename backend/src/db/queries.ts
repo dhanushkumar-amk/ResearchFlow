@@ -153,6 +153,25 @@ export async function deleteSession(sessionId: string, userId: string) {
   return res.rows[0];
 }
 
+/** Reads the fields needed to resume a report without loading its research context. */
+export async function getOwnedResearchProgress(sessionId: string, userId: string) {
+  const result = await query(`
+    SELECT s.query, s.status, s.created_at,
+      COALESCE((to_jsonb(s)->>'is_public')::boolean, false) AS is_public,
+      EXTRACT(EPOCH FROM (s.completed_at - s.created_at)) AS duration_seconds,
+      r.content, r.quality_score
+    FROM sessions s
+    LEFT JOIN LATERAL (
+      SELECT content, quality_score FROM reports
+      WHERE session_id = s.session_id
+      ORDER BY created_at DESC, report_id DESC
+      LIMIT 1
+    ) r ON true
+    WHERE s.session_id = $1 AND s.user_id = $2
+  `, [sessionId, userId], 1);
+  return result.rows[0];
+}
+
 /**
  * Retrieves the full report for a specific session with performance metadata
  */
