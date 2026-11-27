@@ -1,205 +1,193 @@
-<h1 align="center">🌊 ResearchFlow: Multi-Agent Research & Synthesis Engine</h1>
+# ResearchFlow
 
-<div align="center">
+A research workspace for web research, private document questions, and streamed reports. The interface uses a pale blue background, blue accents, serif report headings, and colorful pixel art. Account emails use the ResearchMind name.
 
-[![Next.js](https://img.shields.io/badge/Next.js-16-emerald?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-teal?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-4.x-emerald?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![LangGraph](https://img.shields.io/badge/LangGraph-Orchestrated-blue?style=for-the-badge&logo=chainlink&logoColor=white)](https://js.langchain.com/docs/langgraph)
-[![Qdrant](https://img.shields.io/badge/Qdrant-Vector_DB-red?style=for-the-badge&logo=qdrant&logoColor=white)](https://qdrant.tech)
-[![Live Demo](https://img.shields.io/badge/Live_Demo-https%3A%2F%2Fresearch--flow--flame.vercel.app-emerald?style=for-the-badge&logo=vercel)](https://research-flow-flame.vercel.app/)
-[![System Architecture](https://img.shields.io/badge/System_Architecture-View_Diagrams-blue?style=for-the-badge&logo=diagrams)](docs/architecture.md)
+![ResearchFlow observatory artwork](frontend/public/research-observatory-day.webp)
 
-<p align="center">
-  <strong>An automated, secure, and production-ready intelligence engine that parallelizes web search swarms and private knowledge vector database retrieval into verified, scholarly reports.</strong>
-</p>
+## Current features
 
-<img src="docs/img/image.png" alt="ResearchFlow Interface" width="90%" style="border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 15px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);" />
+- Email registration and verification, login, password reset, and profile management.
+- LangGraph research workflow: planning, web search, library retrieval, report drafting, review, and persistence.
+- Live report updates through server-sent events, research history, report sharing, and retry controls.
+- Markdown reports with tables, citations, Mermaid diagrams, and PDF, Word, Markdown, and JSON export controls.
+- A document library with uploads and questions grounded in retrieved document snippets.
+- A shared email design for signup, resend, password reset, and password change, with embedded observatory artwork.
+- Observatory and landing artwork used by the application and account emails.
 
-</div>
+Generated answers require review. Model access, service quotas, network connectivity, and uploaded content affect the results; startup alone does not verify every integration.
 
----
+## Stack
 
-## 💡 Why ResearchFlow?
+| Area | Implementation |
+| --- | --- |
+| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
+| Content | React Markdown, remark-gfm, Mermaid |
+| Backend | Express 5, TypeScript, ts-node, nodemon |
+| Orchestration | LangChain and LangGraph |
+| Language model | Groq; current agents use `openai/gpt-oss-120b` |
+| Embeddings | Google Gemini |
+| Persistence | PostgreSQL / Neon |
+| Retrieval | Qdrant, with local retrieval fallback paths |
+| Cache | Upstash Redis, with local memory when unconfigured |
+| Upload storage | AWS S3, with local disk when unconfigured |
+| Email | Resend |
 
-In today's information-heavy landscape, conducting comprehensive research is a slow, manual chore. Typically, a researcher has to:
-1. **Search**: Enter multiple search queries and open dozens of browser tabs.
-2. **Read & Extract**: Filter out noise, ads, and irrelevant blog posts to find verified facts.
-3. **Retrieve Private Context**: Cross-reference web results with internal PDFs, local document libraries, or academic databases.
-4. **Synthesize**: Manually assemble findings, organize sections, build diagrams, and insert citations.
-5. **Verify**: Double-check for factual contradictions, hallucinations, or security leaks before sharing.
+## Local setup
 
-**ResearchFlow automates this entire pipeline in seconds.** By dividing the cognitive workload across a specialized agent graph, it schedules parallel searches, checks private vector databases (RAG), drafts reports with automatic citation anchoring, and puts drafts through an automated Critic loop until they satisfy rigorous quality standards.
+Use Node.js 20 or newer and npm. Configure PostgreSQL before registration or research.
 
----
+### Backend
 
-## 🏗️ System Architecture
+```powershell
+cd backend
+npm install
+Copy-Item .env.example .env
+```
 
-<div align="center">
-  <h3>Agentic Execution Graph</h3>
-</div>
+If `.env` already exists, edit it instead of overwriting it. Supply your own credentials:
+
+```dotenv
+PORT=3001
+NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
+JWT_SECRET=replace-with-a-long-random-secret
+DATABASE_URL=postgresql://user:password@host/database?sslmode=verify-full
+GROQ_API_KEY=your-groq-key
+GOOGLE_API_KEY=your-google-key
+TAVILY_API_KEY=your-tavily-key
+QDRANT_URL=https://your-cluster.cloud.qdrant.io
+QDRANT_API_KEY=your-qdrant-key
+UPSTASH_REDIS_REST_URL=https://your-instance.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your-redis-token
+RESEND_API_KEY=your-resend-key
+RESEND_FROM_EMAIL=no-reply@your-verified-domain.com
+RESEND_FROM_NAME=ResearchMind
+AWS_ACCESS_KEY_ID=your-aws-access-key
+AWS_SECRET_ACCESS_KEY=your-aws-secret
+AWS_REGION=us-east-1
+AWS_S3_BUCKET=your-bucket
+```
+
+Optional search integrations also read `NEWS_API_KEY`, `PUBMED_EMAIL`, and `REDDIT_USER_AGENT`. Resend requires an authorized sender domain. Never commit `.env` or place backend credentials in frontend environment variables.
+
+Initialize the schema and start development:
+
+```powershell
+npm run migrate
+npm run dev
+```
+
+The API listens on port 3001 by default. While nodemon is running, enter `rs` to restart. After stopping it with Ctrl+C, use `npm run dev` again; `rs` is not a PowerShell command.
+
+### Frontend
+
+In a separate terminal:
+
+```powershell
+cd frontend
+npm install
+```
+
+Create `frontend/.env.local`:
+
+```dotenv
+NEXT_PUBLIC_API_URL=http://localhost:3001
+```
+
+```powershell
+npm run dev
+```
+
+Open http://localhost:3000. Register, use the latest email verification code, then start research or upload documents to the library.
+
+## Research workflow
 
 ```mermaid
-graph TD
-    User([User Prompt]) --> Planner[1. Planner Agent]
-    
-    Planner -->|Generate Tasks & Sub-queries| Classifier{Routing Classifier}
-    
-    Classifier -->|Academic| AcademicSwarm[PubMed & arXiv Agents]
-    Classifier -->|Tech & Code| TechSwarm[GitHub & Web Agents]
-    Classifier -->|Discussions| SocialSwarm[Reddit & HackerNews Agents]
-    Classifier -->|General Web| GeneralSwarm[Tavily & DuckDuckGo Agents]
-    
-    Classifier -->|Uploads / URLs| RAG[Vault RAG Vector Search]
-    
-    AcademicSwarm --> Synthesizer[2. Synthesizer Agent]
-    TechSwarm --> Synthesizer
-    SocialSwarm --> Synthesizer
-    GeneralSwarm --> Synthesizer
-    RAG --> Synthesizer
-    
-    Synthesizer -->|Stream Report draft| Critic[3. Critic Agent]
-    
-    Critic -->|Score < 7 / Revise| Planner
-    Critic -->|Score >= 7 / Approve| Save[4. Postgres & Cache Save]
-    
-    Save --> StreamToUser([Stream Markdown & Mermaid Report])
+flowchart LR
+    P["Plan"] --> W["Web search"]
+    P --> R["Library retrieval"]
+    W --> S["Draft report"]
+    R --> S
+    S --> C["Review"]
+    C -->|Revise| S
+    C -->|Approve or attempt limit| F["Save report"]
+    classDef blue fill:#e0e7ff,stroke:#2449bf,color:#151f3b;
+    classDef teal fill:#ccfbf1,stroke:#0f766e,color:#151f3b;
+    classDef amber fill:#fef3c7,stroke:#b45309,color:#151f3b;
+    class P,S blue;
+    class W,R teal;
+    class C,F amber;
 ```
 
----
+The review loop allows up to two drafting attempts. Research requests have an eight-minute deadline. Existing saved reports can be reused through the report cache.
 
-## 📊 System Performance Benchmarks
+## Application artwork
 
-Below is the telemetry captured by running the automated diagnostic benchmark suite:
+Only essential application artwork is included in this repository:
 
-### 🏆 Key Showcase Summary
-| Metric Category | Measured Output | Status | Technical Details & Optimizations |
-| :--- | :--- | :--- | :--- |
-| **RAG Pipeline Latency** | `56 ms` | ✅ PASS | Retrieved matching semantic vector chunks from local fallback vector store |
-| **Evaluation Quality** | `4/10` | ✅ PASS | Critic LLM evaluated report: score 4/10 (Verdict: revise) in 1167ms |
-| **Cache Speedup Rate** | `8x Faster` | ⚡ OPTIMIZED | Cached report retrieved in 715ms vs 6000ms fresh run (8.4x speedup) |
-| **Security Guardrails** | `100% Detection` | 🛡️ PASS | Blocked 5/5 malicious prompts, permitted 1/1 safe prompt (100% accuracy) |
-| **Token Optimization** | `96.7% Savings` | 📉 OPTIMIZED | Reduced context window from 45,000 tokens (full doc) to 1500 tokens (top RAG chunks) |
+- `frontend/public/research-observatory-day.webp`: shared observatory illustration.
+- `frontend/public/landing/`: research, desk, library, and report illustrations.
+- `backend/assets/research-observatory-day.webp`: embedded email artwork, included in the backend Docker image.
 
----
+The extra twenty-image generated collection is excluded to keep repository uploads small. Original generated files remain outside the repository in the local image generation output folder.
 
-## 🛠️ Technology Stack
+## Recent fixes
 
-### Backend (API Server)
-* **Core**: Node.js & Express with TypeScript.
-* **Orchestration**: `LangChain` & `LangGraph` for multi-agent graph management.
-* **Databases**:
-  * **PostgreSQL (Neon)**: Structured user metadata, session history, and report storage.
-  * **Upstash Redis**: OTP verification, authentication session memory, and rate limiting.
-  * **Qdrant Cloud**: Vector database hosting high-dimensional embeddings for private document search.
-* **Services**:
-  * **AWS S3** (with local filesystem fallback): Scoped storage for uploaded PDFs and documents.
-  * **Winston**: Production telemetry logging.
+- Startup success is logged on the actual server listening event; port conflicts have recovery instructions.
+- PostgreSQL connections have an IPv4 DNS fallback when the local resolver fails.
+- Migrations initialize the base schema before adding columns, including agent-log status.
+- Authentication codes and pending registrations use PostgreSQL-backed temporary storage, surviving backend restarts. Codes last ten minutes; registration sessions last thirty minutes and refresh on resend.
+- Groq agents use a model confirmed accessible during setup instead of unavailable Llama model IDs.
+- Verification and security emails share the application theme and embedded artwork.
+- Mermaid rendering repairs unquoted flowchart labels and supplies colors for unstyled flowcharts. Generation prompts allow layouts suited to the subject.
+- Report tables scroll horizontally and avoid splitting short values into individual characters.
+- Library answers support GitHub-flavored Markdown tables and clearer grouped answers.
 
-### Frontend (SPA Launchpad)
-* **Framework**: Next.js 16 (App Router) with Turbopack compilation.
-* **Design & Styling**: Emerald-green modern theme using TailwindCSS, glassmorphism UI structures, and micro-interactions.
-* **Visualization**: Interactive agent status timelines, D3-based graphs, and native Mermaid diagram rendering.
+## Commands
 
----
+| Directory | Command | Purpose |
+| --- | --- | --- |
+| backend | `npm run dev` | Start API with nodemon |
+| backend | `npm run migrate` | Initialize and update database schema |
+| backend | `npm run build` | Compile TypeScript |
+| backend | `npm start` | Run compiled backend |
+| frontend | `npm run dev` | Start Next.js development server |
+| frontend | `npm run build` | Create production frontend build |
+| frontend | `npm start` | Serve production frontend |
+| frontend | `npm run lint` | Run ESLint |
+| Either | `npx tsc --noEmit` | Check TypeScript in that directory |
 
-## 📋 Comprehensive Environment Configuration
+There is no consolidated backend test suite configured in `npm test`; individual diagnostic scripts live under `backend/src/test`.
 
-To run the application, copy `.env.example` in the `backend` directory to `.env` and fill in all variables listed below:
+## Troubleshooting
 
-### Server & Ports
-* `PORT`: Port on which the Express server runs (Default: `3001`).
-* `FRONTEND_URL`: URL of the Next.js frontend (Default: `http://localhost:3000`).
-* `JWT_SECRET`: Secret key used for signing JWT authentication tokens.
+| Symptom | What to check |
+| --- | --- |
+| Port 3001 already in use | Stop the existing project backend before starting another instance. |
+| `ENOTFOUND` for Neon | Confirm the hostname in Neon Connect and local DNS/network access. |
+| `relation users does not exist` | Run `npm run migrate` against the configured database. |
+| Groq `model_not_found` | Check the account's available models and update the model configuration. |
+| Registration session expired | Register again if the original session is missing; resend refreshes a valid pending session. |
+| Email not delivered | Check the Resend key, verified sender domain, and backend email error output. |
+| Qdrant compatibility warning | Check the cluster URL, credentials, network, and server availability. |
+| Diagram source appears | Check generated Mermaid syntax; unfinished streamed diagrams may wait until complete. |
 
-### LLM API Credentials
-* `GROQ_API_KEY`: API key for Groq's high-speed inference engine (Llama models).
-* `GOOGLE_API_KEY`: API key for Gemini's Embedding and Generative models.
-* `OPENROUTER_API_KEY`: API key for OpenRouter models.
-* `DEEPSEEK_API_KEY`: API key for DeepSeek models.
+## Repository layout
 
-### Databases & Cache
-* `DATABASE_URL`: Connection string for your PostgreSQL instance (Neon Serverless).
-* `UPSTASH_REDIS_REST_URL`: Upstash Redis REST API connection URL.
-* `UPSTASH_REDIS_REST_TOKEN`: Upstash Redis REST token for secure access.
-* `QDRANT_URL`: Qdrant Cloud Cluster URL.
-* `QDRANT_API_KEY`: Qdrant Cloud Cluster API access key.
-
-### Email Server (Resend)
-* `RESEND_API_KEY`: API key for the Resend service.
-* `RESEND_FROM_EMAIL`: Domain-authenticated email address used to send verification and password reset codes.
-* `RESEND_FROM_NAME`: Display name shown on system emails (e.g., `ResearchMind`).
-
-### AWS Object Storage (S3)
-* `AWS_ACCESS_KEY_ID`: IAM User access key ID for file uploads.
-* `AWS_SECRET_ACCESS_KEY`: IAM User secret access key.
-* `AWS_S3_BUCKET`: Name of your AWS S3 bucket.
-* `AWS_REGION`: AWS S3 deployment region (e.g., `us-east-1`).
-
-### Search & Special Tools APIs
-* `TAVILY_API_KEY`: API key for Tavily AI Search (web indexing).
-* `NEWS_API_KEY`: API key for general news search.
-* `PUBMED_EMAIL`: Email registered with PubMed for API access tracking.
-* `REDDIT_USER_AGENT`: User agent header sent when fetching Reddit thread context.
-
----
-
-## 🚀 Local Installation & Setup
-
-### Prerequisites
-* Node.js (v18+)
-* PostgreSQL instance
-* Redis instance
-
-### 1. Backend Configuration
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Initialize the environment: Create your `.env` file using the comprehensive configuration section above.
-4. Run database migrations to set up the tables:
-   ```bash
-   npm run migrate
-   ```
-5. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-### 2. Frontend Configuration
-1. Navigate to the frontend directory:
-   ```bash
-   cd ../frontend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a `.env.local` file:
-   ```env
-   NEXT_PUBLIC_API_URL=http://localhost:3001
-   ```
-4. Start the development server:
-   ```bash
-   npm run dev
-   ```
-5. Open `http://localhost:3000` in your web browser.
-
----
-
-## 📊 Running Telemetry Benchmarks
-
-To run the automated performance suite:
-```bash
-cd backend
-npm run build
-npx ts-node src/test/benchmark-runner.ts
+```text
+backend/
+  assets/             Email artwork
+  src/agents/         Planning, search, retrieval, drafting, review, chat
+  src/db/             Schema, migrations, queries, cache and auth storage
+  src/graph/          LangGraph workflow and state
+  src/routes/         Express API routes
+  src/utils/          Email templates, storage, and supporting utilities
+frontend/
+  app/                Application pages and global styles
+  components/         Shared interface and report components
+  public/landing/     Landing page illustrations
+  lib/                API, authentication, and exports
+ docs/                Supporting architecture documentation and screenshots
 ```
-This will automatically refresh results and write them directly into the root `benchmark.md` file.
 
-
-
+See [architecture notes](docs/architecture.md) for additional background; the source code is authoritative for current behavior.
