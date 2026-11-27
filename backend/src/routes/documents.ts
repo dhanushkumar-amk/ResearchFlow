@@ -147,7 +147,7 @@ router.post('/query', async (req: Request, res: Response) => {
     // 3. Invoke LLM to answer grounded in contexts
     const llm = new ChatGroq({
       apiKey: config.groqApiKey,
-      model: 'llama-3.3-70b-versatile',
+      model: 'openai/gpt-oss-120b',
       temperature: 0.2,
     });
 
@@ -155,6 +155,7 @@ router.post('/query', async (req: Request, res: Response) => {
       You are a precise, scholarly Research Assistant.
       Synthesize a detailed, helpful answer to the user's question using strictly the retrieved Vault Contexts below.
       Always cite the source document name next to the facts you present (e.g. "as shown in [Source Name]").
+      Format the answer as readable Markdown with short headings and paragraphs. For personal skills, use a concise bullet list grouped by category, then a short summary. Use tables only for genuine comparisons. Every table row must be on its own line with a header separator row. Never put literal pipe characters inside cells or source names; replace them with commas. List source names once in a Sources section instead of repeating long source names in every row. Do not wrap the answer in a code fence.
       If the context does not contain enough information to address the query, state that the context lacks sufficient facts, but still offer a brief, logical general deduction.
 
       ### RETRIEVED VAULT CONTEXTS:

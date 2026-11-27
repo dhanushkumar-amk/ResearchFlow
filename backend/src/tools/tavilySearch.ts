@@ -15,13 +15,19 @@ function sleep(ms: number) {
 }
 
 // Initialize the Tavily client once
-const tavilyClient = tavily({ apiKey: config.tavilyApiKey });
+const tavilyClient = config.tavilyApiKey
+  ? tavily({ apiKey: config.tavilyApiKey })
+  : null;
 
 /**
  * Runs a single Tavily search query.
  * On 429 rate-limit error, waits 1 second and retries once automatically.
  */
 async function runSingleQuery(query: string): Promise<SearchResult[]> {
+  if (!tavilyClient) {
+    console.warn('[Search] Tavily is not configured; skipping web search.');
+    return [];
+  }
   const doSearch = async () => {
     const response = await tavilyClient.search(query, {
       maxResults: 5,

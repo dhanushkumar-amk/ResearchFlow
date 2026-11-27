@@ -23,7 +23,7 @@ export async function runPlannerAgent(query: string, sessionId?: string): Promis
   // Initialize the Groq LLM - USES INSTANT MODEL for sub-second planning
   const llm = new ChatGroq({
     apiKey: config.groqApiKey,
-    model: 'llama-3.1-8b-instant',
+    model: 'openai/gpt-oss-120b',
     temperature: 0,
   });
 

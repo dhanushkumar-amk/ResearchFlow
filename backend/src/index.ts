@@ -55,7 +55,8 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Server running');
 });
 
-const server = app.listen(port, () => {
+const server = app.listen(port);
+server.once('listening', () => {
   console.log(`✅ [Express] Server successfully bound to port ${port}`);
   console.log('🚀 ResearchFlow Backend is ready for requests.');
 });
@@ -63,6 +64,8 @@ const server = app.listen(port, () => {
 server.on('error', (err: any) => {
   if (err.code === 'EADDRINUSE') {
     console.error(`❌ Error: Port ${port} is already in use.`);
+    console.error('Stop the other backend process, or set a different PORT in backend/.env.');
+    console.error('On Windows, find the process with: netstat -ano | findstr :3001');
   } else {
     console.error('❌ Server error:', err);
   }

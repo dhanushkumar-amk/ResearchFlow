@@ -32,6 +32,7 @@ RUN npm install --omit=dev --legacy-peer-deps
 
 # Copy the compiled output from the builder stage
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/assets ./assets
 
 # Create a logs directory for Winston
 RUN mkdir logs

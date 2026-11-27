@@ -1,8 +1,9 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { API_URL } from './api';
 
-const AUTH_PATH = '/api/auth';
+const AUTH_PATH = `${API_URL}/api/auth`;
 
 interface User {
   id: string;

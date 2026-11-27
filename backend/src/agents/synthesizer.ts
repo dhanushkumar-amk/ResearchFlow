@@ -24,7 +24,7 @@ export async function* runSynthesizerAgent(inputs: SynthesizerInputs): AsyncGene
   // Initialize the Groq LLM (LangChain version for better telemetry)
   const llm = new ChatGroq({
     apiKey: config.groqApiKey,
-    model: 'llama-3.3-70b-versatile',
+    model: 'openai/gpt-oss-120b',
     temperature: 0.3,
     streaming: true,
   });
@@ -37,10 +37,13 @@ export async function* runSynthesizerAgent(inputs: SynthesizerInputs): AsyncGene
     2. Use H2 (##) and H3 (###) for all sections.
     3. Citation Radar: Cite sources with [Web Source X] or [Document Context X].
     4. Include at least one Markdown Table.
-    5. Include EXACTLY one Mermaid Diagram using \`graph TD\` syntax.
+    5. Include one useful Mermaid diagram. Choose graph LR for pipelines, graph TD for hierarchies, sequenceDiagram for interactions, or mindmap for concept relationships. Vary the layout to suit the subject instead of always producing a top-down hierarchy.
        - MANDATORY: Wrap the diagram in triple backticks like this: \`\`\`mermaid\ngraph TD\n...\n\`\`\`
        - CRITICAL: Use ONLY \`-->\` for arrows. 
        - DO NOT USE \`|>\`.
+       - Quote every node label, including nodes defined on edges: A["Input"] --> B["Retriever (vector search)"].
+       - For flowcharts, use classDef and class to distinguish stages with soft blue, teal, amber, pink, and violet fills and dark readable text.
+       - Include only the diagram in the code block; omit commentary about syntax or arrows from the report.
     6. Tone: Professional and analytical.
 
     ### CONTEXT PROVIDED:

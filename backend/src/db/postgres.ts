@@ -1,6 +1,7 @@
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 import dns from 'dns';
+import net from 'net';
 
 // Load environment variables
 dotenv.config();
@@ -8,7 +9,14 @@ dotenv.config();
 // Custom lookup function that forces IPv4 to avoid broken IPv6 TLS handshake hangs on Windows/Wi-Fi
 const lookupIPv4 = (hostname: string, options: any, callback: any) => {
   dns.lookup(hostname, { family: 4 }, (err, address, family) => {
-    callback(err, address, family);
+    if (!err) return options?.all ? callback(null, [{ address, family }]) : callback(null, address, family);
+    const resolver = new dns.Resolver();
+    resolver.setServers(['1.1.1.1', '8.8.8.8']);
+    resolver.resolve4(hostname, (fallbackError, addresses) => {
+      if (fallbackError) return callback(fallbackError);
+      if (options?.all) return callback(null, addresses.map(address => ({ address, family: 4 })));
+      callback(null, addresses[0], 4);
+    });
   });
 };
 
@@ -25,7 +33,13 @@ const pool = new Pool({
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 15000, // 15 seconds to allow serverless cold starts
   ssl: isNeon ? { rejectUnauthorized: false } : undefined,
-  lookup: lookupIPv4
+  // pg uses a supplied socket for connection options such as DNS lookup.
+  stream: () => {
+    const socket = new net.Socket();
+    socket.connect = ((port: number, host: string) =>
+      (net.Socket.prototype.connect as any).call(socket, { port, host, lookup: lookupIPv4 })) as any;
+    return socket;
+  }
 } as any);
 
 

@@ -5,9 +5,9 @@ import { config } from '../config';
 /**
  * High-Performance Chat Model (Groq Llama 3.3)
  */
-const model = new ChatGroq({
+const getModel = () => new ChatGroq({
   apiKey: config.groqApiKey,
-  model: "llama-3.3-70b-versatile",
+  model: "openai/gpt-oss-120b",
   temperature: 0.3,
   streaming: true,
 });
@@ -53,7 +53,12 @@ export async function* runChatAgent(input: ChatInput) {
   ];
 
   try {
-    const stream = await model.stream(messages);
+    if (!config.groqApiKey) {
+      yield 'AI chat is unavailable because GROQ_API_KEY is not configured.';
+      return;
+    }
+
+    const stream = await getModel().stream(messages);
 
     for await (const chunk of stream) {
       if (chunk.content) {

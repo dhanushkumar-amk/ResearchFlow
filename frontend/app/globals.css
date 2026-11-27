@@ -296,6 +296,10 @@ body {
 .rf-report-text pre, .rf-report-table { max-width: 100%; overflow-x: auto; }
 .rf-report-table { margin-block: 1.5rem; }
 .rf-report-table table { margin-block: 0; min-width: 27rem; }
+.rf-report-table :is(th, td) { overflow-wrap: normal; word-break: normal; min-width: 7rem; padding: .8rem 1rem; }
+.rf-report-table :is(th, td):first-child { min-width: 5rem; }
+.rf-report-table th { background: var(--rf-accent-soft); color: var(--foreground); }
+.rf-report-table tbody tr:nth-child(even) { background: #f8faff; }
 .rf-citation { padding: .06rem .28rem; border: 1px solid #dce2f2; border-radius: .2rem; background: #eef2ff; color: #264584; font-size: .72em; white-space: normal; }
 .rf-selection { position: fixed; z-index: 40; transform: translateX(-50%); border-radius: .45rem; padding: .55rem .7rem; background: var(--foreground); color: white; font-size: .8125rem; cursor: pointer; }
 

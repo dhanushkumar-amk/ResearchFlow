@@ -8,6 +8,7 @@ import { query } from '../db/postgres';
 import { requireAuth, AuthRequest } from '../middleware/auth';
 import { setMemory, getMemory, deleteMemory } from '../db/redis';
 import { sendEmail } from '../utils/email';
+import { verificationEmail } from '../utils/emailTemplate';
 import { uploadFile } from '../utils/s3';
 
 const router = Router();
@@ -49,16 +50,7 @@ router.post('/register', async (req: Request, res: Response) => {
     await sendEmail({
       to: normalizedEmail,
       subject: 'Verify your ResearchMind account',
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
-          <h2 style="color: #10b981; font-weight: bold; margin-bottom: 20px;">Welcome to ResearchMind!</h2>
-          <p>Thank you for signing up. Please verify your email address by using the 6-digit verification code below:</p>
-          <div style="background-color: #f3f4f6; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 4px; color: #1f2937; margin: 20px 0; border-radius: 6px;">
-            ${code}
-          </div>
-          <p style="color: #6b7280; font-size: 14px;">This verification code will expire in 10 minutes. If you did not request this, please ignore this email.</p>
-        </div>
-      `
+      html: verificationEmail({ code, title: 'Verify your email', description: 'Welcome to ResearchMind. Enter this code in the app to finish creating your account.' })
     });
 
     res.status(200).json({
@@ -138,22 +130,14 @@ router.post('/resend-verification', async (req: Request, res: Response) => {
     }
 
     // Generate new OTP
+    await setMemory(`temp_user:${normalizedEmail}`, tempUser, 1800);
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     await setMemory(`otp:${normalizedEmail}`, code, 600); // 10 minutes
 
     await sendEmail({
       to: normalizedEmail,
       subject: 'Verify your ResearchMind account (Resent)',
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
-          <h2 style="color: #10b981; font-weight: bold; margin-bottom: 20px;">Verify your email address</h2>
-          <p>Use the 6-digit verification code below to complete your registration:</p>
-          <div style="background-color: #f3f4f6; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 4px; color: #1f2937; margin: 20px 0; border-radius: 6px;">
-            ${code}
-          </div>
-          <p style="color: #6b7280; font-size: 14px;">This code will expire in 10 minutes.</p>
-        </div>
-      `
+      html: verificationEmail({ code, title: 'Verify your email', description: 'Here is your new verification code. Enter it in the app to complete your registration.' })
     });
 
     res.status(200).json({ message: 'A new verification code has been sent.' });
@@ -173,6 +157,11 @@ router.post('/login', async (req: Request, res: Response) => {
   }
 
   try {
+    if (!config.databaseUrl) {
+      res.status(503).json({ error: 'Sign-in is not configured: add DATABASE_URL to backend/.env and restart the backend.' });
+      return;
+    }
+
     const result = await query(
       'SELECT user_id, name, email, password_hash FROM users WHERE email = $1',
       [email.toLowerCase()]
@@ -230,16 +219,7 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
     await sendEmail({
       to: normalizedEmail,
       subject: 'Reset your ResearchMind password',
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
-          <h2 style="color: #10b981; font-weight: bold; margin-bottom: 20px;">Password Reset Request</h2>
-          <p>We received a request to reset your password. Use the 6-digit code below to proceed:</p>
-          <div style="background-color: #f3f4f6; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 4px; color: #1f2937; margin: 20px 0; border-radius: 6px;">
-            ${code}
-          </div>
-          <p style="color: #6b7280; font-size: 14px;">This code will expire in 10 minutes. If you did not request this, you can ignore this email.</p>
-        </div>
-      `
+      html: verificationEmail({ code, title: 'Reset your password', description: 'Enter this code in ResearchMind to continue resetting your password.' })
     });
 
     res.status(200).json({ message: 'Reset code sent to email.' });
@@ -481,17 +461,7 @@ router.post('/change-password/request', requireAuth, async (req: AuthRequest, re
     await sendEmail({
       to: email,
       subject: 'Verify your password change request',
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
-          <h2 style="color: #10b981; font-weight: bold; margin-bottom: 20px;">Security Verification Code</h2>
-          <p>Hello ${name},</p>
-          <p>We received a request to change the password for your ResearchFlow account. Use the following 6-digit verification code to complete this change:</p>
-          <div style="background-color: #f3f4f6; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 4px; color: #1f2937; margin: 20px 0; border-radius: 6px;">
-            ${code}
-          </div>
-          <p style="color: #6b7280; font-size: 14px;">This code will expire in 10 minutes. If you did not request this, please change your password immediately to protect your account.</p>
-        </div>
-      `
+      html: verificationEmail({ code, title: 'Confirm password change', description: 'Enter this code in ResearchMind to confirm your password change request.' })
     });
 
     res.json({ message: 'Verification code sent to your registered email.' });

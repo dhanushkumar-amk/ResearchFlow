@@ -165,7 +165,7 @@ export async function runCriticAgent(inputs: CriticInputs): Promise<CriticOutput
   // Initialize Groq LLM
   const llm = new ChatGroq({
     apiKey: config.groqApiKey,
-    model: 'llama-3.1-8b-instant',
+    model: 'openai/gpt-oss-120b',
     temperature: 0.1,
   });
 

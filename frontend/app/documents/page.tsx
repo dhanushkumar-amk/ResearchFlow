@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent, type DragEvent } from 'react';
 import { ArrowUpRight, BookOpen, FileText, Globe2, Link2, Loader2, MessageSquare, Plus, Search, Trash2, Upload } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { deleteDocument, getHistory, ingestUrl, queryKnowledgeBase, uploadDocument } from '../../lib/api';
 import { useAuth } from '../../lib/AuthContext';
 import type { Document } from '../../types/research';
@@ -317,7 +318,9 @@ export default function DocumentsPage() {
           {answer && (
             <article className="rf-library-answer" aria-live="polite">
               <h3>{answer.question}</h3>
-              <div className="prose prose-sm max-w-none"><ReactMarkdown>{answer.text}</ReactMarkdown></div>
+              <div className="prose prose-sm max-w-none"><ReactMarkdown remarkPlugins={[remarkGfm]} components={{
+                table: ({ children }) => <div className="rf-report-table"><table>{children}</table></div>,
+              }}>{answer.text}</ReactMarkdown></div>
               {answer.sources.length > 0 && (
                 <div className="mt-4">
                   <h4 className="text-sm font-semibold">Sources used</h4>

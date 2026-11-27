@@ -1,4 +1,6 @@
 import axios from 'axios';
+import fs from 'fs';
+import path from 'path';
 
 export async function sendEmail({
   to,
@@ -10,7 +12,7 @@ export async function sendEmail({
   html: string;
 }) {
   const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'no-reply@dhanushkumaramk.dev';
+  const fromEmail = process.env.RESEND_FROM_EMAIL || 'no-reply@dhanushkumar.in';
   const fromName = process.env.RESEND_FROM_NAME || 'ResearchMind';
 
   if (!apiKey) {
@@ -29,6 +31,11 @@ export async function sendEmail({
         to: [to],
         subject,
         html,
+        attachments: html.includes('cid:researchmind-art') ? [{
+          filename: 'research-observatory.webp',
+          content: fs.readFileSync(path.resolve(__dirname, '../../assets/research-observatory-day.webp')).toString('base64'),
+          content_id: 'researchmind-art',
+        }] : undefined,
       },
       {
         headers: {

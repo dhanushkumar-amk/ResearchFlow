@@ -21,6 +21,9 @@ const cleanMermaidChart = (rawChart: string): string => {
 
   // Clean labeled arrow endings like `-->|Label|>` or `-->|Label| >` to `-->|Label|`
   cleaned = cleaned.replace(/\|([^|]*)\|\s*>/g, '|$1|');
+  // Quote labels on edges too: A --> B[Retriever (vector search)].
+  cleaned = cleaned.replace(/\b([A-Za-z_][\w-]*)\[([^\]\n]*)\]/g, (match, id, label) =>
+    label.trim().startsWith('"') ? match : `${id}["${label.replace(/"/g, '&quot;')}"]`);
 
   // Basic arrow and arrow-head corrections
   cleaned = cleaned
@@ -40,7 +43,7 @@ const cleanMermaidChart = (rawChart: string): string => {
     }
 
     // Replace raw ampersands with "and" inside labels to prevent syntax break
-    l = l.replace(/&/g, 'and');
+    // Preserve entities and quoted label contents.
 
     // Fix unquoted node labels with special characters like parentheses
     // matches: NodeID[Label (with parens)] -> NodeID["Label (with parens)"]
@@ -116,7 +119,14 @@ export default function Mermaid({ chart, isStreaming }: MermaidProps) {
         if (!active) return;
         const diagram = valid || isStreaming ? source : cleanMermaidChart(source);
         if (!valid && isStreaming) return;
-        const { svg } = await mermaid.render(`mermaid-${id}-${++revision.current}`, diagram);
+        let coloredDiagram = diagram;
+        if (/^(graph|flowchart)\b/i.test(diagram) && !/\b(classDef|style)\s/.test(diagram)) {
+          const nodes = [...diagram.matchAll(/\b([A-Za-z_][\w-]*)\s*[\[({]/g)].map(match => match[1]);
+          const colors = ['#e0e7ff', '#ccfbf1', '#fef3c7', '#fce7f3', '#e0f2fe'];
+          coloredDiagram += [...new Set(nodes)].map((node, index) =>
+            `\nstyle ${node} fill:${colors[index % colors.length]},stroke:#64748b,color:#151f3b`).join('');
+        }
+        const { svg } = await mermaid.render(`mermaid-${id}-${++revision.current}`, coloredDiagram);
         if (active) setResult({ chart, svg });
       } catch {
         if (active && !isStreaming) setResult({ chart, error: true });
